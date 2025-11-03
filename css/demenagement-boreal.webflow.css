@@ -3515,6 +3515,30 @@ figcaption {
     overflow: auto;
   }
 
+  /* ALWAYS show logo in hamburger menu on mobile - simple approach */
+  .navbar3_menu .navbar3_logo-link-menu {
+    display: flex !important;
+    width: 100% !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin-top: 0 !important;
+    margin-bottom: 2rem !important;
+    padding: 0 !important;
+    order: -1 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  .navbar3_menu .navbar3_logo-link-menu .navbar3_logo,
+  .navbar3_menu .navbar3_logo-link-menu img {
+    max-width: 200px !important;
+    width: 100% !important;
+    height: auto !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
   /* Force logo to show in hamburger menu when menu is open */
   [data-nav-menu-open] .navbar3_logo-link-menu,
   .navbar3_menu[data-nav-menu-open] .navbar3_logo-link-menu,
