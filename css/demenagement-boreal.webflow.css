@@ -5761,4 +5761,111 @@ figcaption {
   }
 }
 
+/* ============================================
+   Mobile Adjustments - Banner, Logo, Navbar
+   ============================================ */
+
+/* Keep banner items (phone, email, social icons) on one line on mobile */
+@media screen and (max-width: 767px) {
+  .banner9_content-wrapper {
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+
+  .banner9_content {
+    align-items: center !important;
+    margin-bottom: 0 !important;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+  }
+
+  .banner9_social-icons {
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+}
+
+/* Constrain logo width on mobile to prevent it from being too wide */
+@media screen and (max-width: 767px) {
+  .navbar3_logo {
+    max-width: 140px !important;
+    width: auto !important;
+    height: auto !important;
+  }
+
+  .navbar3_logo-link {
+    max-width: 140px;
+    flex-shrink: 1;
+  }
+}
+
+/* Further reduce logo on very small screens */
+@media screen and (max-width: 479px) {
+  .navbar3_logo {
+    max-width: 120px !important;
+    width: auto !important;
+    height: auto !important;
+  }
+
+  .navbar3_logo-link {
+    max-width: 120px;
+  }
+}
+
+/* Navbar container adjustments for better mobile layout */
+@media screen and (max-width: 767px) {
+  .navbar3_container {
+    grid-column-gap: 8px !important;
+    grid-template-columns: auto 1fr auto !important;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .navbar3_component {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    min-height: 3.5rem;
+  }
+
+  /* Ensure button doesn't get too small */
+  .navbar3_tablet-menu-button,
+  .button.w-button {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    white-space: nowrap;
+  }
+
+  /* Hide "Estimation Gratuite" button text on very small screens, show icon only */
+  #w-node-_57009b8f-2e23-55ac-0a6e-23428477262f-84772613 {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+/* Very small screens - further optimizations */
+@media screen and (max-width: 479px) {
+  .navbar3_container {
+    grid-column-gap: 6px !important;
+  }
+
+  .navbar3_component {
+    min-height: 3rem;
+  }
+
+  .navbar3_logo {
+    max-width: 100px !important;
+  }
+
+  .navbar3_logo-link {
+    max-width: 100px;
+  }
+
+  /* Reduce button size on tiny screens */
+  .button.w-button {
+    font-size: 0.7rem;
+    padding: 0.4rem 0.6rem;
+  }
+}
+
 
