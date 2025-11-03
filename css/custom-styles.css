@@ -121,6 +121,13 @@
   object-fit: contain;
 }
 
+.messenger-button img[src$=".svg"] {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  filter: none;
+}
+
 @media screen and (max-width: 480px) {
   .messenger-button {
     width: 48px;
