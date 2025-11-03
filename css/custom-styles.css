@@ -81,7 +81,9 @@
     height: 48px;
   }
 
-  .st_button svg {
+  .st_button svg,
+  .st_button .arrow-icon,
+  .st_button img {
     width: 20px;
     height: 20px;
   }
