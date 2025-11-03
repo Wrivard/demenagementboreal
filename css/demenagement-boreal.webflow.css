@@ -3545,14 +3545,36 @@ figcaption {
     background-color: transparent !important;
   }
 
-  /* Specific rules for SVG logo */
+  /* Specific rules for SVG logo - make it white in dark menu */
   .navbar3_menu .navbar3_logo-link-menu img[src$=".svg"],
   .navbar3_menu .navbar3_logo-link-menu .navbar3_logo[src$=".svg"] {
     width: 200px !important;
     height: auto !important;
     max-height: 60px !important;
-    fill: currentColor !important;
+    filter: brightness(0) invert(1) !important; /* Make SVG white */
     color: #ffffff !important;
+  }
+
+  /* Alternative: Use SVG as background if filter doesn't work */
+  .navbar3_menu .navbar3_logo-link-menu {
+    position: relative;
+  }
+
+  .navbar3_menu .navbar3_logo-link-menu::before {
+    content: '';
+    display: block;
+    width: 200px;
+    height: 60px;
+    background-image: url('images/Logo-wide.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: brightness(0) invert(1); /* Make white */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
   }
 
   /* Force logo to show in hamburger menu when menu is open - multiple selectors */
