@@ -1,20 +1,22 @@
 # Floating Buttons (Back to Top + Messenger)
 
-This guide explains how to implement, style, and maintain the two floating buttons used across the site, identical to the homepage implementation. It also documents pitfalls we hit and how to avoid them.
+This guide explains how to implement, style, and maintain the two floating buttons used across the site. It documents the centralized implementation and best practices.
 
 ## What you get
 - Back to Top (smooth scroll to top)
-- Messenger (link to `https://m.me/inforenovationlc`)
+- Messenger (link to `https://m.me/61555945646998`)
 - Class-based show/hide animation on scroll (> 300px)
 - Centralized logic (one shared script for all pages)
+- SVG icons inlined in JavaScript (no external file dependencies)
 
 ## Files involved
 - CSS: `css/custom-styles.css` (contains the styles for `.st_wrapper`, `.st_button`, `.messenger-button` and animations)
-- Script: `js/fab-buttons.js` (injects homepage markup and handles show/hide + scroll behavior)
+- Script: `js/fab-buttons.js` (injects button markup with inlined SVGs and handles show/hide + scroll behavior)
 
 ## Design and accent color
-- The buttons use the project accent color. In this project, it’s the gold gradient `#d3af37 → #b8941f` (see `custom-styles.css`).
-- If the project accent color changes, update the gradient in `.messenger-button` and any related styles in `css/custom-styles.css`.
+- The buttons use the project accent color. In this project, it's the glacier blue gradient `#72adcb → #5b8aa2` (see `custom-styles.css`).
+- Border radius: `12px` (rounded rectangles, not perfect circles)
+- If the project accent color changes, update the gradient in `.st_button` and `.messenger-button` styles in `css/custom-styles.css`.
 
 ## How to add the buttons to a page
 1) Ensure styles are included (already global for this site):
@@ -56,14 +58,16 @@ Example (nested pages like `/services/...`):
    - Bind the scroll handler and click handler (smooth scroll to top).
    - Work even if multiple button instances exist (multi-instance safe).
 
-## Behavior details (matching homepage)
-- Markup injected (icon path is absolute so subfolders work):
-  - Messenger icon: `/images/Messenger_Icon_Secondary_White.png`
-- Show/hide on scroll:
+## Behavior details
+- **SVG Icons**: Both icons are inlined directly in the JavaScript (no external file loading)
+  - Messenger icon: SVG from `Messenger_Icon_Secondary_White.svg` (inlined)
+  - Arrow icon: SVG from `IcBaselineArrowUpward.svg` (inlined, white fill)
+- **Show/hide on scroll**:
   - threshold: 300px
-  - toggles classes: `is-visible` and `appear` for css transitions
-- Click behavior:
-  - `window.scrollTo({ top: 0, behavior: 'smooth' });`
+  - toggles classes: `is-visible` and `appear` for CSS transitions
+- **Click behavior**:
+  - Back to Top: `window.scrollTo({ top: 0, behavior: 'smooth' });`
+  - Messenger: Opens `https://m.me/61555945646998` in new tab
 
 ## Common pitfalls we encountered (and fixes)
 1) Duplicate/Conflicting FAB blocks on a page
@@ -80,7 +84,7 @@ Example (nested pages like `/services/...`):
 
 4) Wrong asset paths in subfolders
    - Symptom: Icons/images fail in `/services/*` pages if relative paths assume project root.
-   - Fix: Use absolute path for Messenger icon (`/images/...`) inside the shared script; it works from any subfolder.
+   - Fix: **SVGs are now inlined directly in JavaScript** - no path issues. Icons are embedded as SVG strings in `js/fab-buttons.js`.
 
 5) Empty wrapper present (`<div class="st_wrapper"></div>`) but no children
    - Symptom: You see the wrapper in markup but no buttons on the page.
@@ -95,16 +99,27 @@ Example (nested pages like `/services/...`):
    - Fix: Correct the `srcset` entries; ensure each `srcset` item points to a valid URL variant.
 
 ## Testing checklist (per page)
-- [ ] Check that jQuery + `js/webflow.js` + `js/mobile-menu-fix.js` load before `js/fab-buttons.js`.
+- [ ] Check that jQuery + `js/webflow.js` load before `js/fab-buttons.js`.
 - [ ] Confirm one of these exists: empty `.st_wrapper` or no wrapper (both are fine; script will handle it).
 - [ ] Hard refresh the page, scroll > 300px: both buttons appear and animate.
 - [ ] Click Back to Top: smooth scroll to page top.
-- [ ] Messenger opens `https://m.me/inforenovationlc` in new tab.
+- [ ] Messenger opens `https://m.me/61555945646998` in new tab.
+- [ ] Icons display correctly (no 404 errors in console).
+- [ ] Buttons have rounded corners (border-radius: 12px), not perfect circles.
 - [ ] Navbar dropdown still works (verifies Webflow runtime is present).
 
 ## Implementation policy
-- Always use the homepage buttons (markup/behavior) via `js/fab-buttons.js`.
+- Always use the centralized buttons via `js/fab-buttons.js`.
 - Do not embed per-page FAB logic. It reintroduces drift and conflicts.
-- Always keep the buttons styled with the project’s accent color.
+- Always keep the buttons styled with the project's accent color.
+- SVG icons are inlined in JavaScript to avoid path resolution issues.
+- Border radius: `12px` for rounded rectangles (adjust if needed).
+
+## Current implementation (Déménagement Boréal)
+- **Accent Color**: Glacier Blue (`#72adcb → #5b8aa2`)
+- **Border Radius**: `12px` (rounded rectangles)
+- **Messenger URL**: `https://m.me/61555945646998`
+- **Icons**: Inlined SVGs (no external file dependencies)
+- **Scroll Threshold**: 300px
 
 
