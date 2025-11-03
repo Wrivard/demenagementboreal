@@ -3513,6 +3513,15 @@ figcaption {
     margin-bottom: 2rem;
     display: flex;
     position: static;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+
+  .navbar3_logo-link-menu .navbar3_logo {
+    max-width: 200px;
+    width: 100%;
+    height: auto;
   }
 
   .menu-icon3 {
