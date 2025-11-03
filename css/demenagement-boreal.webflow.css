@@ -3539,10 +3539,12 @@ figcaption {
     opacity: 1 !important;
   }
 
-  /* Force logo to show in hamburger menu when menu is open */
+  /* Force logo to show in hamburger menu when menu is open - multiple selectors */
   [data-nav-menu-open] .navbar3_logo-link-menu,
   .navbar3_menu[data-nav-menu-open] .navbar3_logo-link-menu,
-  .w-nav-menu[data-nav-menu-open] .navbar3_logo-link-menu {
+  .w-nav-menu[data-nav-menu-open] .navbar3_logo-link-menu,
+  .navbar3_menu .navbar3_logo-link-menu.w-nav-brand,
+  .w-nav-menu .navbar3_logo-link-menu.w-nav-brand {
     display: flex !important;
     width: 100% !important;
     justify-content: center !important;
@@ -3551,12 +3553,16 @@ figcaption {
     margin-bottom: 2rem !important;
     padding: 0 !important;
     order: -1 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
   [data-nav-menu-open] .navbar3_logo-link-menu .navbar3_logo,
   [data-nav-menu-open] .navbar3_logo-link-menu img,
   .navbar3_menu[data-nav-menu-open] .navbar3_logo-link-menu .navbar3_logo,
-  .navbar3_menu[data-nav-menu-open] .navbar3_logo-link-menu img {
+  .navbar3_menu[data-nav-menu-open] .navbar3_logo-link-menu img,
+  .navbar3_menu .navbar3_logo-link-menu.w-nav-brand .navbar3_logo,
+  .navbar3_menu .navbar3_logo-link-menu.w-nav-brand img {
     max-width: 200px !important;
     width: 100% !important;
     height: auto !important;
