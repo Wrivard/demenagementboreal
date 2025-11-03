@@ -2015,9 +2015,9 @@ figcaption {
 }
 
 .navbar3_tablet-menu-button {
-  border: 1px solid var(--color-scheme-1--border);
+  border: 1px solid var(--_primitives---colors--glacier);
   color: var(--_primitives---colors--white);
-  background-color: #000;
+  background-color: var(--_primitives---colors--glacier);
   margin-left: 1rem;
   padding: .5rem 1.5rem;
   display: none;
@@ -3491,6 +3491,14 @@ figcaption {
     margin-left: 0;
     margin-right: 0;
     display: inline-block;
+    border: 1px solid var(--_primitives---colors--glacier);
+    background-color: var(--_primitives---colors--glacier);
+    color: var(--_primitives---colors--white);
+  }
+
+  .navbar3_tablet-menu-button:hover {
+    border-color: var(--_primitives---colors--glacier-dark);
+    background-color: var(--_primitives---colors--glacier-dark);
   }
 
   .menu-icon3_line-bottom {
@@ -3511,17 +3519,19 @@ figcaption {
     float: none;
     margin-top: 2.5rem;
     margin-bottom: 2rem;
-    display: flex;
+    display: flex !important;
     position: static;
     justify-content: center;
     align-items: center;
     width: 100%;
+    padding: 0;
   }
 
   .navbar3_logo-link-menu .navbar3_logo {
     max-width: 200px;
     width: 100%;
     height: auto;
+    display: block;
   }
 
   .menu-icon3 {
