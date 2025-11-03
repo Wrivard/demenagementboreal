@@ -35,7 +35,7 @@
   width: 56px;
   height: 56px;
   background: linear-gradient(135deg, #72adcb 0%, #5b8aa2 100%);
-  border-radius: 50%;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -100,7 +100,7 @@
   width: 56px;
   height: 56px;
   background: linear-gradient(135deg, #72adcb 0%, #5b8aa2 100%);
-  border-radius: 50%;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
