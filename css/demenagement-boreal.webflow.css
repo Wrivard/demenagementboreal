@@ -3491,10 +3491,12 @@ figcaption {
     background-clip: border-box;
     border-right: 1px solid #000;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
+    align-items: flex-start;
     width: 80vw;
     height: 100dvh;
     margin-left: 0;
+    padding-top: 2rem;
     padding-bottom: 6.5rem;
     padding-left: 5vw;
     padding-right: 5vw;
@@ -3503,6 +3505,28 @@ figcaption {
     position: absolute;
     inset: 0% auto 0% 0%;
     overflow: auto;
+  }
+
+  /* Force logo to show in hamburger menu */
+  .navbar3_menu .navbar3_logo-link-menu {
+    display: flex !important;
+    width: 100% !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin-top: 0 !important;
+    margin-bottom: 2rem !important;
+    padding: 0 !important;
+    order: -1;
+  }
+
+  .navbar3_menu .navbar3_logo-link-menu .navbar3_logo,
+  .navbar3_menu .navbar3_logo-link-menu img {
+    max-width: 200px !important;
+    width: 100% !important;
+    height: auto !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
   .navbar3_tablet-menu-button {
