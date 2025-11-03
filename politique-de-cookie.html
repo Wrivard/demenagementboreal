@@ -311,107 +311,155 @@ margin: 0rem !important;
           <div class="navbar3_menu-background"></div>
         </div>
       </div>
-      <header class="section_header62 color-scheme-1">
+      <section class="section_content28">
+        <style>
+/* Accent color - Glacier Blue from brand */
+:root {
+  --accent: #72adcb;
+}
+
+/* Section content 28 - container + typography */
+.section_content28 { background: #fafbfc; padding: 120px 0; min-height: 100vh; }
+.content28_component { max-width: 900px; margin: 0 auto; padding: 0 40px; }
+.content28_content { background: transparent; }
+
+/* Hide sidebar (not used in this layout) */
+.content28_sidebar { display: none !important; }
+
+/* Hero header card */
+.content28_header {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 24px; padding: 80px 60px; margin-bottom: 80px; text-align: center;
+  border: 1px solid rgba(0,0,0,0.06); box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+.content28_header h1 { color:#0f172a; font-size:3.5rem; font-weight:800; margin:0 0 24px; letter-spacing:-0.04em; line-height:1.1; }
+.content28_header p { color:#64748b; font-size:1.1rem; margin:0; }
+
+/* Section cards */
+.content28_card { background:#fff; border-radius:20px; padding:48px; margin-bottom:28px; box-shadow:0 10px 30px rgba(0,0,0,0.08); border:1px solid rgba(0,0,0,0.06); }
+.content28_card h2 { color:#1f2937; font-size:1.8rem; font-weight:700; margin:0 0 16px; border-bottom:3px solid var(--accent); display:inline-block; padding-bottom:8px; }
+.content28_card p { color:#374151; font-size:1rem; line-height:1.7; margin:0 0 16px; }
+
+/* Info grid (used for cookie types) */
+.content28_info-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; margin:20px 0; }
+.content28_info {
+  background: color-mix(in srgb, var(--accent) 10%, #fff 90%);
+  border:2px solid color-mix(in srgb, var(--accent) 60%, #fff 40%);
+  border-radius:12px; padding:24px; box-shadow:0 2px 8px rgba(0,0,0,0.06);
+}
+.content28_info h3 { color:#312b22; margin:0 0 12px; font-size:1.2rem; font-weight:600; }
+.content28_info p { margin:0; font-size:0.95rem; line-height:1.5; color:#666; }
+
+/* Callout banner (top) */
+.content28_banner { text-align:center; padding:40px 20px; background: linear-gradient(135deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 70%, #000 30%) 100%); color:#fff; border-radius:12px; margin-bottom:40px; box-shadow:0 4px 20px rgba(0,0,0,0.12); }
+.content28_banner h1 { font-size:2.5rem; margin:0 0 12px; font-weight:700; text-shadow:0 2px 4px rgba(0,0,0,0.3); }
+.content28_banner p { font-size:1rem; margin:0; opacity:.95; font-weight:500; }
+
+/* Contact block */
+.content28_contact { background:linear-gradient(135deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 70%, #000 30%) 100%); padding:56px; border-radius:24px; box-shadow:0 10px 30px rgba(0,0,0,0.12); text-align:center; }
+.content28_contact h3 { color:#fff; font-size:1.8rem; font-weight:700; margin:0 0 24px; }
+.content28_contact p { color:#cbd5e1; font-size:1.1rem; line-height:1.7; margin:0; opacity:0.9; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .section_content28{ padding:80px 0; } .content28_component{ padding:0 24px; }
+  .content28_header{ padding:60px 40px; } .content28_header h1{ font-size:2.5rem; }
+  .content28_card{ padding:40px; } .content28_contact{ padding:40px; }
+}
+@media (max-width: 480px) {
+  .content28_component{ padding:0 16px; } .content28_header{ padding:40px 24px; }
+  .content28_header h1{ font-size:2rem; } .content28_card{ padding:32px; }
+}
+        </style>
         <div class="padding-global">
           <div class="container-large">
             <div class="padding-section-large">
-              <div class="header62_component">
-                <div class="text-align-center">
-                  <div data-w-id="af3d19af-d084-99ea-bdca-c033ac1f1757" style="opacity:0" class="max-width-large align-center">
-                    <div class="margin-bottom margin-xsmall">
-                      <div class="text-style-tagline">Transparence</div>
-                    </div>
-                    <div class="margin-bottom margin-small">
-                      <h1 class="heading-style-h1">Politique de cookies</h1>
-                    </div>
-                    <p class="text-size-medium">Comprendre comment nous utilisons les cookies pour améliorer votre expérience de navigation sur notre site web</p>
+              <div class="content28_component">
+                <div class="max-width-large content28_content">
+
+                  <!-- Banner header -->
+                  <div class="content28_banner">
+                    <h1>Politique de Cookies</h1>
+                    <p><strong>Dernière mise à jour : 15 janvier 2025</strong></p>
                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-      <section class="section_content7 color-scheme-2">
-        <div class="padding-global">
-          <div class="container-large">
-            <div class="padding-section-large">
-              <div class="content7_component">
-                <div class="max-width-large align-center">
-                  <div class="content7_content-wrapper">
-                    <div class="margin-bottom margin-small">
-                      <h2 id="w-node-af3d19af-d084-99ea-bdca-c033ac1f1768-ca70a54a" class="heading-style-h2">Utilisation des cookies</h2>
-                    </div>
-                    <div class="text-rich-text w-richtext">
-                      <p>Chez Déménagement &amp; Transport Boréal, nous croyons en la transparence totale concernant nos pratiques numériques. Les cookies sont de petits fichiers texte stockés sur votre appareil lorsque vous visitez notre site web. Ils nous aident à améliorer votre expérience de navigation et à comprendre comment nos clients interagissent avec nos services.</p>
-                      <p></p>
-                      <p>Nous utilisons deux types principaux de cookies. Les cookies essentiels sont nécessaires au fonctionnement de base du site, garantissant que vous pouvez naviguer et utiliser nos services sans interruption. Les cookies analytiques nous permettent de collecter des informations sur le comportement des utilisateurs, nous aidant à optimiser notre site et à offrir une meilleure expérience.</p>
-                      <p></p>
-                      <p>Vos données personnelles sont protégées. Nous ne partageons jamais vos informations avec des tiers sans votre consentement explicite. Vous pouvez à tout moment gérer vos préférences de cookies dans les paramètres de votre navigateur ou via notre panneau de configuration.</p>
-                      <p></p>
-                      <p>En continuant à utiliser notre site, vous acceptez notre politique de cookies. Nous nous engageons à maintenir la confidentialité et la sécurité de vos informations, conformément aux réglementations canadiennes sur la protection des données.</p>
-                      <p></p>
-                      <p>Si vous avez des questions ou des préoccupations concernant notre utilisation des cookies, n&#x27;hésitez pas à nous contacter directement. La transparence est au cœur de notre engagement envers nos clients.</p>
-                    </div>
+
+                  <!-- Section: Introduction -->
+                  <div class="content28_card" id="introduction">
+                    <h2>Introduction</h2>
+                    <p>Chez Déménagement Boréal, nous croyons en la transparence totale concernant nos pratiques numériques. Cette politique de cookies explique comment nous utilisons les cookies et technologies similaires sur notre site web <strong>demenagementboreal.ca</strong> pour améliorer votre expérience de navigation et comprendre comment nos clients interagissent avec nos services.</p>
+                    <p>En continuant à utiliser notre site, vous acceptez notre politique de cookies. Nous nous engageons à maintenir la confidentialité et la sécurité de vos informations, conformément aux réglementations canadiennes sur la protection des données.</p>
                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section id="contact" class="section_contact16 color-scheme-3">
-        <div class="padding-global">
-          <div class="container-large">
-            <div class="padding-section-large">
-              <div class="contact16_component">
-                <div class="margin-bottom margin-xxlarge">
-                  <div class="w-layout-grid contact16_content">
-                    <div class="contact16_content-left">
-                      <div class="max-width-large">
-                        <div class="margin-bottom margin-xsmall">
-                          <div class="text-style-tagline">Contact</div>
-                        </div>
-                        <div class="margin-bottom margin-small">
-                          <h2 class="heading-style-h2">Parlons déménagement</h2>
-                        </div>
-                        <p class="text-size-medium">Nous sommes prêts à transformer votre déménagement en une expérience simple et sans stress.</p>
+
+                  <!-- Section: Que sont les cookies ? -->
+                  <div class="content28_card" id="que-sont-les-cookies">
+                    <h2>Que sont les cookies ?</h2>
+                    <p>Les cookies sont de petits fichiers texte stockés sur votre appareil (ordinateur, tablette ou mobile) lorsque vous visitez notre site web. Ils nous aident à :</p>
+                    <ul style="color:#374151; font-size:1rem; line-height:1.7; margin:16px 0; padding-left:24px;">
+                      <li>Mémoriser vos préférences et paramètres</li>
+                      <li>Améliorer la fonctionnalité du site</li>
+                      <li>Analyser l'utilisation du site pour optimiser nos services</li>
+                      <li>Assurer la sécurité de votre navigation</li>
+                    </ul>
+                    
+                    <div class="content28_info-grid">
+                      <div class="content28_info">
+                        <h3>Cookies essentiels</h3>
+                        <p>Nécessaires au fonctionnement de base du site. Ils garantissent que vous pouvez naviguer et utiliser nos services sans interruption. Ces cookies ne peuvent pas être désactivés.</p>
+                      </div>
+                      <div class="content28_info">
+                        <h3>Cookies de performance</h3>
+                        <p>Nous permettent de collecter des informations anonymes sur le comportement des utilisateurs, nous aidant à optimiser notre site et à offrir une meilleure expérience.</p>
+                      </div>
+                      <div class="content28_info">
+                        <h3>Cookies fonctionnels</h3>
+                        <p>Améliorent l'expérience utilisateur en mémorisant vos préférences et choix (comme la langue ou la région). Ils permettent au site de se souvenir de vos actions.</p>
                       </div>
                     </div>
-                    <div class="contact16_content-right">
-                      <div class="w-layout-grid contact16_contact-list">
-                        <div id="w-node-_9be49083-c02e-39d7-4c8f-8da89220eda4-9220ed91" class="contact16_item">
-                          <div class="contact16_item-icon-wrapper">
-                            <div class="icon-embed-xsmall special w-embed"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewbox="0 0 24 24" fill="none" preserveaspectratio="xMidYMid meet" aria-hidden="true" role="img">
-                                <path d="M3.05359 5.74219V18.9463H20.9462V6.13867L20.1708 6.64844L12.2147 11.8867C12.1544 11.9184 12.102 11.944 12.0565 11.9619C12.0534 11.9629 12.0366 11.9678 11.9999 11.9678C11.9626 11.9678 11.946 11.9628 11.9432 11.9619C11.8975 11.9439 11.8448 11.9186 11.7841 11.8867L4.05359 6.7959V6.39648L11.7264 11.4219L11.9999 11.6016L12.2733 11.4229L20.62 5.97266L21.6307 5.31152C21.6464 5.38933 21.6551 5.46973 21.6552 5.55371V18.4463C21.6552 18.7675 21.5429 19.041 21.2938 19.2891C21.0449 19.5371 20.7701 19.6494 20.4462 19.6494H3.55359C3.23187 19.6494 2.95869 19.5371 2.71082 19.2891L2.6239 19.1953C2.43623 18.9725 2.35046 18.7279 2.35046 18.4463V5.55371C2.35048 5.46519 2.35953 5.38047 2.37683 5.29883L3.05359 5.74219ZM3.55359 4.34473H20.4462C20.7696 4.34473 21.0438 4.4579 21.2928 4.70703H21.2938C21.4035 4.81669 21.485 4.93216 21.5438 5.05371H2.46082C2.5195 4.93172 2.60127 4.81595 2.71082 4.70605H2.71179C2.95976 4.45718 3.23251 4.34476 3.55359 4.34473Z" fill="currentColor" stroke="currentColor"></path>
-                              </svg></div>
-                          </div>
-                          <div class="contact16_item-text-wrapper">
-                            <div class="margin-bottom margin-xxsmall">
-                              <h3 class="heading-style-h6">Courriel</h3>
-                            </div>
-                            <a href="#" class="text-style-link">dettboreal@gmail.com</a>
-                          </div>
-                        </div>
-                        <div id="w-node-_9be49083-c02e-39d7-4c8f-8da89220edad-9220ed91" class="contact16_item">
-                          <div class="contact16_item-icon-wrapper">
-                            <div class="icon-embed-xsmall special w-embed"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewbox="0 0 24 24" fill="none" preserveaspectratio="xMidYMid meet" aria-hidden="true" role="img">
-                                <path d="M4.11902 3.34473H7.61902C7.80275 3.34474 7.93038 3.39945 8.03503 3.49805C8.12854 3.58614 8.20705 3.70059 8.2655 3.85156L8.31726 4.01465L8.9823 7.02832C9.01497 7.26011 9.00744 7.44511 8.97253 7.5918C8.94139 7.72276 8.8796 7.83104 8.78015 7.92578L8.77332 7.93164L6.25574 10.415L5.97644 10.6904L6.17664 11.0264C6.60337 11.7435 7.05685 12.416 7.53699 13.042C8.01981 13.6715 8.55599 14.2696 9.14441 14.8369C9.75779 15.4701 10.399 16.0453 11.0682 16.5605C11.7434 17.0804 12.4488 17.5353 13.1844 17.9248L13.5155 18.0996L13.7762 17.832L16.1815 15.3643L16.1913 15.3535C16.3309 15.2021 16.4775 15.111 16.6337 15.0645C16.7647 15.0256 16.8944 15.012 17.0253 15.0215L17.1571 15.0391L19.9774 15.6631C20.1431 15.7092 20.2749 15.7806 20.3817 15.875L20.4813 15.9775C20.5981 16.1186 20.6552 16.2764 20.6552 16.4707V19.8809C20.6552 20.1178 20.581 20.2895 20.4374 20.4316C20.2909 20.5766 20.1181 20.6494 19.8866 20.6494C18.0114 20.6494 16.0911 20.1991 14.1219 19.2842C12.1538 18.3698 10.3229 17.0691 8.62976 15.376C7.0427 13.7889 5.79967 12.0798 4.89539 10.249L4.71863 9.88086C3.80159 7.90938 3.35046 5.99008 3.35046 4.11914C3.35048 3.94128 3.39174 3.79881 3.47351 3.67773L3.56921 3.56348C3.71327 3.41863 3.88502 3.34473 4.11902 3.34473ZM4.06628 4.5752C4.09721 5.28818 4.20923 6.0365 4.39929 6.81836C4.59086 7.60639 4.89058 8.47618 5.2948 9.4248L5.58386 10.1035L6.1073 9.58301L8.12683 7.5752L8.32019 7.38281L8.26257 7.11621L7.69421 4.44922L7.60925 4.05371H4.04382L4.06628 4.5752ZM19.9462 16.377L19.5477 16.2949L17.0624 15.7803L16.7909 15.7246L16.5985 15.9248L14.6356 17.9824L14.1542 18.4863L14.787 18.7812C15.4818 19.1045 16.2353 19.3664 17.0448 19.5693C17.8555 19.7725 18.6477 19.8945 19.4208 19.9336L19.9462 19.96V16.377Z" fill="currentColor" stroke="currentColor"></path>
-                              </svg></div>
-                          </div>
-                          <div class="contact16_item-text-wrapper">
-                            <div class="margin-bottom margin-xxsmall">
-                              <h3 class="heading-style-h6">Téléphone</h3>
-                            </div>
-                            <a href="#" class="text-style-link">418 555-7890</a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
                   </div>
-                </div>
-                <div class="contact16_map-wrapper">
-                  <div class="contact16_map w-widget w-widget-map" data-widget-style="roadmap" data-widget-latlng="" data-enable-scroll="true" role="" title="" data-enable-touch="true" data-widget-zoom="12" data-widget-tooltip=""></div>
+
+                  <!-- Section: Types de cookies que nous utilisons -->
+                  <div class="content28_card" id="types-de-cookies">
+                    <h2>Types de cookies que nous utilisons</h2>
+                    <p><strong>Cookies de session :</strong> Temporaires et supprimés lorsque vous fermez votre navigateur. Ils nous permettent de suivre votre activité au cours d'une visite.</p>
+                    <p><strong>Cookies persistants :</strong> Restent sur votre appareil pendant une période déterminée ou jusqu'à ce que vous les supprimiez. Ils mémorisent vos préférences pour vos visites futures.</p>
+                    <p><strong>Cookies tiers :</strong> Placés par des domaines autres que le nôtre, généralement utilisés pour des fonctionnalités comme les réseaux sociaux ou les outils d'analyse.</p>
+                  </div>
+
+                  <!-- Section: Gestion des cookies -->
+                  <div class="content28_card" id="gestion-des-cookies">
+                    <h2>Gestion de vos cookies</h2>
+                    <p>Vous avez le contrôle total sur les cookies. Vous pouvez :</p>
+                    <ul style="color:#374151; font-size:1rem; line-height:1.7; margin:16px 0; padding-left:24px;">
+                      <li>Modifier les paramètres de votre navigateur pour bloquer ou supprimer les cookies</li>
+                      <li>Recevoir une notification avant qu'un cookie ne soit stocké</li>
+                      <li>Supprimer les cookies déjà stockés sur votre appareil</li>
+                    </ul>
+                    <p><strong>Important :</strong> La désactivation de certains cookies peut affecter la fonctionnalité de notre site et limiter votre accès à certaines fonctionnalités.</p>
+                    <p>Pour obtenir des instructions sur la gestion des cookies selon votre navigateur, consultez :</p>
+                    <ul style="color:#374151; font-size:1rem; line-height:1.7; margin:16px 0; padding-left:24px;">
+                      <li><a href="https://support.google.com/chrome/answer/95647" target="_blank" style="color:var(--accent); text-decoration:none;">Google Chrome</a></li>
+                      <li><a href="https://support.mozilla.org/fr/kb/activer-desactiver-cookies-preferences" target="_blank" style="color:var(--accent); text-decoration:none;">Mozilla Firefox</a></li>
+                      <li><a href="https://support.apple.com/fr-ca/guide/safari/sfri11471/mac" target="_blank" style="color:var(--accent); text-decoration:none;">Safari</a></li>
+                      <li><a href="https://support.microsoft.com/fr-fr/microsoft-edge/supprimer-les-cookies-dans-microsoft-edge-63947406-40ac-c3b8-57ba-ef1f0c98f1f2" target="_blank" style="color:var(--accent); text-decoration:none;">Microsoft Edge</a></li>
+                    </ul>
+                  </div>
+
+                  <!-- Section: Protection des données -->
+                  <div class="content28_card" id="protection-des-donnees">
+                    <h2>Protection de vos données</h2>
+                    <p>Vos données personnelles sont protégées. Nous ne partageons jamais vos informations avec des tiers sans votre consentement explicite. Les informations collectées via les cookies sont utilisées uniquement pour améliorer votre expérience sur notre site et comprendre comment nous pouvons mieux vous servir.</p>
+                    <p>Nous respectons la Loi sur la protection des renseignements personnels et les documents électroniques (LPRPDE) du Canada et nous nous engageons à maintenir la confidentialité et la sécurité de vos informations.</p>
+                  </div>
+
+                  <!-- Section: Contact / assistance -->
+                  <div class="content28_contact">
+                    <h3>Besoin d'aide ?</h3>
+                    <p>Si vous avez des questions ou des préoccupations concernant notre utilisation des cookies, n'hésitez pas à nous contacter :</p>
+                    <p style="margin-top:16px; font-size:1rem;"><strong>Email :</strong> <a href="mailto:dettboreal@gmail.com" style="color:#fff; text-decoration:underline;">dettboreal@gmail.com</a></p>
+                    <p style="margin-top:8px; font-size:1rem;"><strong>Téléphone :</strong> <a href="tel:+14506024832" style="color:#fff; text-decoration:underline;">(450) 602-4832</a></p>
+                    <p style="margin-top:24px; opacity:0.9;">La transparence est au cœur de notre engagement envers nos clients.</p>
+                  </div>
+
                 </div>
               </div>
             </div>
