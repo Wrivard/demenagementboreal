@@ -3535,13 +3535,24 @@ figcaption {
   .navbar3_menu .navbar3_logo-link-menu img {
     max-width: 200px !important;
     min-width: 150px !important;
-    width: auto !important;
+    width: 200px !important;
     height: auto !important;
     min-height: 40px !important;
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
     object-fit: contain !important;
+    background-color: transparent !important;
+  }
+
+  /* Specific rules for SVG logo */
+  .navbar3_menu .navbar3_logo-link-menu img[src$=".svg"],
+  .navbar3_menu .navbar3_logo-link-menu .navbar3_logo[src$=".svg"] {
+    width: 200px !important;
+    height: auto !important;
+    max-height: 60px !important;
+    fill: currentColor !important;
+    color: #ffffff !important;
   }
 
   /* Force logo to show in hamburger menu when menu is open - multiple selectors */
