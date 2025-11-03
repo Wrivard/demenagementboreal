@@ -1,0 +1,13 @@
+{
+  "name": "demenagementboreal",
+  "version": "1.0.0",
+  "description": "Déménagement Boréal - Website with Webflow export",
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "vercel dev"
+  },
+  "keywords": ["webflow", "demenagement", "quebec"],
+  "author": "Déménagement Boréal",
+  "license": "MIT"
+}
+
