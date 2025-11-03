@@ -64,15 +64,16 @@
 }
 
 .st_button svg,
-.st_button .arrow-icon,
 .st_button img {
   width: 24px;
   height: 24px;
-  filter: brightness(0) invert(1); /* Make arrow white */
+  display: block;
 }
 
-.st_button .arrow-icon {
-  object-fit: contain;
+.messenger-button svg {
+  width: 32px;
+  height: 32px;
+  display: block;
 }
 
 @media screen and (max-width: 480px) {
@@ -82,10 +83,15 @@
   }
 
   .st_button svg,
-  .st_button .arrow-icon,
   .st_button img {
     width: 20px;
     height: 20px;
+  }
+
+  .messenger-button svg,
+  .messenger-button img {
+    width: 28px;
+    height: 28px;
   }
 }
 
@@ -123,17 +129,11 @@
   transform: translateY(0);
 }
 
+.messenger-button svg,
 .messenger-button img {
   width: 32px;
   height: 32px;
   object-fit: contain;
-}
-
-.messenger-button img[src$=".svg"] {
-  width: 32px;
-  height: 32px;
-  object-fit: contain;
-  filter: none;
 }
 
 @media screen and (max-width: 480px) {
