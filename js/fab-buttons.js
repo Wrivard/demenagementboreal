@@ -14,12 +14,10 @@
   // Button markup template
   const buttonMarkup = `
     <a href="${MESSENGER_URL}" target="_blank" class="messenger-button" aria-label="Contactez-nous sur Messenger">
-      <img src="/images/Messenger_Icon_Secondary_White.svg" alt="Messenger" />
+      <img src="images/Messenger_Icon_Secondary_White.svg" alt="Messenger" />
     </a>
     <button class="st_button" aria-label="Retour en haut">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 4l-8 8h6v8h4v-8h6l-8-8z" fill="currentColor"/>
-      </svg>
+      <img src="images/IcBaselineArrowUpward.svg" alt="Retour en haut" class="arrow-icon" />
     </button>
   `;
 
