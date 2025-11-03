@@ -148,3 +148,16 @@
   }
 }
 
+/* Navbar button width fix */
+.navbar3_container .button.w-button {
+  white-space: nowrap;
+  max-width: fit-content;
+  min-width: auto;
+}
+
+#w-node-bef02059-0f04-4c51-dd44-11b0045b4401-55729ec5 {
+  white-space: nowrap;
+  max-width: fit-content;
+  min-width: auto;
+}
+
