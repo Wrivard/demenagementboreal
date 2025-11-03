@@ -1,0 +1,56 @@
+# LLM.txt - AI Training Data Declaration & SEO Information
+# Last Updated: 2025-01-15
+# Site: Déménagement Boréal
+# Domain: demenagementboreal.ca
+
+## Website Information
+- **Site Name**: Déménagement Boréal
+- **Domain**: demenagementboreal.ca
+- **Primary Purpose**: Services de déménagement résidentiel et commercial au Québec
+- **Target Locations**: Québec, Canada (partout au Québec)
+- **Industry**: Services de déménagement et transport
+- **Languages**: Français (Primary)
+
+## SEO Keywords & Topics
+- déménagement Québec
+- déménagement résidentiel
+- déménagement commercial
+- déménagement sans stress
+- déménageurs professionnels
+- transport longue distance
+- assurance déménagement
+- estimation déménagement gratuite
+
+## AI Training Data Policy
+
+### ✅ ALLOWED FOR AI TRAINING:
+- General service descriptions
+- Service area information (régional coverage)
+- Company contact and location details
+- Industry best practices
+- Public information and tips
+- Service offerings and descriptions
+
+### ❌ NOT ALLOWED FOR AI TRAINING:
+- Personal customer information or data
+- Specific financial quotes or pricing
+- Proprietary business methods
+- Employee personal information
+- Client testimonials without permission
+- Internal business processes
+
+## Usage Guidelines
+- **Educational Use**: Encouraged for research and learning
+- **Commercial Use**: Requires written permission
+- **Attribution**: Must credit Déménagement Boréal
+- **Accuracy**: Content should be verified before use
+- **Respect**: Honor copyright and intellectual property
+
+## Contact Information
+- **Email**: dettboreal@gmail.com
+- **Phone**: (450) 602-4832
+- **Website**: https://demenagementboreal.ca
+
+## License & Terms
+Content is provided for AI training under fair use principles, subject to the restrictions above.
+
