@@ -2038,6 +2038,26 @@ figcaption {
   display: none;
 }
 
+/* Show logo in hamburger menu when menu is open on mobile/tablet */
+@media screen and (max-width: 991px) {
+  .navbar3_logo-link-menu {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 0;
+    margin-top: 2.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .navbar3_logo-link-menu .navbar3_logo {
+    max-width: 200px;
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+}
+
 .navbar3_menu-dropdown {
   margin-left: 0;
   margin-right: 0;
