@@ -2040,21 +2040,29 @@ figcaption {
 
 /* Show logo in hamburger menu when menu is open on mobile/tablet */
 @media screen and (max-width: 991px) {
-  .navbar3_logo-link-menu {
+  /* When menu is open (has data-nav-menu-open attribute) */
+  [data-nav-menu-open] .navbar3_logo-link-menu,
+  .w-nav-menu[data-nav-menu-open] .navbar3_logo-link-menu,
+  .navbar3_menu[data-nav-menu-open] .navbar3_logo-link-menu {
     display: flex !important;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    padding: 0;
-    margin-top: 2.5rem;
-    margin-bottom: 2rem;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 2rem !important;
+    order: -1 !important;
   }
 
-  .navbar3_logo-link-menu .navbar3_logo {
-    max-width: 200px;
-    width: 100%;
-    height: auto;
-    display: block;
+  .navbar3_logo-link-menu .navbar3_logo,
+  [data-nav-menu-open] .navbar3_logo-link-menu .navbar3_logo,
+  [data-nav-menu-open] .navbar3_logo-link-menu img {
+    max-width: 200px !important;
+    width: 100% !important;
+    height: auto !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 }
 
@@ -3507,8 +3515,10 @@ figcaption {
     overflow: auto;
   }
 
-  /* Force logo to show in hamburger menu */
-  .navbar3_menu .navbar3_logo-link-menu {
+  /* Force logo to show in hamburger menu when menu is open */
+  [data-nav-menu-open] .navbar3_logo-link-menu,
+  .navbar3_menu[data-nav-menu-open] .navbar3_logo-link-menu,
+  .w-nav-menu[data-nav-menu-open] .navbar3_logo-link-menu {
     display: flex !important;
     width: 100% !important;
     justify-content: center !important;
@@ -3516,11 +3526,13 @@ figcaption {
     margin-top: 0 !important;
     margin-bottom: 2rem !important;
     padding: 0 !important;
-    order: -1;
+    order: -1 !important;
   }
 
-  .navbar3_menu .navbar3_logo-link-menu .navbar3_logo,
-  .navbar3_menu .navbar3_logo-link-menu img {
+  [data-nav-menu-open] .navbar3_logo-link-menu .navbar3_logo,
+  [data-nav-menu-open] .navbar3_logo-link-menu img,
+  .navbar3_menu[data-nav-menu-open] .navbar3_logo-link-menu .navbar3_logo,
+  .navbar3_menu[data-nav-menu-open] .navbar3_logo-link-menu img {
     max-width: 200px !important;
     width: 100% !important;
     height: auto !important;
