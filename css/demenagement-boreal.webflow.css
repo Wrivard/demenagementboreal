@@ -3548,10 +3548,21 @@ figcaption {
   }
 
   .navbar3_logo-link-menu .navbar3_logo {
-    max-width: 200px;
-    width: 100%;
-    height: auto;
-    display: block;
+    max-width: 200px !important;
+    width: 100% !important;
+    height: auto !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  .navbar3_logo-link-menu img {
+    max-width: 200px !important;
+    width: 100% !important;
+    height: auto !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
   .menu-icon3 {
