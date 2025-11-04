@@ -1,10 +1,28 @@
 // Multi-step form with conditional branching logic
+console.log('=== calculator-form.js FILE LOADED ===');
+console.log('Script execution started at:', new Date().toISOString());
+
 (function() {
   'use strict';
   
-  console.log('=== calculator-form.js loaded ===');
+  console.log('=== calculator-form.js IIFE executing ===');
   console.log('DOM ready state:', document.readyState);
-  console.log('Form element exists:', document.getElementById('estimation-form') !== null);
+  
+  // Wait for DOM if needed
+  if (document.readyState === 'loading') {
+    console.log('DOM still loading, waiting...');
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOMContentLoaded fired');
+      initializeCalculator();
+    });
+  } else {
+    console.log('DOM already ready, initializing immediately');
+    initializeCalculator();
+  }
+  
+  function initializeCalculator() {
+    console.log('=== initializeCalculator called ===');
+    console.log('Form element exists:', document.getElementById('estimation-form') !== null);
 
   const form = document.getElementById('estimation-form');
   if (!form) {
@@ -851,5 +869,6 @@
 
   // Initialize
   showStep(1);
+  } // End of initializeCalculator function
 })();
 
