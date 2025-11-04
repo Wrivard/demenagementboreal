@@ -1,9 +1,21 @@
 // Multi-step form with conditional branching logic
 (function() {
   'use strict';
+  
+  console.log('=== calculator-form.js loaded ===');
+  console.log('DOM ready state:', document.readyState);
+  console.log('Form element exists:', document.getElementById('estimation-form') !== null);
 
   const form = document.getElementById('estimation-form');
-  if (!form) return;
+  if (!form) {
+    console.error('=== ERROR: Form #estimation-form not found! ===');
+    console.log('Available forms:', document.querySelectorAll('form'));
+    console.log('All elements with id:', document.querySelectorAll('[id]'));
+    return;
+  }
+  
+  console.log('=== Form found, initializing ===');
+  console.log('Form classes:', form.className);
 
   let currentStep = 1;
   const totalSteps = 5;
