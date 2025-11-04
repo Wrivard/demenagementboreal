@@ -543,9 +543,18 @@
 }
 
 /* Ensure checkbox icon has proper spacing from left edge */
-.form_checkbox-btn .form_checkbox-icon {
+.form_checkbox-btn .form_checkbox-icon,
+.form_checkbox-btn .w-checkbox-input.form_checkbox-icon {
   margin-left: 0 !important;
   margin-right: 12px !important;
+  flex-shrink: 0 !important;
+}
+
+/* Ensure checkbox container has proper padding */
+.form_checkbox-btn,
+.w-checkbox.form_checkbox-btn {
+  padding-left: 20px !important;
+  padding-right: 20px !important;
 }
 
 .form_checkbox-btn:hover {
