@@ -408,6 +408,11 @@
   min-height: 60px;
 }
 
+/* Ensure background is always visible on dark theme */
+.custom-radio-option:has(input[type="radio"]:checked) {
+  background-color: rgba(114, 173, 203, 0.12) !important;
+}
+
 .custom-radio-option:hover {
   border-color: var(--accent-blue, #72adcb);
   background-color: rgba(114, 173, 203, 0.08);
@@ -449,33 +454,32 @@
   transition: all 0.2s ease;
 }
 
-/* Selected state */
+/* Selected state - Subtle and intuitive */
 .custom-radio-option input[type="radio"]:checked + .custom-radio-badge,
 .custom-radio-option:has(input[type="radio"]:checked) .custom-radio-badge {
-  background-color: #ffffff;
-  border-color: #ffffff;
-  color: var(--accent-blue, #72adcb);
+  background-color: var(--accent-blue, #72adcb);
+  border-color: var(--accent-blue, #72adcb);
+  color: #ffffff;
 }
 
 .custom-radio-option input[type="radio"]:checked ~ .custom-radio-label,
 .custom-radio-option:has(input[type="radio"]:checked) .custom-radio-label {
-  color: #ffffff;
+  color: var(--color-scheme-2--text, #ffffff);
   font-weight: 600;
 }
 
 .custom-radio-option input[type="radio"]:checked,
 .custom-radio-option:has(input[type="radio"]:checked) {
-  background-color: var(--accent-blue, #72adcb);
+  background-color: rgba(114, 173, 203, 0.12);
   border-color: var(--accent-blue, #72adcb);
-  box-shadow: 0 0 0 3px rgba(114, 173, 203, 0.2);
+  box-shadow: 0 0 0 3px rgba(114, 173, 203, 0.15);
 }
 
 /* Apply selected styles to the label when radio is checked */
 .custom-radio-option:has(input[type="radio"]:checked) {
-  background-color: var(--accent-blue, #72adcb) !important;
+  background-color: rgba(114, 173, 203, 0.12) !important;
   border-color: var(--accent-blue, #72adcb) !important;
-  box-shadow: 0 0 0 3px rgba(114, 173, 203, 0.2) !important;
-  color: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(114, 173, 203, 0.15) !important;
 }
 
 .form_radio-btn.is-checked .form_radio-btn-label,
@@ -590,32 +594,31 @@
   z-index: -1;
 }
 
-/* Selected checkbox state - UNIFORM with radio buttons */
+/* Selected checkbox state - Subtle and uniform with radio buttons */
 .form_checkbox-btn.is-checked,
 .form_checkbox-btn:has(input[type="checkbox"]:checked) {
-  background-color: var(--accent-blue, #72adcb) !important;
+  background-color: rgba(114, 173, 203, 0.12) !important;
   border-color: var(--accent-blue, #72adcb) !important;
-  box-shadow: 0 0 0 3px rgba(114, 173, 203, 0.2) !important;
-  color: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(114, 173, 203, 0.15) !important;
 }
 
-/* Checkbox icon when selected - white background with blue checkmark */
+/* Checkbox icon when selected - blue background with white checkmark */
 .form_checkbox-btn.is-checked .form_checkbox-icon,
 .form_checkbox-btn:has(input[type="checkbox"]:checked) .form_checkbox-icon {
-  background-color: #ffffff !important;
-  border-color: #ffffff !important;
+  background-color: var(--accent-blue, #72adcb) !important;
+  border-color: var(--accent-blue, #72adcb) !important;
 }
 
 .form_checkbox-btn.is-checked .form_checkbox-icon::after,
 .form_checkbox-btn:has(input[type="checkbox"]:checked) .form_checkbox-icon::after {
   display: block;
-  color: var(--accent-blue, #72adcb);
+  color: #ffffff;
 }
 
-/* Checkbox label when selected - white text like radio buttons */
+/* Checkbox label when selected - keep text color same, just bold */
 .form_checkbox-btn.is-checked .form_checkbox-label,
 .form_checkbox-btn:has(input[type="checkbox"]:checked) .form_checkbox-label {
-  color: #ffffff !important;
+  color: var(--color-scheme-2--text, #ffffff) !important;
   font-weight: 600 !important;
 }
 
