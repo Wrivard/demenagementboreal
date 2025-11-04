@@ -673,12 +673,29 @@
     }
   }
 
-  // Service type selection handler
+  // Simple handler for custom radio buttons
+  function handleCustomRadioChange(radio) {
+    // CSS :has() selector handles the visual state automatically
+    // Just trigger service type selection if needed
+    if (radio.name === 'service-type') {
+      handleServiceTypeSelection();
+    }
+  }
+
+  // Service type selection handler - simple and fast
   form.querySelectorAll('input[name="service-type"]').forEach(radio => {
     radio.addEventListener('change', function() {
-      handleServiceTypeSelection();
-      updateRadioButtonState(this);
+      handleCustomRadioChange(this);
     });
+  });
+
+  // All other radio buttons (floors, etc.)
+  form.querySelectorAll('input[type="radio"]').forEach(radio => {
+    if (radio.name !== 'service-type') {
+      radio.addEventListener('change', function() {
+        handleCustomRadioChange(this);
+      });
+    }
   });
 
   // Checkbox visual feedback
@@ -699,81 +716,6 @@
     if (checkbox.checked && checkbox.closest('.form_checkbox-btn')) {
       checkbox.closest('.form_checkbox-btn').classList.add('is-checked');
     }
-  });
-
-  // Initialize radio button checked state on page load
-  form.querySelectorAll('input[type="radio"]:checked').forEach(radio => {
-    updateRadioButtonState(radio);
-  });
-
-  // Listen for all radio button state changes (including Webflow's)
-  form.querySelectorAll('input[type="radio"]').forEach(radio => {
-    // Skip service-type as it's handled separately
-    if (radio.name === 'service-type') return;
-    
-    radio.addEventListener('change', function() {
-      updateRadioButtonState(this);
-    });
-    
-    // Also listen for click events to catch Webflow's interactions
-    radio.addEventListener('click', function() {
-      setTimeout(() => updateRadioButtonState(this), 10);
-    });
-    
-    // Also listen for mousedown to catch Webflow's interactions earlier
-    radio.addEventListener('mousedown', function() {
-      setTimeout(() => updateRadioButtonState(this), 5);
-    });
-  });
-
-  // MutationObserver to watch for Webflow's class changes
-  const observer = new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutation) {
-      if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-        const target = mutation.target;
-        // Check if this is a radio button container
-        if (target.classList.contains('form_radio-btn') || target.classList.contains('w-radio')) {
-          const radioInput = target.querySelector('input[type="radio"]');
-          if (radioInput) {
-            // Force update if Webflow added is-active-inputactive
-            if (target.classList.contains('is-active-inputactive') || radioInput.checked) {
-              updateRadioButtonState(radioInput);
-            } else {
-              // Remove styles if unchecked
-              target.style.backgroundColor = '';
-              target.style.borderColor = '';
-              target.style.color = '';
-              const label = target.querySelector('.form_radio-btn-label, .w-form-label');
-              if (label) {
-                label.style.color = '';
-              }
-              const badge = target.querySelector('.form_radio-btn-letter');
-              if (badge) {
-                badge.style.backgroundColor = '';
-                badge.style.borderColor = '';
-                badge.style.color = '';
-              }
-            }
-          }
-        }
-      }
-    });
-  });
-
-  // Observe all radio button containers
-  form.querySelectorAll('.form_radio-btn, .w-radio').forEach(function(radioBtn) {
-    observer.observe(radioBtn, {
-      attributes: true,
-      attributeFilter: ['class']
-    });
-  });
-
-  // Also observe radio inputs directly
-  form.querySelectorAll('input[type="radio"]').forEach(function(radioInput) {
-    observer.observe(radioInput, {
-      attributes: true,
-      attributeFilter: ['checked']
-    });
   });
 
   // Form submit handler
