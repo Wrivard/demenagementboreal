@@ -680,6 +680,56 @@
     if (radio.name === 'service-type') {
       handleServiceTypeSelection();
     }
+    
+    // Force apply subtle selected styles via JavaScript for better browser support
+    updateCustomRadioStyles();
+  }
+  
+  // Force apply subtle selected styles to custom radio buttons
+  function updateCustomRadioStyles() {
+    form.querySelectorAll('.custom-radio-option input[type="radio"]').forEach(radio => {
+      const option = radio.closest('.custom-radio-option');
+      if (!option) return;
+      
+      if (radio.checked) {
+        // Apply subtle background
+        option.style.setProperty('background-color', 'rgba(114, 173, 203, 0.12)', 'important');
+        option.style.setProperty('border-color', '#72adcb', 'important');
+        option.style.setProperty('box-shadow', '0 0 0 3px rgba(114, 173, 203, 0.15)', 'important');
+        
+        // Badge: blue background with white text
+        const badge = option.querySelector('.custom-radio-badge');
+        if (badge) {
+          badge.style.setProperty('background-color', '#72adcb', 'important');
+          badge.style.setProperty('border-color', '#72adcb', 'important');
+          badge.style.setProperty('color', '#ffffff', 'important');
+        }
+        
+        // Label: keep text color normal, just bold
+        const label = option.querySelector('.custom-radio-label');
+        if (label) {
+          label.style.setProperty('font-weight', '600', 'important');
+          // Don't force color, let CSS variable handle it
+        }
+      } else {
+        // Reset styles
+        option.style.setProperty('background-color', '', 'important');
+        option.style.setProperty('border-color', '', 'important');
+        option.style.setProperty('box-shadow', '', 'important');
+        
+        const badge = option.querySelector('.custom-radio-badge');
+        if (badge) {
+          badge.style.setProperty('background-color', '', 'important');
+          badge.style.setProperty('border-color', '', 'important');
+          badge.style.setProperty('color', '', 'important');
+        }
+        
+        const label = option.querySelector('.custom-radio-label');
+        if (label) {
+          label.style.setProperty('font-weight', '', 'important');
+        }
+      }
+    });
   }
 
   // Service type selection handler - simple and fast
@@ -697,6 +747,16 @@
       });
     }
   });
+  
+  // Initialize styles on page load
+  updateCustomRadioStyles();
+  
+  // Also update on step change to ensure styles are applied
+  const originalShowStep = showStep;
+  showStep = function(step) {
+    originalShowStep(step);
+    setTimeout(updateCustomRadioStyles, 100);
+  };
 
   // Checkbox visual feedback
   form.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
