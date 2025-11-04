@@ -608,20 +608,26 @@
     btn.addEventListener('click', handleBack);
   });
 
+  // Helper function to update radio button visual state
+  function updateRadioButtonState(radio) {
+    const name = radio.name;
+    // Remove is-checked from all radio buttons in the same group
+    form.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+      if (r.closest('.form_radio-btn')) {
+        r.closest('.form_radio-btn').classList.remove('is-checked');
+      }
+    });
+    // Add is-checked to the selected radio button
+    if (radio.checked && radio.closest('.form_radio-btn')) {
+      radio.closest('.form_radio-btn').classList.add('is-checked');
+    }
+  }
+
   // Service type selection handler
   form.querySelectorAll('input[name="service-type"]').forEach(radio => {
-    radio.addEventListener('change', handleServiceTypeSelection);
-    
-    // Add visual feedback class
     radio.addEventListener('change', function() {
-      // Remove checked class from all radio buttons
-      form.querySelectorAll('.form_radio-btn').forEach(btn => {
-        btn.classList.remove('is-checked');
-      });
-      // Add checked class to parent of selected radio
-      if (radio.checked && radio.closest('.form_radio-btn')) {
-        radio.closest('.form_radio-btn').classList.add('is-checked');
-      }
+      handleServiceTypeSelection();
+      updateRadioButtonState(this);
     });
   });
 
@@ -650,6 +656,21 @@
     if (radio.closest('.form_radio-btn')) {
       radio.closest('.form_radio-btn').classList.add('is-checked');
     }
+  });
+
+  // Listen for all radio button state changes (including Webflow's)
+  form.querySelectorAll('input[type="radio"]').forEach(radio => {
+    // Skip service-type as it's handled separately
+    if (radio.name === 'service-type') return;
+    
+    radio.addEventListener('change', function() {
+      updateRadioButtonState(this);
+    });
+    
+    // Also listen for click events to catch Webflow's interactions
+    radio.addEventListener('click', function() {
+      setTimeout(() => updateRadioButtonState(this), 10);
+    });
   });
 
   // Form submit handler

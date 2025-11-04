@@ -320,7 +320,8 @@
 /* Selected radio button state */
 .form_radio-btn.is-checked,
 .form_radio-btn:has(input[type="radio"]:checked),
-.w-radio.is-active-inputactive {
+.w-radio.is-active-inputactive,
+.form_radio-btn.is-active-inputactive {
   background-color: var(--accent-blue, #72adcb) !important;
   border-color: var(--accent-blue, #72adcb) !important;
   box-shadow: 0 0 0 3px rgba(114, 173, 203, 0.2);
@@ -335,7 +336,10 @@
 .form_radio-btn:has(input[type="radio"]:checked) span,
 .w-radio.is-active-inputactive .form_radio-btn-label,
 .w-radio.is-active-inputactive .w-form-label,
-.w-radio.is-active-inputactive span {
+.w-radio.is-active-inputactive span,
+.form_radio-btn.is-active-inputactive .form_radio-btn-label,
+.form_radio-btn.is-active-inputactive .w-form-label,
+.form_radio-btn.is-active-inputactive span {
   color: #ffffff !important;
 }
 
@@ -345,7 +349,11 @@
 .form_radio-btn:has(input[type="radio"]:checked) .form_radio-btn-letter,
 .form_radio-btn:has(input[type="radio"]:checked) .form_radio-btn-letter div,
 .w-radio.is-active-inputactive .form_radio-btn-letter,
-.w-radio.is-active-inputactive .form_radio-btn-letter div {
+.w-radio.is-active-inputactive .form_radio-btn-letter div,
+.form_radio-btn.is-active-inputactive .form_radio-btn-letter,
+.form_radio-btn.is-active-inputactive .form_radio-btn-letter div {
+  background-color: #ffffff !important;
+  border-color: #ffffff !important;
   color: var(--accent-blue, #72adcb) !important;
 }
 
