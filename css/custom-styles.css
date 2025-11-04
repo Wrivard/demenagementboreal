@@ -391,21 +391,24 @@
   width: 100%;
 }
 
-.custom-radio-option {
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 18px 20px;
-  margin: 0;
-  background-color: var(--color-scheme-2--foreground, #2a2a2a);
-  border: 2px solid var(--color-scheme-2--border, #555555);
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-sizing: border-box;
-  overflow: hidden;
-  min-height: 60px;
+/* Force custom radio option styles with maximum specificity */
+html body .custom-radio-option,
+.w-form .custom-radio-option,
+div.multi-form11_form .custom-radio-option {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  padding: 18px 20px !important;
+  margin: 0 0 14px 0 !important;
+  background-color: #2a2a2a !important;
+  border: 2px solid #555555 !important;
+  border-radius: 12px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  min-height: 60px !important;
 }
 
 /* Ensure background is always visible on dark theme */
@@ -428,21 +431,24 @@
   z-index: -1;
 }
 
-.custom-radio-badge {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  margin-right: 12px;
-  background-color: var(--color-scheme-2--background, #1a1a1a);
-  border: 2px solid var(--color-scheme-2--border, #555555);
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--color-scheme-2--text, #ffffff);
-  transition: all 0.2s ease;
+/* Force custom radio badge styles */
+html body .custom-radio-badge,
+.w-form .custom-radio-badge,
+div.multi-form11_form .custom-radio-badge {
+  flex-shrink: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 32px !important;
+  height: 32px !important;
+  margin-right: 12px !important;
+  background-color: #1a1a1a !important;
+  border: 2px solid #555555 !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  color: #ffffff !important;
+  transition: all 0.2s ease !important;
 }
 
 .custom-radio-label {
@@ -454,11 +460,13 @@
   transition: all 0.2s ease;
 }
 
-/* Selected state - Subtle and intuitive - Maximum specificity */
-.multi-form11_form .custom-radio-group .custom-radio-option input[type="radio"]:checked + .custom-radio-badge,
-.multi-form11_form .custom-radio-group .custom-radio-option:has(input[type="radio"]:checked) .custom-radio-badge,
-.custom-radio-option input[type="radio"]:checked + .custom-radio-badge,
-.custom-radio-option:has(input[type="radio"]:checked) .custom-radio-badge {
+/* Selected state - Force override Webflow with maximum specificity */
+html body .multi-form11_form .custom-radio-group .custom-radio-option input[type="radio"]:checked + .custom-radio-badge,
+html body .multi-form11_form .custom-radio-group .custom-radio-option:has(input[type="radio"]:checked) .custom-radio-badge,
+html body .custom-radio-option input[type="radio"]:checked + .custom-radio-badge,
+html body .custom-radio-option:has(input[type="radio"]:checked) .custom-radio-badge,
+.w-form .custom-radio-option input[type="radio"]:checked + .custom-radio-badge,
+.w-form .custom-radio-option:has(input[type="radio"]:checked) .custom-radio-badge {
   background-color: #72adcb !important;
   border-color: #72adcb !important;
   color: #ffffff !important;
@@ -472,10 +480,12 @@
   font-weight: 600 !important;
 }
 
-/* Apply selected styles to the container - Subtle background */
-.multi-form11_form .custom-radio-group .custom-radio-option:has(input[type="radio"]:checked),
-.multi-form11_field-wrapper .custom-radio-group .custom-radio-option:has(input[type="radio"]:checked),
-.custom-radio-option:has(input[type="radio"]:checked) {
+/* Apply selected styles to the container - Force override with maximum specificity */
+html body .multi-form11_form .custom-radio-group .custom-radio-option:has(input[type="radio"]:checked),
+html body .multi-form11_field-wrapper .custom-radio-group .custom-radio-option:has(input[type="radio"]:checked),
+html body .custom-radio-option:has(input[type="radio"]:checked),
+.w-form .custom-radio-option:has(input[type="radio"]:checked),
+div.multi-form11_form .custom-radio-option:has(input[type="radio"]:checked) {
   background-color: rgba(114, 173, 203, 0.12) !important;
   border-color: #72adcb !important;
   box-shadow: 0 0 0 3px rgba(114, 173, 203, 0.15) !important;
