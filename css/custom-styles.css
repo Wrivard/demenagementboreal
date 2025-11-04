@@ -320,19 +320,28 @@
 }
 
 /* Selected radio button state - MUST override Webflow's .is-active-inputactive */
+/* Using maximum specificity to override Webflow styles */
+.multi-form11_form .multi-form11_field-wrapper .multi-form11_radio-group .form_radio-btn.is-checked,
+.multi-form11_form .multi-form11_field-wrapper .multi-form11_radio-group .form_radio-btn:has(input[type="radio"]:checked),
+.multi-form11_form .multi-form11_field-wrapper .multi-form11_radio-group .w-radio.is-active-inputactive,
+.multi-form11_form .multi-form11_field-wrapper .multi-form11_radio-group .form_radio-btn.is-active-inputactive,
 .form_radio-btn.is-checked,
 .form_radio-btn:has(input[type="radio"]:checked),
 .w-radio.is-active-inputactive,
-.form_radio-btn.is-active-inputactive,
-.multi-form11_radio-group .form_radio-btn.is-active-inputactive,
-.multi-form11_radio-group .w-radio.is-active-inputactive {
-  background-color: var(--accent-blue, #72adcb) !important;
-  border-color: var(--accent-blue, #72adcb) !important;
+.form_radio-btn.is-active-inputactive {
+  background-color: #72adcb !important;
+  border-color: #72adcb !important;
   box-shadow: 0 0 0 3px rgba(114, 173, 203, 0.2) !important;
   color: #ffffff !important;
 }
 
-/* Ensure label text is white in selected radio button */
+/* Ensure label text is white in selected radio button - maximum specificity */
+.multi-form11_form .multi-form11_field-wrapper .multi-form11_radio-group .form_radio-btn.is-checked .form_radio-btn-label,
+.multi-form11_form .multi-form11_field-wrapper .multi-form11_radio-group .form_radio-btn.is-checked .w-form-label,
+.multi-form11_form .multi-form11_field-wrapper .multi-form11_radio-group .form_radio-btn.is-checked span,
+.multi-form11_form .multi-form11_field-wrapper .multi-form11_radio-group .form_radio-btn.is-active-inputactive .form_radio-btn-label,
+.multi-form11_form .multi-form11_field-wrapper .multi-form11_radio-group .form_radio-btn.is-active-inputactive .w-form-label,
+.multi-form11_form .multi-form11_field-wrapper .multi-form11_radio-group .form_radio-btn.is-active-inputactive span,
 .form_radio-btn.is-checked .form_radio-btn-label,
 .form_radio-btn.is-checked .w-form-label,
 .form_radio-btn.is-checked span,
@@ -346,6 +355,7 @@
 .form_radio-btn.is-active-inputactive .w-form-label,
 .form_radio-btn.is-active-inputactive span {
   color: #ffffff !important;
+  font-weight: 600 !important;
 }
 
 /* Exception: badge letter should have blue text on white background when selected */

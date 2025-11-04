@@ -613,13 +613,53 @@
     const name = radio.name;
     // Remove is-checked from all radio buttons in the same group
     form.querySelectorAll(`input[name="${name}"]`).forEach(r => {
-      if (r.closest('.form_radio-btn')) {
-        r.closest('.form_radio-btn').classList.remove('is-checked');
+      const radioBtn = r.closest('.form_radio-btn');
+      if (radioBtn) {
+        radioBtn.classList.remove('is-checked');
+        // Remove inline styles
+        radioBtn.style.backgroundColor = '';
+        radioBtn.style.borderColor = '';
+        radioBtn.style.color = '';
+        // Update label text color
+        const label = radioBtn.querySelector('.form_radio-btn-label, .w-form-label');
+        if (label) {
+          label.style.color = '';
+        }
+        // Update badge
+        const badge = radioBtn.querySelector('.form_radio-btn-letter');
+        if (badge) {
+          badge.style.backgroundColor = '';
+          badge.style.borderColor = '';
+          badge.style.color = '';
+        }
       }
     });
-    // Add is-checked to the selected radio button
+    // Add is-checked to the selected radio button and apply styles directly
     if (radio.checked && radio.closest('.form_radio-btn')) {
-      radio.closest('.form_radio-btn').classList.add('is-checked');
+      const radioBtn = radio.closest('.form_radio-btn');
+      radioBtn.classList.add('is-checked');
+      // Apply styles directly via inline styles to override Webflow
+      radioBtn.style.backgroundColor = '#72adcb';
+      radioBtn.style.borderColor = '#72adcb';
+      radioBtn.style.color = '#ffffff';
+      
+      // Update label text color
+      const label = radioBtn.querySelector('.form_radio-btn-label, .w-form-label');
+      if (label) {
+        label.style.color = '#ffffff';
+        label.style.fontWeight = '600';
+      }
+      
+      // Update badge to white background with blue text
+      const badge = radioBtn.querySelector('.form_radio-btn-letter');
+      if (badge) {
+        badge.style.backgroundColor = '#ffffff';
+        badge.style.borderColor = '#ffffff';
+        const badgeText = badge.querySelector('div');
+        if (badgeText) {
+          badgeText.style.color = '#72adcb';
+        }
+      }
     }
   }
 
