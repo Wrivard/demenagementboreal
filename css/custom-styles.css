@@ -247,26 +247,27 @@
   --accent-blue-light: rgba(114, 173, 203, 0.15);
 }
 
-/* Base radio button container */
-.form_radio-btn {
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 16px;
-  margin-bottom: 12px;
-  background-color: var(--color-scheme-2--foreground, #2a2a2a);
-  border: 2px solid var(--color-scheme-2--border, #555555);
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  overflow: hidden;
-  box-sizing: border-box;
+/* Base radio button container - override Webflow styles */
+.form_radio-btn,
+.multi-form11_radio-group .form_radio-btn {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  padding: 16px !important;
+  margin-bottom: 12px !important;
+  background-color: var(--color-scheme-2--foreground, #2a2a2a) !important;
+  border: 2px solid var(--color-scheme-2--border, #555555) !important;
+  border-radius: 12px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
 }
 
 .form_radio-btn:hover {
-  border-color: var(--accent-blue, #72adcb);
-  background-color: rgba(114, 173, 203, 0.08);
+  border-color: var(--accent-blue, #72adcb) !important;
+  background-color: rgba(114, 173, 203, 0.08) !important;
 }
 
 /* Radio button icon styling */
@@ -275,22 +276,23 @@
   flex-shrink: 0;
 }
 
-/* Radio button letter/number badge */
-.form_radio-btn-letter {
-  flex-shrink: 0;
-  margin-right: 12px;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--color-scheme-2--background, #1a1a1a);
-  border: 2px solid var(--color-scheme-2--border, #555555);
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--color-scheme-2--text, #ffffff);
-  transition: all 0.2s ease;
+/* Radio button letter/number badge - override Webflow styles */
+.form_radio-btn-letter,
+.form_radio-btn .form_radio-btn-letter {
+  flex-shrink: 0 !important;
+  margin-right: 12px !important;
+  width: 32px !important;
+  height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background-color: var(--color-scheme-2--background, #1a1a1a) !important;
+  border: 2px solid var(--color-scheme-2--border, #555555) !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  color: var(--color-scheme-2--text, #ffffff) !important;
+  transition: all 0.2s ease !important;
 }
 
 .form_radio-btn-letter div {
@@ -317,14 +319,17 @@
   z-index: -1;
 }
 
-/* Selected radio button state */
+/* Selected radio button state - MUST override Webflow's .is-active-inputactive */
 .form_radio-btn.is-checked,
 .form_radio-btn:has(input[type="radio"]:checked),
 .w-radio.is-active-inputactive,
-.form_radio-btn.is-active-inputactive {
+.form_radio-btn.is-active-inputactive,
+.multi-form11_radio-group .form_radio-btn.is-active-inputactive,
+.multi-form11_radio-group .w-radio.is-active-inputactive {
   background-color: var(--accent-blue, #72adcb) !important;
   border-color: var(--accent-blue, #72adcb) !important;
-  box-shadow: 0 0 0 3px rgba(114, 173, 203, 0.2);
+  box-shadow: 0 0 0 3px rgba(114, 173, 203, 0.2) !important;
+  color: #ffffff !important;
 }
 
 /* Ensure label text is white in selected radio button */
@@ -343,7 +348,7 @@
   color: #ffffff !important;
 }
 
-/* Exception: badge letter should have blue text on white background */
+/* Exception: badge letter should have blue text on white background when selected */
 .form_radio-btn.is-checked .form_radio-btn-letter,
 .form_radio-btn.is-checked .form_radio-btn-letter div,
 .form_radio-btn:has(input[type="radio"]:checked) .form_radio-btn-letter,
@@ -351,7 +356,9 @@
 .w-radio.is-active-inputactive .form_radio-btn-letter,
 .w-radio.is-active-inputactive .form_radio-btn-letter div,
 .form_radio-btn.is-active-inputactive .form_radio-btn-letter,
-.form_radio-btn.is-active-inputactive .form_radio-btn-letter div {
+.form_radio-btn.is-active-inputactive .form_radio-btn-letter div,
+.multi-form11_radio-group .form_radio-btn.is-active-inputactive .form_radio-btn-letter,
+.multi-form11_radio-group .form_radio-btn.is-active-inputactive .form_radio-btn-letter div {
   background-color: #ffffff !important;
   border-color: #ffffff !important;
   color: var(--accent-blue, #72adcb) !important;
