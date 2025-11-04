@@ -580,21 +580,28 @@
   box-shadow: 0 2px 8px rgba(114, 173, 203, 0.15);
 }
 
-/* Checkbox icon styling */
-.form_checkbox-icon {
-  flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  margin-left: 0;
-  margin-right: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--color-scheme-2--background, #1a1a1a);
-  border: 2px solid var(--color-scheme-2--border, #555555);
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  position: relative;
+/* Checkbox icon styling - Override Webflow's styles completely */
+.form_checkbox-icon,
+.w-checkbox-input.form_checkbox-icon,
+.w-checkbox-input--inputType-custom.form_checkbox-icon {
+  flex-shrink: 0 !important;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  margin-left: 0 !important;
+  margin-right: 12px !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background-color: var(--color-scheme-2--background, #1a1a1a) !important;
+  border: 2px solid var(--color-scheme-2--border, #555555) !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+  position: relative !important;
+  float: none !important;
 }
 
 /* Checkbox checkmark */
