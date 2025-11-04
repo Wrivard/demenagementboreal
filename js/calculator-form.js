@@ -1,26 +1,42 @@
 // Multi-step form with conditional branching logic
 // IMMEDIATE LOG - This should appear as soon as script loads
-console.log('🔵🔵🔵 calculator-form.js FILE LOADED - IMMEDIATE LOG 🔵🔵🔵');
-console.log('Script execution started at:', new Date().toISOString());
-console.log('Document ready state:', document.readyState);
-console.log('Window loaded:', typeof window !== 'undefined');
+try {
+  console.log('🔵🔵🔵 calculator-form.js FILE LOADED - IMMEDIATE LOG 🔵🔵🔵');
+  console.log('Script execution started at:', new Date().toISOString());
+  console.log('Document ready state:', document.readyState);
+  console.log('Window loaded:', typeof window !== 'undefined');
+} catch(e) {
+  console.error('Error in initial logs:', e);
+}
 
 (function() {
   'use strict';
   
-  console.log('=== calculator-form.js IIFE executing ===');
-  console.log('DOM ready state:', document.readyState);
-  
-  // Wait for DOM if needed
-  if (document.readyState === 'loading') {
-    console.log('DOM still loading, waiting...');
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('DOMContentLoaded fired');
-      initializeCalculator();
-    });
-  } else {
-    console.log('DOM already ready, initializing immediately');
-    initializeCalculator();
+  try {
+    console.log('=== calculator-form.js IIFE executing ===');
+    console.log('DOM ready state:', document.readyState);
+    
+    // Wait for DOM if needed
+    if (document.readyState === 'loading') {
+      console.log('DOM still loading, waiting...');
+      document.addEventListener('DOMContentLoaded', function() {
+        try {
+          console.log('DOMContentLoaded fired');
+          initializeCalculator();
+        } catch(e) {
+          console.error('Error in DOMContentLoaded handler:', e);
+        }
+      });
+    } else {
+      console.log('DOM already ready, initializing immediately');
+      try {
+        initializeCalculator();
+      } catch(e) {
+        console.error('Error initializing calculator:', e);
+      }
+    }
+  } catch(e) {
+    console.error('Error in IIFE:', e);
   }
   
   function initializeCalculator() {
@@ -87,12 +103,12 @@ console.log('Window loaded:', typeof window !== 'undefined');
 
   // Initialize Google Maps Distance Matrix Service
   function initGoogleMapsServices() {
-    if (typeof google === 'undefined' || !google.maps) {
-      console.warn('Google Maps API not loaded');
-      return false;
-    }
-
     try {
+      if (typeof google === 'undefined' || !google.maps || !google.maps.DistanceMatrixService) {
+        console.warn('Google Maps API not loaded');
+        return false;
+      }
+
       distanceMatrixService = new google.maps.DistanceMatrixService();
       return true;
     } catch (error) {
@@ -103,54 +119,58 @@ console.log('Window loaded:', typeof window !== 'undefined');
 
   // Initialize Google Places Autocomplete
   function initGooglePlacesAutocomplete() {
-    if (typeof google === 'undefined' || !google.maps || !google.maps.places) {
-      console.warn('Google Places API not loaded');
-      return;
+    try {
+      if (typeof google === 'undefined' || !google.maps || !google.maps.places || !google.maps.places.Autocomplete) {
+        console.warn('Google Places API not loaded');
+        return;
+      }
+
+      const fromInput = document.getElementById('form-address-departure');
+      const toInput = document.getElementById('form-address-destination');
+
+      if (!fromInput || !toInput) return;
+
+      // Initialize autocomplete for departure address
+      fromAutocomplete = new google.maps.places.Autocomplete(fromInput, {
+        componentRestrictions: { country: 'ca' },
+        fields: ['formatted_address', 'geometry']
+      });
+
+      // Initialize autocomplete for destination address
+      toAutocomplete = new google.maps.places.Autocomplete(toInput, {
+        componentRestrictions: { country: 'ca' },
+        fields: ['formatted_address', 'geometry']
+      });
+
+      // Listen for place selection on departure address
+      fromAutocomplete.addListener('place_changed', () => {
+        const place = fromAutocomplete.getPlace();
+        if (place.formatted_address) {
+          fromInput.value = place.formatted_address;
+          calculateDistance();
+        }
+      });
+
+      // Listen for place selection on destination address
+      toAutocomplete.addListener('place_changed', () => {
+        const place = toAutocomplete.getPlace();
+        if (place.formatted_address) {
+          toInput.value = place.formatted_address;
+          calculateDistance();
+        }
+      });
+
+      // Listen for blur events (when user leaves the field)
+      fromInput.addEventListener('blur', () => {
+        calculateDistance();
+      });
+
+      toInput.addEventListener('blur', () => {
+        calculateDistance();
+      });
+    } catch(error) {
+      console.error('Error initializing Google Places Autocomplete:', error);
     }
-
-    const fromInput = document.getElementById('form-address-departure');
-    const toInput = document.getElementById('form-address-destination');
-
-    if (!fromInput || !toInput) return;
-
-    // Initialize autocomplete for departure address
-    fromAutocomplete = new google.maps.places.Autocomplete(fromInput, {
-      componentRestrictions: { country: 'ca' },
-      fields: ['formatted_address', 'geometry']
-    });
-
-    // Initialize autocomplete for destination address
-    toAutocomplete = new google.maps.places.Autocomplete(toInput, {
-      componentRestrictions: { country: 'ca' },
-      fields: ['formatted_address', 'geometry']
-    });
-
-    // Listen for place selection on departure address
-    fromAutocomplete.addListener('place_changed', () => {
-      const place = fromAutocomplete.getPlace();
-      if (place.formatted_address) {
-        fromInput.value = place.formatted_address;
-        calculateDistance();
-      }
-    });
-
-    // Listen for place selection on destination address
-    toAutocomplete.addListener('place_changed', () => {
-      const place = toAutocomplete.getPlace();
-      if (place.formatted_address) {
-        toInput.value = place.formatted_address;
-        calculateDistance();
-      }
-    });
-
-    // Listen for blur events (when user leaves the field)
-    fromInput.addEventListener('blur', () => {
-      calculateDistance();
-    });
-
-    toInput.addEventListener('blur', () => {
-      calculateDistance();
-    });
   }
 
   // Calculate distance using Google Maps Distance Matrix Service
@@ -205,11 +225,17 @@ console.log('Window loaded:', typeof window !== 'undefined');
       avoidTolls: false
     };
 
-    distanceMatrixService.getDistanceMatrix(request, (response, status) => {
-      if (status === google.maps.DistanceMatrixStatus.OK) {
-        const element = response.rows[0].elements[0];
-        
-        if (element.status === google.maps.DistanceMatrixElementStatus.OK) {
+    try {
+      distanceMatrixService.getDistanceMatrix(request, (response, status) => {
+        try {
+          if (!response || !response.rows || !response.rows[0] || !response.rows[0].elements || !response.rows[0].elements[0]) {
+            throw new Error('Invalid response from Distance Matrix API');
+          }
+          
+          if (status === google.maps.DistanceMatrixStatus.OK) {
+            const element = response.rows[0].elements[0];
+            
+            if (element.status === google.maps.DistanceMatrixElementStatus.OK) {
           // Distance is in meters, convert to kilometers
           const distanceKm = Math.round(element.distance.value / 1000);
           
@@ -240,9 +266,22 @@ console.log('Window loaded:', typeof window !== 'undefined');
         distanceInput.disabled = false;
         distanceInput.removeAttribute('readonly');
         
-        showDistanceMessage('Erreur lors du calcul de la distance. Veuillez saisir manuellement.', 'error');
-      }
-    });
+          showDistanceMessage('Erreur lors du calcul de la distance. Veuillez saisir manuellement.', 'error');
+        } catch(e) {
+          console.error('Error in distance matrix callback:', e);
+          distanceInput.placeholder = 'Erreur de calcul';
+          distanceInput.disabled = false;
+          distanceInput.removeAttribute('readonly');
+          showDistanceMessage('Erreur lors du calcul. Veuillez saisir manuellement.', 'error');
+        }
+      });
+    } catch(e) {
+      console.error('Error calling distance matrix service:', e);
+      distanceInput.placeholder = 'Erreur de calcul';
+      distanceInput.disabled = false;
+      distanceInput.removeAttribute('readonly');
+      showDistanceMessage('Erreur lors du calcul. Veuillez saisir manuellement.', 'error');
+    }
   }
 
   // Show distance calculation message
