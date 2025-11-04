@@ -387,7 +387,7 @@
 .custom-radio-group {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   width: 100%;
 }
 
@@ -396,7 +396,7 @@
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 16px;
+  padding: 18px 20px;
   margin: 0;
   background-color: var(--color-scheme-2--foreground, #2a2a2a);
   border: 2px solid var(--color-scheme-2--border, #555555);
@@ -405,11 +405,14 @@
   transition: all 0.2s ease;
   box-sizing: border-box;
   overflow: hidden;
+  min-height: 60px;
 }
 
 .custom-radio-option:hover {
   border-color: var(--accent-blue, #72adcb);
   background-color: rgba(114, 173, 203, 0.08);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(114, 173, 203, 0.15);
 }
 
 .custom-radio-option input[type="radio"] {
@@ -517,40 +520,63 @@
    Checkbox Styling - Modern & Clean
    ============================================ */
 
-/* Base checkbox container */
+/* Base checkbox container - Uniform with radio buttons */
 .form_checkbox-btn {
   position: relative;
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 14px 16px;
-  margin-bottom: 10px;
+  padding: 18px 20px;
+  margin-bottom: 14px;
   background-color: var(--color-scheme-2--foreground, #2a2a2a);
   border: 2px solid var(--color-scheme-2--border, #555555);
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
   overflow: hidden;
   box-sizing: border-box;
+  min-height: 60px;
 }
 
 .form_checkbox-btn:hover {
   border-color: var(--accent-blue, #72adcb);
   background-color: rgba(114, 173, 203, 0.08);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(114, 173, 203, 0.15);
 }
 
 /* Checkbox icon styling */
 .form_checkbox-icon {
-  transition: all 0.2s ease;
   flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  margin-right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-scheme-2--background, #1a1a1a);
+  border: 2px solid var(--color-scheme-2--border, #555555);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+/* Checkbox checkmark */
+.form_checkbox-icon::after {
+  content: '✓';
+  display: none;
+  color: var(--accent-blue, #72adcb);
+  font-weight: 700;
+  font-size: 18px;
 }
 
 /* Checkbox label */
 .form_checkbox-label {
   flex: 1;
-  margin-left: 12px;
+  margin-left: 0;
   color: var(--color-scheme-2--text, #ffffff);
   font-weight: 500;
+  font-size: 16px;
   transition: all 0.2s ease;
   line-height: 1.4;
 }
@@ -564,29 +590,38 @@
   z-index: -1;
 }
 
-/* Selected checkbox state */
+/* Selected checkbox state - UNIFORM with radio buttons */
 .form_checkbox-btn.is-checked,
 .form_checkbox-btn:has(input[type="checkbox"]:checked) {
-  background-color: var(--accent-blue-light, rgba(114, 173, 203, 0.15)) !important;
-  border-color: var(--accent-blue, #72adcb) !important;
-  box-shadow: 0 0 0 3px rgba(114, 173, 203, 0.2);
-}
-
-.form_checkbox-btn.is-checked .form_checkbox-icon,
-.form_checkbox-btn:has(input[type="checkbox"]:checked) .form_checkbox-icon {
   background-color: var(--accent-blue, #72adcb) !important;
   border-color: var(--accent-blue, #72adcb) !important;
+  box-shadow: 0 0 0 3px rgba(114, 173, 203, 0.2) !important;
+  color: #ffffff !important;
 }
 
+/* Checkbox icon when selected - white background with blue checkmark */
+.form_checkbox-btn.is-checked .form_checkbox-icon,
+.form_checkbox-btn:has(input[type="checkbox"]:checked) .form_checkbox-icon {
+  background-color: #ffffff !important;
+  border-color: #ffffff !important;
+}
+
+.form_checkbox-btn.is-checked .form_checkbox-icon::after,
+.form_checkbox-btn:has(input[type="checkbox"]:checked) .form_checkbox-icon::after {
+  display: block;
+  color: var(--accent-blue, #72adcb);
+}
+
+/* Checkbox label when selected - white text like radio buttons */
 .form_checkbox-btn.is-checked .form_checkbox-label,
 .form_checkbox-btn:has(input[type="checkbox"]:checked) .form_checkbox-label {
-  color: var(--accent-blue, #72adcb) !important;
-  font-weight: 600;
+  color: #ffffff !important;
+  font-weight: 600 !important;
 }
 
-/* Ensure no overflow issues */
+/* Ensure consistent spacing */
 .multi-form11_radio-group .form_checkbox-btn {
-  margin-bottom: 10px;
+  margin-bottom: 14px;
 }
 
 .multi-form11_radio-group .form_checkbox-btn:last-child {
