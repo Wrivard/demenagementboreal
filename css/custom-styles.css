@@ -542,6 +542,12 @@
   min-height: 60px;
 }
 
+/* Ensure checkbox icon has proper spacing from left edge */
+.form_checkbox-btn .form_checkbox-icon {
+  margin-left: 0 !important;
+  margin-right: 12px !important;
+}
+
 .form_checkbox-btn:hover {
   border-color: var(--accent-blue, #72adcb);
   background-color: rgba(114, 173, 203, 0.08);
@@ -554,6 +560,7 @@
   flex-shrink: 0;
   width: 32px;
   height: 32px;
+  margin-left: 0;
   margin-right: 12px;
   display: flex;
   align-items: center;
