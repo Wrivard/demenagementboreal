@@ -877,10 +877,10 @@ try {
   updateCustomRadioStyles();
   
   // Also update on step change to ensure styles are applied
-  const originalShowStep = showStep;
+  const originalShowStepFunc1 = showStep;
   showStep = function(step) {
     console.log('=== showStep called with step:', step, '===');
-    originalShowStep(step);
+    originalShowStepFunc1(step);
     setTimeout(() => {
       console.log('=== Updating styles after step change ===');
       updateCustomRadioStyles();
