@@ -236,37 +236,38 @@ try {
             const element = response.rows[0].elements[0];
             
             if (element.status === google.maps.DistanceMatrixElementStatus.OK) {
-          // Distance is in meters, convert to kilometers
-          const distanceKm = Math.round(element.distance.value / 1000);
-          
-          distanceInput.value = distanceKm;
-          distanceInput.disabled = false;
-          distanceInput.setAttribute('readonly', 'readonly'); // Keep readonly after successful calculation
-          distanceInput.placeholder = 'Calculé automatiquement';
-          
-          showDistanceMessage(`Distance calculée: ${element.distance.text}`, 'success');
-        } else {
-          // Handle invalid addresses
-          distanceInput.placeholder = 'Distance non disponible';
-          distanceInput.disabled = false;
-          distanceInput.removeAttribute('readonly');
-          
-          let errorMessage = 'Impossible de calculer la distance entre ces adresses.';
-          if (element.status === google.maps.DistanceMatrixElementStatus.NOT_FOUND) {
-            errorMessage = 'Une ou plusieurs adresses introuvables.';
-          } else if (element.status === google.maps.DistanceMatrixElementStatus.ZERO_RESULTS) {
-            errorMessage = 'Aucun itinéraire trouvé entre ces adresses.';
+              // Distance is in meters, convert to kilometers
+              const distanceKm = Math.round(element.distance.value / 1000);
+              
+              distanceInput.value = distanceKm;
+              distanceInput.disabled = false;
+              distanceInput.setAttribute('readonly', 'readonly'); // Keep readonly after successful calculation
+              distanceInput.placeholder = 'Calculé automatiquement';
+              
+              showDistanceMessage(`Distance calculée: ${element.distance.text}`, 'success');
+            } else {
+              // Handle invalid addresses
+              distanceInput.placeholder = 'Distance non disponible';
+              distanceInput.disabled = false;
+              distanceInput.removeAttribute('readonly');
+              
+              let errorMessage = 'Impossible de calculer la distance entre ces adresses.';
+              if (element.status === google.maps.DistanceMatrixElementStatus.NOT_FOUND) {
+                errorMessage = 'Une ou plusieurs adresses introuvables.';
+              } else if (element.status === google.maps.DistanceMatrixElementStatus.ZERO_RESULTS) {
+                errorMessage = 'Aucun itinéraire trouvé entre ces adresses.';
+              }
+              
+              showDistanceMessage(errorMessage, 'error');
+            }
+          } else {
+            // Handle API errors
+            distanceInput.placeholder = 'Erreur de calcul';
+            distanceInput.disabled = false;
+            distanceInput.removeAttribute('readonly');
+            
+            showDistanceMessage('Erreur lors du calcul de la distance. Veuillez saisir manuellement.', 'error');
           }
-          
-          showDistanceMessage(errorMessage, 'error');
-        }
-      } else {
-        // Handle API errors
-        distanceInput.placeholder = 'Erreur de calcul';
-        distanceInput.disabled = false;
-        distanceInput.removeAttribute('readonly');
-        
-          showDistanceMessage('Erreur lors du calcul de la distance. Veuillez saisir manuellement.', 'error');
         } catch(e) {
           console.error('Error in distance matrix callback:', e);
           distanceInput.placeholder = 'Erreur de calcul';
@@ -1022,9 +1023,9 @@ try {
   }, 100);
   
   // Re-apply styles when step changes
-  const originalShowStep = showStep;
+  const originalShowStepFunc = showStep;
   showStep = function(step) {
-    originalShowStep(step);
+    originalShowStepFunc(step);
     setTimeout(function() {
       applyCustomStyles();
     }, 50);
