@@ -298,7 +298,8 @@
 }
 
 /* Radio button label */
-.form_radio-btn-label {
+.form_radio-btn-label,
+.form_radio-btn .w-form-label {
   flex: 1;
   margin-left: 12px;
   color: var(--color-scheme-2--text, #ffffff);
@@ -318,10 +319,34 @@
 
 /* Selected radio button state */
 .form_radio-btn.is-checked,
-.form_radio-btn:has(input[type="radio"]:checked) {
+.form_radio-btn:has(input[type="radio"]:checked),
+.w-radio.is-active-inputactive {
   background-color: var(--accent-blue, #72adcb) !important;
   border-color: var(--accent-blue, #72adcb) !important;
   box-shadow: 0 0 0 3px rgba(114, 173, 203, 0.2);
+}
+
+/* Ensure label text is white in selected radio button */
+.form_radio-btn.is-checked .form_radio-btn-label,
+.form_radio-btn.is-checked .w-form-label,
+.form_radio-btn.is-checked span,
+.form_radio-btn:has(input[type="radio"]:checked) .form_radio-btn-label,
+.form_radio-btn:has(input[type="radio"]:checked) .w-form-label,
+.form_radio-btn:has(input[type="radio"]:checked) span,
+.w-radio.is-active-inputactive .form_radio-btn-label,
+.w-radio.is-active-inputactive .w-form-label,
+.w-radio.is-active-inputactive span {
+  color: #ffffff !important;
+}
+
+/* Exception: badge letter should have blue text on white background */
+.form_radio-btn.is-checked .form_radio-btn-letter,
+.form_radio-btn.is-checked .form_radio-btn-letter div,
+.form_radio-btn:has(input[type="radio"]:checked) .form_radio-btn-letter,
+.form_radio-btn:has(input[type="radio"]:checked) .form_radio-btn-letter div,
+.w-radio.is-active-inputactive .form_radio-btn-letter,
+.w-radio.is-active-inputactive .form_radio-btn-letter div {
+  color: var(--accent-blue, #72adcb) !important;
 }
 
 .form_radio-btn.is-checked .form_radio-btn-icon,
@@ -331,13 +356,21 @@
 }
 
 .form_radio-btn.is-checked .form_radio-btn-label,
-.form_radio-btn:has(input[type="radio"]:checked) .form_radio-btn-label {
+.form_radio-btn.is-checked .w-form-label,
+.form_radio-btn:has(input[type="radio"]:checked) .form_radio-btn-label,
+.form_radio-btn:has(input[type="radio"]:checked) .w-form-label,
+.form_radio-btn.is-checked span.form_radio-btn-label,
+.form_radio-btn.is-checked span.w-form-label,
+.form_radio-btn:has(input[type="radio"]:checked) span.form_radio-btn-label,
+.form_radio-btn:has(input[type="radio"]:checked) span.w-form-label {
   color: #ffffff !important;
-  font-weight: 600;
+  font-weight: 600 !important;
 }
 
 .form_radio-btn.is-checked .form_radio-btn-letter,
-.form_radio-btn:has(input[type="radio"]:checked) .form_radio-btn-letter {
+.form_radio-btn.is-checked .form_radio-btn-letter div,
+.form_radio-btn:has(input[type="radio"]:checked) .form_radio-btn-letter,
+.form_radio-btn:has(input[type="radio"]:checked) .form_radio-btn-letter div {
   background-color: #ffffff !important;
   border-color: #ffffff !important;
   color: var(--accent-blue, #72adcb) !important;
