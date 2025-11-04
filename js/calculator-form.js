@@ -610,54 +610,64 @@
 
   // Helper function to update radio button visual state
   function updateRadioButtonState(radio) {
+    if (!radio || !radio.name) return;
+    
     const name = radio.name;
     // Remove is-checked from all radio buttons in the same group
     form.querySelectorAll(`input[name="${name}"]`).forEach(r => {
-      const radioBtn = r.closest('.form_radio-btn');
+      const radioBtn = r.closest('.form_radio-btn') || r.closest('.w-radio');
       if (radioBtn) {
         radioBtn.classList.remove('is-checked');
-        // Remove inline styles
-        radioBtn.style.backgroundColor = '';
-        radioBtn.style.borderColor = '';
-        radioBtn.style.color = '';
+        // Remove inline styles - use !important via setProperty
+        radioBtn.style.setProperty('background-color', '', 'important');
+        radioBtn.style.setProperty('border-color', '', 'important');
+        radioBtn.style.setProperty('color', '', 'important');
         // Update label text color
-        const label = radioBtn.querySelector('.form_radio-btn-label, .w-form-label');
+        const label = radioBtn.querySelector('.form_radio-btn-label, .w-form-label, span');
         if (label) {
-          label.style.color = '';
+          label.style.setProperty('color', '', 'important');
+          label.style.setProperty('font-weight', '', 'important');
         }
         // Update badge
         const badge = radioBtn.querySelector('.form_radio-btn-letter');
         if (badge) {
-          badge.style.backgroundColor = '';
-          badge.style.borderColor = '';
-          badge.style.color = '';
+          badge.style.setProperty('background-color', '', 'important');
+          badge.style.setProperty('border-color', '', 'important');
+          badge.style.setProperty('color', '', 'important');
+          const badgeText = badge.querySelector('div');
+          if (badgeText) {
+            badgeText.style.setProperty('color', '', 'important');
+          }
         }
       }
     });
+    
     // Add is-checked to the selected radio button and apply styles directly
-    if (radio.checked && radio.closest('.form_radio-btn')) {
-      const radioBtn = radio.closest('.form_radio-btn');
-      radioBtn.classList.add('is-checked');
-      // Apply styles directly via inline styles to override Webflow
-      radioBtn.style.backgroundColor = '#72adcb';
-      radioBtn.style.borderColor = '#72adcb';
-      radioBtn.style.color = '#ffffff';
-      
-      // Update label text color
-      const label = radioBtn.querySelector('.form_radio-btn-label, .w-form-label');
-      if (label) {
-        label.style.color = '#ffffff';
-        label.style.fontWeight = '600';
-      }
-      
-      // Update badge to white background with blue text
-      const badge = radioBtn.querySelector('.form_radio-btn-letter');
-      if (badge) {
-        badge.style.backgroundColor = '#ffffff';
-        badge.style.borderColor = '#ffffff';
-        const badgeText = badge.querySelector('div');
-        if (badgeText) {
-          badgeText.style.color = '#72adcb';
+    if (radio.checked) {
+      const radioBtn = radio.closest('.form_radio-btn') || radio.closest('.w-radio');
+      if (radioBtn) {
+        radioBtn.classList.add('is-checked');
+        // Apply styles directly via inline styles with !important to override Webflow
+        radioBtn.style.setProperty('background-color', '#72adcb', 'important');
+        radioBtn.style.setProperty('border-color', '#72adcb', 'important');
+        radioBtn.style.setProperty('color', '#ffffff', 'important');
+        
+        // Update label text color
+        const label = radioBtn.querySelector('.form_radio-btn-label, .w-form-label, span');
+        if (label) {
+          label.style.setProperty('color', '#ffffff', 'important');
+          label.style.setProperty('font-weight', '600', 'important');
+        }
+        
+        // Update badge to white background with blue text
+        const badge = radioBtn.querySelector('.form_radio-btn-letter');
+        if (badge) {
+          badge.style.setProperty('background-color', '#ffffff', 'important');
+          badge.style.setProperty('border-color', '#ffffff', 'important');
+          const badgeText = badge.querySelector('div');
+          if (badgeText) {
+            badgeText.style.setProperty('color', '#72adcb', 'important');
+          }
         }
       }
     }
