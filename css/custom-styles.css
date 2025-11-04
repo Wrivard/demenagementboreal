@@ -542,19 +542,35 @@
   min-height: 60px;
 }
 
-/* Ensure checkbox icon has proper spacing from left edge */
+/* Override Webflow's float and negative margin on checkbox inputs */
+.w-checkbox-input,
+.w-checkbox-input--inputType-custom,
+.form_checkbox-btn .w-checkbox-input,
+.form_checkbox-btn .w-checkbox-input--inputType-custom,
 .form_checkbox-btn .form_checkbox-icon,
-.form_checkbox-btn .w-checkbox-input.form_checkbox-icon {
+.form_checkbox-btn .w-checkbox-input.form_checkbox-icon,
+.w-checkbox.form_checkbox-btn .w-checkbox-input,
+.w-checkbox.form_checkbox-btn .form_checkbox-icon {
+  float: none !important;
   margin-left: 0 !important;
   margin-right: 12px !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
   flex-shrink: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
 
-/* Ensure checkbox container has proper padding */
+/* Ensure checkbox container has proper padding and uses flexbox */
 .form_checkbox-btn,
 .w-checkbox.form_checkbox-btn {
+  display: flex !important;
+  align-items: center !important;
   padding-left: 20px !important;
   padding-right: 20px !important;
+  padding-top: 18px !important;
+  padding-bottom: 18px !important;
 }
 
 .form_checkbox-btn:hover {
