@@ -1252,6 +1252,27 @@ margin: 0rem !important;
   <div class="st_wrapper"></div>
   <script src="js/webflow.js" type="text/javascript"></script>
   <script src="js/fab-buttons.js"></script>
+  <script>
+    // Test if script loading works
+    console.log('🔴 BEFORE calculator-form.js load');
+    window.testBeforeCalc = true;
+  </script>
   <script src="js/calculator-form.js"></script>
+  <script>
+    // Test if script loaded
+    console.log('🟢 AFTER calculator-form.js load');
+    console.log('Script loaded check:', typeof window !== 'undefined');
+    
+    // Check if form exists after all scripts
+    setTimeout(function() {
+      console.log('🟡 DELAYED CHECK - Form exists:', document.getElementById('estimation-form') !== null);
+      const form = document.getElementById('estimation-form');
+      if (form) {
+        console.log('Form found! Classes:', form.className);
+        console.log('Custom radios:', form.querySelectorAll('.custom-radio-option').length);
+        console.log('Checkboxes:', form.querySelectorAll('.form_checkbox-btn').length);
+      }
+    }, 1000);
+  </script>
 </body>
 </html>
