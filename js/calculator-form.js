@@ -1,6 +1,9 @@
 // Multi-step form with conditional branching logic
-console.log('=== calculator-form.js FILE LOADED ===');
+// IMMEDIATE LOG - This should appear as soon as script loads
+console.log('🔵🔵🔵 calculator-form.js FILE LOADED - IMMEDIATE LOG 🔵🔵🔵');
 console.log('Script execution started at:', new Date().toISOString());
+console.log('Document ready state:', document.readyState);
+console.log('Window loaded:', typeof window !== 'undefined');
 
 (function() {
   'use strict';
