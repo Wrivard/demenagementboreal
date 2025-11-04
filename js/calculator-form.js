@@ -870,6 +870,127 @@ console.log('Window loaded:', typeof window !== 'undefined');
   // Form submit handler
   form.addEventListener('submit', handleSubmit);
 
+  // Apply styles directly via JavaScript to ensure they work
+  function applyCustomStyles() {
+    console.log('🎨 Applying custom styles via JavaScript');
+    
+    // Get all custom radio options
+    const customRadios = form.querySelectorAll('.custom-radio-option');
+    console.log('Custom radios found:', customRadios.length);
+    
+    customRadios.forEach(function(radio) {
+      const input = radio.querySelector('input[type="radio"]');
+      const badge = radio.querySelector('.custom-radio-badge');
+      const label = radio.querySelector('.custom-radio-label');
+      
+      if (!input || !badge || !label) return;
+      
+      // Apply base styles
+      radio.style.setProperty('display', 'flex', 'important');
+      radio.style.setProperty('align-items', 'center', 'important');
+      radio.style.setProperty('padding', '18px 20px', 'important');
+      radio.style.setProperty('min-height', '60px', 'important');
+      radio.style.setProperty('border-radius', '12px', 'important');
+      radio.style.setProperty('cursor', 'pointer', 'important');
+      radio.style.setProperty('box-sizing', 'border-box', 'important');
+      radio.style.setProperty('margin', '0 0 14px 0', 'important');
+      
+      // Check if selected
+      function updateRadioState() {
+        if (input.checked) {
+          radio.style.setProperty('background-color', 'rgba(114, 173, 203, 0.12)', 'important');
+          radio.style.setProperty('border-color', '#72adcb', 'important');
+          radio.style.setProperty('border-width', '2px', 'important');
+          radio.style.setProperty('box-shadow', '0 0 0 3px rgba(114, 173, 203, 0.15)', 'important');
+          badge.style.setProperty('background-color', '#72adcb', 'important');
+          badge.style.setProperty('border-color', '#72adcb', 'important');
+          badge.style.setProperty('color', '#ffffff', 'important');
+          label.style.setProperty('font-weight', '600', 'important');
+        } else {
+          radio.style.setProperty('background-color', '', 'important');
+          radio.style.setProperty('border-color', '', 'important');
+          radio.style.setProperty('box-shadow', '', 'important');
+          badge.style.setProperty('background-color', '', 'important');
+          badge.style.setProperty('border-color', '', 'important');
+          badge.style.setProperty('color', '', 'important');
+          label.style.setProperty('font-weight', '', 'important');
+        }
+      }
+      
+      // Apply initial state
+      updateRadioState();
+      
+      // Listen for changes
+      input.addEventListener('change', function() {
+        // Update all radios in the same group
+        const groupName = input.name;
+        form.querySelectorAll(`input[name="${groupName}"]`).forEach(function(otherInput) {
+          const otherRadio = otherInput.closest('.custom-radio-option');
+          if (otherRadio) {
+            const otherBadge = otherRadio.querySelector('.custom-radio-badge');
+            const otherLabel = otherRadio.querySelector('.custom-radio-label');
+            if (otherInput.checked) {
+              otherRadio.style.setProperty('background-color', 'rgba(114, 173, 203, 0.12)', 'important');
+              otherRadio.style.setProperty('border-color', '#72adcb', 'important');
+              otherRadio.style.setProperty('box-shadow', '0 0 0 3px rgba(114, 173, 203, 0.15)', 'important');
+              if (otherBadge) {
+                otherBadge.style.setProperty('background-color', '#72adcb', 'important');
+                otherBadge.style.setProperty('border-color', '#72adcb', 'important');
+                otherBadge.style.setProperty('color', '#ffffff', 'important');
+              }
+              if (otherLabel) otherLabel.style.setProperty('font-weight', '600', 'important');
+            } else {
+              otherRadio.style.setProperty('background-color', '', 'important');
+              otherRadio.style.setProperty('border-color', '', 'important');
+              otherRadio.style.setProperty('box-shadow', '', 'important');
+              if (otherBadge) {
+                otherBadge.style.setProperty('background-color', '', 'important');
+                otherBadge.style.setProperty('border-color', '', 'important');
+                otherBadge.style.setProperty('color', '', 'important');
+              }
+              if (otherLabel) otherLabel.style.setProperty('font-weight', '', 'important');
+            }
+          }
+        });
+      });
+    });
+    
+    // Fix checkbox spacing
+    const checkboxes = form.querySelectorAll('.form_checkbox-btn');
+    console.log('Checkboxes found:', checkboxes.length);
+    
+    checkboxes.forEach(function(checkbox) {
+      const icon = checkbox.querySelector('.w-checkbox-input, .form_checkbox-icon');
+      if (icon) {
+        icon.style.setProperty('float', 'none', 'important');
+        icon.style.setProperty('margin-left', '0', 'important');
+        icon.style.setProperty('margin-right', '12px', 'important');
+        icon.style.setProperty('display', 'flex', 'important');
+        icon.style.setProperty('align-items', 'center', 'important');
+        icon.style.setProperty('justify-content', 'center', 'important');
+      }
+      checkbox.style.setProperty('padding', '18px 20px', 'important');
+      checkbox.style.setProperty('display', 'flex', 'important');
+      checkbox.style.setProperty('align-items', 'center', 'important');
+    });
+    
+    console.log('✅ Styles applied via JavaScript');
+  }
+  
+  // Apply styles after a short delay to ensure DOM is ready
+  setTimeout(function() {
+    applyCustomStyles();
+  }, 100);
+  
+  // Re-apply styles when step changes
+  const originalShowStep = showStep;
+  showStep = function(step) {
+    originalShowStep(step);
+    setTimeout(function() {
+      applyCustomStyles();
+    }, 50);
+  };
+
   // Initialize
   showStep(1);
   } // End of initializeCalculator function
