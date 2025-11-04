@@ -687,9 +687,20 @@
   
   // Force apply subtle selected styles to custom radio buttons
   function updateCustomRadioStyles() {
-    form.querySelectorAll('.custom-radio-option input[type="radio"]').forEach(radio => {
+    console.log('=== updateCustomRadioStyles called ===');
+    const radios = form.querySelectorAll('.custom-radio-option input[type="radio"]');
+    console.log('Found', radios.length, 'custom radio buttons');
+    
+    radios.forEach((radio, index) => {
       const option = radio.closest('.custom-radio-option');
-      if (!option) return;
+      if (!option) {
+        console.warn('Radio', index, '- no .custom-radio-option parent found');
+        return;
+      }
+      
+      // Check computed styles
+      const computedStyles = window.getComputedStyle(option);
+      console.log('Radio', index, '- checked:', radio.checked, '- padding:', computedStyles.padding, '- background:', computedStyles.backgroundColor);
       
       if (radio.checked) {
         // Apply subtle background
@@ -703,6 +714,8 @@
           badge.style.setProperty('background-color', '#72adcb', 'important');
           badge.style.setProperty('border-color', '#72adcb', 'important');
           badge.style.setProperty('color', '#ffffff', 'important');
+        } else {
+          console.warn('Radio', index, '- no badge found');
         }
         
         // Label: keep text color normal, just bold
@@ -710,6 +723,8 @@
         if (label) {
           label.style.setProperty('font-weight', '600', 'important');
           // Don't force color, let CSS variable handle it
+        } else {
+          console.warn('Radio', index, '- no label found');
         }
       } else {
         // Reset styles
@@ -730,6 +745,22 @@
         }
       }
     });
+    
+    // Also check checkboxes
+    const checkboxes = form.querySelectorAll('.form_checkbox-btn');
+    console.log('Found', checkboxes.length, 'checkboxes');
+    checkboxes.forEach((checkbox, index) => {
+      const computedStyles = window.getComputedStyle(checkbox);
+      const icon = checkbox.querySelector('.form_checkbox-icon, .w-checkbox-input');
+      const iconStyles = icon ? window.getComputedStyle(icon) : null;
+      
+      console.log('Checkbox', index, '- padding:', computedStyles.padding, '- paddingLeft:', computedStyles.paddingLeft, '- background:', computedStyles.backgroundColor);
+      if (iconStyles) {
+        console.log('Checkbox', index, 'icon - marginLeft:', iconStyles.marginLeft, '- float:', iconStyles.float);
+      } else {
+        console.warn('Checkbox', index, '- no icon found');
+      }
+    });
   }
 
   // Service type selection handler - simple and fast
@@ -748,14 +779,39 @@
     }
   });
   
+  // Debug: Check CSS loading and styles
+  console.log('=== CSS Debug Info ===');
+  console.log('Custom styles CSS loaded:', document.querySelector('link[href*="custom-styles.css"]') !== null);
+  console.log('Webflow CSS loaded:', document.querySelector('link[href*="demenagement-boreal.webflow.css"]') !== null);
+  
+  // Check if custom radio buttons exist
+  const customRadios = form.querySelectorAll('.custom-radio-option');
+  console.log('Custom radio options found:', customRadios.length);
+  
+  // Check if old radio buttons exist
+  const oldRadios = form.querySelectorAll('.form_radio-btn');
+  console.log('Old radio buttons found:', oldRadios.length);
+  
+  // Check checkbox styles
+  const checkboxes = form.querySelectorAll('.form_checkbox-btn');
+  console.log('Checkboxes found:', checkboxes.length);
+  checkboxes.forEach((cb, i) => {
+    const styles = window.getComputedStyle(cb);
+    console.log(`Checkbox ${i} - padding:`, styles.padding, '- classes:', cb.className);
+  });
+  
   // Initialize styles on page load
   updateCustomRadioStyles();
   
   // Also update on step change to ensure styles are applied
   const originalShowStep = showStep;
   showStep = function(step) {
+    console.log('=== showStep called with step:', step, '===');
     originalShowStep(step);
-    setTimeout(updateCustomRadioStyles, 100);
+    setTimeout(() => {
+      console.log('=== Updating styles after step change ===');
+      updateCustomRadioStyles();
+    }, 100);
   };
 
   // Checkbox visual feedback
