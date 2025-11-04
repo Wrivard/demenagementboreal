@@ -391,10 +391,13 @@
   width: 100%;
 }
 
-/* Force custom radio option styles with maximum specificity */
+/* Force custom radio option styles - target actual HTML structure */
+.custom-radio-option,
+label.custom-radio-option,
 html body .custom-radio-option,
 .w-form .custom-radio-option,
-div.multi-form11_form .custom-radio-option {
+div.multi-form11_form .custom-radio-option,
+.multi-form11_field-wrapper .custom-radio-option {
   position: relative !important;
   display: flex !important;
   align-items: center !important;
@@ -431,10 +434,13 @@ div.multi-form11_form .custom-radio-option {
   z-index: -1;
 }
 
-/* Force custom radio badge styles */
+/* Force custom radio badge styles - target actual HTML structure */
+.custom-radio-badge,
+span.custom-radio-badge,
 html body .custom-radio-badge,
 .w-form .custom-radio-badge,
-div.multi-form11_form .custom-radio-badge {
+div.multi-form11_form .custom-radio-badge,
+.multi-form11_field-wrapper .custom-radio-badge {
   flex-shrink: 0 !important;
   display: flex !important;
   align-items: center !important;
@@ -460,13 +466,17 @@ div.multi-form11_form .custom-radio-badge {
   transition: all 0.2s ease;
 }
 
-/* Selected state - Force override Webflow with maximum specificity */
-html body .multi-form11_form .custom-radio-group .custom-radio-option input[type="radio"]:checked + .custom-radio-badge,
-html body .multi-form11_form .custom-radio-group .custom-radio-option:has(input[type="radio"]:checked) .custom-radio-badge,
+/* Selected state - Force override with ALL possible selectors */
+.custom-radio-option input[type="radio"]:checked + .custom-radio-badge,
+.custom-radio-option:has(input[type="radio"]:checked) .custom-radio-badge,
+label.custom-radio-option input[type="radio"]:checked + .custom-radio-badge,
+label.custom-radio-option:has(input[type="radio"]:checked) .custom-radio-badge,
 html body .custom-radio-option input[type="radio"]:checked + .custom-radio-badge,
 html body .custom-radio-option:has(input[type="radio"]:checked) .custom-radio-badge,
 .w-form .custom-radio-option input[type="radio"]:checked + .custom-radio-badge,
-.w-form .custom-radio-option:has(input[type="radio"]:checked) .custom-radio-badge {
+.w-form .custom-radio-option:has(input[type="radio"]:checked) .custom-radio-badge,
+.multi-form11_field-wrapper .custom-radio-option input[type="radio"]:checked + .custom-radio-badge,
+.multi-form11_field-wrapper .custom-radio-option:has(input[type="radio"]:checked) .custom-radio-badge {
   background-color: #72adcb !important;
   border-color: #72adcb !important;
   color: #ffffff !important;
@@ -480,11 +490,12 @@ html body .custom-radio-option:has(input[type="radio"]:checked) .custom-radio-ba
   font-weight: 600 !important;
 }
 
-/* Apply selected styles to the container - Force override with maximum specificity */
-html body .multi-form11_form .custom-radio-group .custom-radio-option:has(input[type="radio"]:checked),
-html body .multi-form11_field-wrapper .custom-radio-group .custom-radio-option:has(input[type="radio"]:checked),
+/* Apply selected styles to the container - ALL possible selectors */
+.custom-radio-option:has(input[type="radio"]:checked),
+label.custom-radio-option:has(input[type="radio"]:checked),
 html body .custom-radio-option:has(input[type="radio"]:checked),
 .w-form .custom-radio-option:has(input[type="radio"]:checked),
+.multi-form11_field-wrapper .custom-radio-option:has(input[type="radio"]:checked),
 div.multi-form11_form .custom-radio-option:has(input[type="radio"]:checked) {
   background-color: rgba(114, 173, 203, 0.12) !important;
   border-color: #72adcb !important;
