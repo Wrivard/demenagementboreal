@@ -240,11 +240,11 @@
    Radio Button Styling - Modern & Clean
    ============================================ */
 
-/* Modern accent blue color */
+/* Modern accent blue color - using site's glacier blue */
 :root {
-  --accent-blue: #3b82f6;
-  --accent-blue-dark: #2563eb;
-  --accent-blue-light: rgba(59, 130, 246, 0.1);
+  --accent-blue: #72adcb;
+  --accent-blue-dark: #5b8aa2;
+  --accent-blue-light: rgba(114, 173, 203, 0.15);
 }
 
 /* Base radio button container */
@@ -265,8 +265,8 @@
 }
 
 .form_radio-btn:hover {
-  border-color: var(--accent-blue, #3b82f6);
-  background-color: rgba(59, 130, 246, 0.05);
+  border-color: var(--accent-blue, #72adcb);
+  background-color: rgba(114, 173, 203, 0.08);
 }
 
 /* Radio button icon styling */
@@ -319,28 +319,28 @@
 /* Selected radio button state */
 .form_radio-btn.is-checked,
 .form_radio-btn:has(input[type="radio"]:checked) {
-  background-color: var(--accent-blue-light, rgba(59, 130, 246, 0.1)) !important;
-  border-color: var(--accent-blue, #3b82f6) !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background-color: var(--accent-blue, #72adcb) !important;
+  border-color: var(--accent-blue, #72adcb) !important;
+  box-shadow: 0 0 0 3px rgba(114, 173, 203, 0.2);
 }
 
 .form_radio-btn.is-checked .form_radio-btn-icon,
 .form_radio-btn:has(input[type="radio"]:checked) .form_radio-btn-icon {
-  background-color: var(--accent-blue, #3b82f6) !important;
-  border-color: var(--accent-blue, #3b82f6) !important;
+  background-color: #ffffff !important;
+  border-color: #ffffff !important;
 }
 
 .form_radio-btn.is-checked .form_radio-btn-label,
 .form_radio-btn:has(input[type="radio"]:checked) .form_radio-btn-label {
-  color: var(--accent-blue, #3b82f6) !important;
+  color: #ffffff !important;
   font-weight: 600;
 }
 
 .form_radio-btn.is-checked .form_radio-btn-letter,
 .form_radio-btn:has(input[type="radio"]:checked) .form_radio-btn-letter {
-  background-color: var(--accent-blue, #3b82f6) !important;
-  border-color: var(--accent-blue, #3b82f6) !important;
-  color: #ffffff !important;
+  background-color: #ffffff !important;
+  border-color: #ffffff !important;
+  color: var(--accent-blue, #72adcb) !important;
 }
 
 /* Ensure no overflow issues */
@@ -382,8 +382,8 @@
 }
 
 .form_checkbox-btn:hover {
-  border-color: var(--accent-blue, #3b82f6);
-  background-color: rgba(59, 130, 246, 0.05);
+  border-color: var(--accent-blue, #72adcb);
+  background-color: rgba(114, 173, 203, 0.08);
 }
 
 /* Checkbox icon styling */
@@ -414,20 +414,20 @@
 /* Selected checkbox state */
 .form_checkbox-btn.is-checked,
 .form_checkbox-btn:has(input[type="checkbox"]:checked) {
-  background-color: var(--accent-blue-light, rgba(59, 130, 246, 0.1)) !important;
-  border-color: var(--accent-blue, #3b82f6) !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background-color: var(--accent-blue-light, rgba(114, 173, 203, 0.15)) !important;
+  border-color: var(--accent-blue, #72adcb) !important;
+  box-shadow: 0 0 0 3px rgba(114, 173, 203, 0.2);
 }
 
 .form_checkbox-btn.is-checked .form_checkbox-icon,
 .form_checkbox-btn:has(input[type="checkbox"]:checked) .form_checkbox-icon {
-  background-color: var(--accent-blue, #3b82f6) !important;
-  border-color: var(--accent-blue, #3b82f6) !important;
+  background-color: var(--accent-blue, #72adcb) !important;
+  border-color: var(--accent-blue, #72adcb) !important;
 }
 
 .form_checkbox-btn.is-checked .form_checkbox-label,
 .form_checkbox-btn:has(input[type="checkbox"]:checked) .form_checkbox-label {
-  color: var(--accent-blue, #3b82f6) !important;
+  color: var(--accent-blue, #72adcb) !important;
   font-weight: 600;
 }
 
