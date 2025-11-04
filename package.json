@@ -6,6 +6,9 @@
     "dev": "vercel dev",
     "start": "vercel dev"
   },
+  "engines": {
+    "node": "18.x"
+  },
   "keywords": ["webflow", "demenagement", "quebec"],
   "author": "Déménagement Boréal",
   "license": "MIT"

@@ -17,7 +17,17 @@ export default async function handler(req, res) {
   }
 
   try {
-    const data = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+    // Parse request body
+    let data;
+    if (typeof req.body === 'string') {
+      try {
+        data = JSON.parse(req.body);
+      } catch (e) {
+        data = req.body;
+      }
+    } else {
+      data = req.body || {};
+    }
 
     // Validate required fields
     if (!data.name || !data.email || !data.phone || !data['service-type']) {
