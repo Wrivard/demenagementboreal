@@ -724,7 +724,9 @@ console.log('🚀 Calculator script loaded');
       };
       
       distanceMatrixService.getDistanceMatrix(request, (response, status) => {
-        if (status === 'OK' && response.rows[0].elements[0].status === 'OK') {
+        console.log('📊 Distance Matrix response:', { status, response });
+        
+        if (status === 'OK' && response && response.rows && response.rows[0] && response.rows[0].elements && response.rows[0].elements[0].status === 'OK') {
           const element = response.rows[0].elements[0];
           const distanceKm = Math.round(element.distance.value / 1000);
           
@@ -744,13 +746,28 @@ console.log('🚀 Calculator script loaded');
           if (status === 'ZERO_RESULTS') {
             errorMessage = 'Aucun résultat trouvé pour ces adresses.';
           } else if (status === 'REQUEST_DENIED') {
-            errorMessage = 'Erreur d\'autorisation. Vérifiez la clé API.';
+            errorMessage = 'Erreur d\'autorisation. La clé API Google Maps n\'est pas valide ou n\'a pas les permissions nécessaires. Vérifiez la configuration Vercel.';
+            console.error('❌ REQUEST_DENIED - Vérifiez que:');
+            console.error('  1. La clé API est configurée dans Vercel (GOOGLE_MAPS_API_KEY)');
+            console.error('  2. Les APIs suivantes sont activées dans Google Cloud Console:');
+            console.error('     - Maps JavaScript API');
+            console.error('     - Places API');
+            console.error('     - Distance Matrix API');
+            console.error('  3. Les restrictions de la clé API permettent votre domaine');
           } else if (status === 'OVER_QUERY_LIMIT') {
             errorMessage = 'Limite de requêtes dépassée.';
+          } else if (status === 'INVALID_REQUEST') {
+            errorMessage = 'Requête invalide. Vérifiez les adresses.';
+          } else {
+            console.error('❌ Distance Matrix error:', status, response);
+            if (response && response.error_message) {
+              console.error('❌ Error message:', response.error_message);
+              errorMessage += ' ' + response.error_message;
+            }
           }
           
           showDistanceMessage(errorMessage, 'error');
-          console.error('Distance Matrix error:', status, response);
+          console.error('Distance Matrix error details:', { status, response });
         }
       });
     }
