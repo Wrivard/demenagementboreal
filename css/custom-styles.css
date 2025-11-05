@@ -187,15 +187,13 @@
   display: block;
 }
 
-/* Form input error state */
-/* Error styles - use accent blue instead of red */
+/* Form input error state - use accent blue instead of red */
 .form_input.error,
 .w-select.error,
 .w-input.error {
   border-color: #72adcb !important;
   background-color: rgba(114, 173, 203, 0.1) !important;
-  border-color: #ff4444 !important;
-  box-shadow: 0 0 0 2px rgba(255, 68, 68, 0.1) !important;
+  box-shadow: 0 0 0 2px rgba(114, 173, 203, 0.2) !important;
 }
 
 /* Flatpickr calendar styling */
