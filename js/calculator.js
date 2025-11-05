@@ -406,105 +406,223 @@ console.log('🚀 Calculator script loaded');
       });
     }
     
-    // Simple address autocomplete for step 4
+    // Google Maps Autocomplete and Distance Calculation
+    let googleMapsLoaded = false;
+    let fromAutocomplete = null;
+    let toAutocomplete = null;
+    let distanceMatrixService = null;
+    
+    async function loadGoogleMapsAPI() {
+      if (googleMapsLoaded) return true;
+      
+      try {
+        // Get API key from serverless function
+        const response = await fetch('/api/get-maps-key');
+        const data = await response.json();
+        
+        if (!data.success || !data.apiKey) {
+          console.warn('Google Maps API key not available');
+          showDistanceMessage('Google Maps non disponible. Vous pouvez saisir la distance manuellement.', 'warning');
+          return false;
+        }
+        
+        const apiKey = data.apiKey;
+        
+        // Load Google Maps JavaScript API
+        return new Promise((resolve, reject) => {
+          if (window.google && window.google.maps) {
+            googleMapsLoaded = true;
+            resolve(true);
+            return;
+          }
+          
+          const script = document.createElement('script');
+          script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&language=fr`;
+          script.async = true;
+          script.defer = true;
+          
+          script.onload = () => {
+            googleMapsLoaded = true;
+            console.log('✅ Google Maps API loaded');
+            resolve(true);
+          };
+          
+          script.onerror = () => {
+            console.error('❌ Failed to load Google Maps API');
+            showDistanceMessage('Erreur de chargement de Google Maps. Vous pouvez saisir la distance manuellement.', 'warning');
+            reject(false);
+          };
+          
+          document.head.appendChild(script);
+        });
+      } catch (error) {
+        console.error('Error loading Google Maps:', error);
+        showDistanceMessage('Erreur de chargement de Google Maps. Vous pouvez saisir la distance manuellement.', 'warning');
+        return false;
+      }
+    }
+    
     function initAddressAutocomplete() {
       const fromInput = form.querySelector('#form-address-departure');
       const toInput = form.querySelector('#form-address-destination');
+      const distanceInput = form.querySelector('#form-distance');
       
-      if (!fromInput || !toInput) return;
+      if (!fromInput || !toInput || !distanceInput) return;
       
-      // Simple autocomplete suggestions for Quebec addresses
-      const suggestions = [
-        'Montréal, QC', 'Québec, QC', 'Laval, QC', 'Gatineau, QC',
-        'Sherbrooke, QC', 'Saguenay, QC', 'Trois-Rivières, QC',
-        'Saint-Jean-sur-Richelieu, QC', 'Drummondville, QC', 'Granby, QC',
-        'Montréal-Nord, QC', 'Longueuil, QC', 'Repentigny, QC', 'Brossard, QC'
-      ];
-      
-      function createAutocomplete(input) {
-        let suggestionsList = null;
+      // Load Google Maps API first
+      loadGoogleMapsAPI().then(loaded => {
+        if (!loaded || !window.google || !window.google.maps) {
+          // Fallback: allow manual distance entry
+          distanceInput.removeAttribute('readonly');
+          distanceInput.placeholder = 'Saisissez la distance manuellement (km)';
+          return;
+        }
         
-        input.addEventListener('input', function() {
-          const value = this.value.toLowerCase();
-          
-          // Remove existing suggestions
-          if (suggestionsList) {
-            suggestionsList.remove();
-          }
-          
-          if (value.length < 2) return;
-          
-          // Filter suggestions
-          const filtered = suggestions.filter(s => s.toLowerCase().includes(value));
-          
-          if (filtered.length === 0) return;
-          
-          // Create suggestions list
-          suggestionsList = document.createElement('div');
-          suggestionsList.className = 'address-autocomplete';
-          suggestionsList.style.cssText = `
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: #2a2a2a;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 8px;
-            margin-top: 4px;
-            max-height: 200px;
-            overflow-y: auto;
-            z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-          `;
-          
-          filtered.forEach(suggestion => {
-            const item = document.createElement('div');
-            item.style.cssText = `
-              padding: 12px 16px;
-              cursor: pointer;
-              color: #ffffff;
-              border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-              transition: background 0.2s;
-            `;
-            item.textContent = suggestion;
-            
-            item.addEventListener('mouseenter', function() {
-              this.style.background = 'rgba(114, 173, 203, 0.2)';
-            });
-            
-            item.addEventListener('mouseleave', function() {
-              this.style.background = 'transparent';
-            });
-            
-            item.addEventListener('click', function() {
-              input.value = suggestion;
-              if (suggestionsList) {
-                suggestionsList.remove();
-              }
-              suggestionsList = null;
-            });
-            
-            suggestionsList.appendChild(item);
-          });
-          
-          const wrapper = input.closest('.multi-form11_field-wrapper');
-          if (wrapper) {
-            wrapper.style.position = 'relative';
-            wrapper.appendChild(suggestionsList);
+        // Initialize Google Places Autocomplete
+        const options = {
+          componentRestrictions: { country: 'ca' },
+          fields: ['formatted_address', 'geometry'],
+          types: ['address']
+        };
+        
+        fromAutocomplete = new google.maps.places.Autocomplete(fromInput, options);
+        toAutocomplete = new google.maps.places.Autocomplete(toInput, options);
+        
+        // Initialize Distance Matrix Service
+        distanceMatrixService = new google.maps.DistanceMatrixService();
+        
+        // Listen for place selection on "from" address
+        fromAutocomplete.addListener('place_changed', () => {
+          const place = fromAutocomplete.getPlace();
+          if (place.formatted_address) {
+            fromInput.value = place.formatted_address;
+            calculateDistance();
           }
         });
         
-        // Close on outside click
-        document.addEventListener('click', function(e) {
-          if (suggestionsList && !suggestionsList.contains(e.target) && e.target !== input) {
-            suggestionsList.remove();
-            suggestionsList = null;
+        // Listen for place selection on "to" address
+        toAutocomplete.addListener('place_changed', () => {
+          const place = toAutocomplete.getPlace();
+          if (place.formatted_address) {
+            toInput.value = place.formatted_address;
+            calculateDistance();
           }
         });
+        
+        // Also calculate on blur events
+        fromInput.addEventListener('blur', () => {
+          setTimeout(() => calculateDistance(), 300);
+        });
+        
+        toInput.addEventListener('blur', () => {
+          setTimeout(() => calculateDistance(), 300);
+        });
+        
+        console.log('✅ Google Places Autocomplete initialized');
+      });
+    }
+    
+    function calculateDistance() {
+      const fromInput = form.querySelector('#form-address-departure');
+      const toInput = form.querySelector('#form-address-destination');
+      const distanceInput = form.querySelector('#form-distance');
+      
+      if (!fromInput || !toInput || !distanceInput) return;
+      
+      const fromAddress = fromInput.value.trim();
+      const toAddress = toInput.value.trim();
+      
+      // Validate both addresses are filled
+      if (!fromAddress || !toAddress) {
+        return;
       }
       
-      createAutocomplete(fromInput);
-      createAutocomplete(toInput);
+      // Show loading state
+      distanceInput.placeholder = 'Calcul en cours...';
+      distanceInput.disabled = true;
+      distanceInput.value = '';
+      
+      // Remove existing messages
+      removeDistanceMessage();
+      
+      // Check if Google Maps is available
+      if (!distanceMatrixService || !window.google || !window.google.maps) {
+        distanceInput.placeholder = 'Distance non disponible';
+        distanceInput.disabled = false;
+        showDistanceMessage('Google Maps non disponible. Vous pouvez saisir la distance manuellement.', 'warning');
+        return;
+      }
+      
+      // Calculate distance using Distance Matrix API
+      const request = {
+        origins: [fromAddress],
+        destinations: [toAddress],
+        travelMode: google.maps.TravelMode.DRIVING,
+        unitSystem: google.maps.UnitSystem.METRIC,
+        avoidHighways: false,
+        avoidTolls: false
+      };
+      
+      distanceMatrixService.getDistanceMatrix(request, (response, status) => {
+        if (status === 'OK' && response.rows[0].elements[0].status === 'OK') {
+          const element = response.rows[0].elements[0];
+          const distanceKm = Math.round(element.distance.value / 1000);
+          
+          // Update distance input
+          distanceInput.value = distanceKm;
+          distanceInput.disabled = false;
+          distanceInput.placeholder = 'Calcul automatique...';
+          
+          // Show success message
+          showDistanceMessage(`Distance calculée: ${element.distance.text}`, 'success');
+        } else {
+          // Handle errors
+          distanceInput.placeholder = 'Erreur de calcul';
+          distanceInput.disabled = false;
+          
+          let errorMessage = 'Impossible de calculer la distance.';
+          if (status === 'ZERO_RESULTS') {
+            errorMessage = 'Aucun résultat trouvé pour ces adresses.';
+          } else if (status === 'REQUEST_DENIED') {
+            errorMessage = 'Erreur d\'autorisation. Vérifiez la clé API.';
+          } else if (status === 'OVER_QUERY_LIMIT') {
+            errorMessage = 'Limite de requêtes dépassée.';
+          }
+          
+          showDistanceMessage(errorMessage, 'error');
+          console.error('Distance Matrix error:', status, response);
+        }
+      });
+    }
+    
+    function showDistanceMessage(message, type) {
+      removeDistanceMessage();
+      
+      const distanceInput = form.querySelector('#form-distance');
+      if (!distanceInput) return;
+      
+      const wrapper = distanceInput.closest('.multi-form11_field-wrapper');
+      if (!wrapper) return;
+      
+      const messageEl = document.createElement('div');
+      messageEl.className = `distance-message distance-message-${type}`;
+      messageEl.textContent = message;
+      
+      wrapper.appendChild(messageEl);
+      
+      // Auto-remove after 5 seconds
+      setTimeout(() => {
+        if (messageEl.parentNode) {
+          messageEl.remove();
+        }
+      }, 5000);
+    }
+    
+    function removeDistanceMessage() {
+      const existing = form.querySelector('.distance-message');
+      if (existing) {
+        existing.remove();
+      }
     }
     
     // Initialize
