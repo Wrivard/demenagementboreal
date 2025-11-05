@@ -706,6 +706,12 @@ console.log('🚀 Calculator script loaded');
       const dateInput = form.querySelector('#form-date');
       if (!dateInput) return;
       
+      // Disable browser autocomplete completely for date picker
+      dateInput.setAttribute('autocomplete', 'off');
+      dateInput.setAttribute('data-lpignore', 'true');
+      dateInput.setAttribute('data-form-type', 'other');
+      dateInput.setAttribute('readonly', 'readonly'); // Prevent browser autocomplete
+        
       // Check if Flatpickr is available
       if (typeof flatpickr === 'undefined') {
         console.warn('⚠️ Flatpickr not loaded, date picker will not work');
@@ -718,16 +724,22 @@ console.log('🚀 Calculator script loaded');
           locale: 'fr',
           dateFormat: 'd/m/Y',
           minDate: 'today',
-          allowInput: true,
+          allowInput: false, // Disable manual input to prevent browser autocomplete
           clickOpens: true,
           placeholder: 'Sélectionner une date',
           monthSelectorType: 'static',
-          altInput: false
+          altInput: false,
+          disableMobile: false // Keep mobile calendar
         });
+        
+        // Remove readonly after Flatpickr initialization (it will handle input)
+        dateInput.removeAttribute('readonly');
         
         console.log('✅ Date picker initialized');
       } catch (error) {
         console.error('❌ Error initializing date picker:', error);
+        // Re-enable input if Flatpickr fails
+        dateInput.removeAttribute('readonly');
       }
     }
     

@@ -891,3 +891,21 @@ label.w-checkbox.form_checkbox-btn {
   z-index: 0;
 }
 
+/* Disable browser autocomplete dropdown for date picker */
+input.date-picker-input::-webkit-calendar-picker-indicator {
+  display: none !important;
+}
+
+input.date-picker-input::-webkit-inner-spin-button,
+input.date-picker-input::-webkit-outer-spin-button {
+  display: none !important;
+}
+
+/* Hide browser autocomplete suggestions */
+input.date-picker-input:-webkit-autofill,
+input.date-picker-input:-webkit-autofill:hover,
+input.date-picker-input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+  -webkit-text-fill-color: #1a1a1a !important;
+}
+
