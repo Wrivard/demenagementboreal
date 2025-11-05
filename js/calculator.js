@@ -67,6 +67,15 @@ console.log('🚀 Calculator script loaded');
         }
       }
       
+      // Initialize address autocomplete when step 4 is shown
+      if (step === 4) {
+        console.log('📍 Step 4 shown, initializing address autocomplete...');
+        // Small delay to ensure DOM is ready
+        setTimeout(() => {
+          initAddressAutocomplete();
+        }, 100);
+      }
+      
       // Update progress bar - scale with current step
       // Try multiple selectors to find the progress bar
       let progressBar = form.querySelector('#progress-indicator');
@@ -650,12 +659,26 @@ console.log('🚀 Calculator script loaded');
               console.log('🔑 Google Maps.places:', window.google.maps.places ? 'exists' : 'missing');
               console.log('🔑 Google Maps.places.Autocomplete:', window.google.maps.places.Autocomplete ? 'exists' : 'missing');
               
+              // Re-check inputs exist at this point
+              if (!fromInput || !toInput) {
+                console.error('❌ Address inputs not found when initializing autocomplete');
+                return;
+              }
+              
               // Initialize Google Places Autocomplete - following CALCULATOR_KM_CALCULATION_AND_STYLING.md
               const options = {
                 componentRestrictions: { country: 'ca' },
                 fields: ['formatted_address', 'geometry'],
                 types: ['address']
               };
+              
+              // Clear any existing autocomplete instances
+              if (fromAutocomplete) {
+                google.maps.event.clearInstanceListeners(fromInput);
+              }
+              if (toAutocomplete) {
+                google.maps.event.clearInstanceListeners(toInput);
+              }
               
               fromAutocomplete = new google.maps.places.Autocomplete(fromInput, options);
               toAutocomplete = new google.maps.places.Autocomplete(toInput, options);
@@ -665,6 +688,8 @@ console.log('🚀 Calculator script loaded');
               
               console.log('✅ Google Places Autocomplete initialized');
               console.log('✅ Distance Matrix Service initialized');
+              console.log('✅ From input:', fromInput);
+              console.log('✅ To input:', toInput);
               
               // Listen for place selection on "from" address - following guide
               fromAutocomplete.addListener('place_changed', () => {
