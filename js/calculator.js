@@ -90,16 +90,22 @@ console.log('🚀 Calculator script loaded');
         const progress = (step / 5) * 100;
         
         // Force update with !important to override any conflicting styles
+        // Set width both as inline style and CSS variable
         progressBar.style.setProperty('width', progress + '%', 'important');
+        progressBar.style.setProperty('--progress-width', progress + '%', 'important');
         progressBar.style.setProperty('display', 'block', 'important');
         progressBar.style.setProperty('background-color', '#72adcb', 'important');
         progressBar.style.setProperty('height', '100%', 'important');
         progressBar.style.setProperty('border-radius', '4px', 'important');
         progressBar.setAttribute('data-progress', progress);
         
+        // Force a reflow to ensure the width is applied
+        void progressBar.offsetWidth;
+        
         console.log(`Progress: ${progress}% (step ${step}/${totalSteps})`);
         console.log('Progress bar element:', progressBar);
         console.log('Progress bar computed width:', window.getComputedStyle(progressBar).width);
+        console.log('Progress bar inline style width:', progressBar.style.width);
       } else {
         console.warn('Progress bar not found. Searching for:', [
           '#progress-indicator',

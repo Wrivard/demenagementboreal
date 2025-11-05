@@ -273,6 +273,14 @@
   border-radius: 4px !important;
   display: block !important;
   min-width: 0 !important;
+  max-width: 100% !important;
+  width: auto !important; /* Let JavaScript set the width dynamically */
+}
+
+/* Force width to be set by JavaScript, not CSS */
+.multi-form11_progress-bar[data-form="progress-indicator"][data-progress],
+#progress-indicator[data-progress] {
+  width: var(--progress-width, 20%) !important;
 }
 
 .multi-form11_progress-bar.current {
