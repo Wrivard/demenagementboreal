@@ -62,14 +62,14 @@ document.addEventListener('DOMContentLoaded', function() {
       
       if (!input || !badge || !label) return;
       
-      // Clean styling with better colors
+      // Clean styling with better colors and contrast
       radio.style.cssText = `
         display: flex !important;
         align-items: center !important;
         padding: 20px !important;
         margin: 10px 0 !important;
-        background: rgba(255, 255, 255, 0.05) !important;
-        border: 2px solid rgba(255, 255, 255, 0.2) !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+        border: 2px solid rgba(255, 255, 255, 0.4) !important;
         border-radius: 12px !important;
         cursor: pointer !important;
         transition: all 0.3s ease !important;
@@ -79,20 +79,21 @@ document.addEventListener('DOMContentLoaded', function() {
         width: 36px !important;
         height: 36px !important;
         margin-right: 16px !important;
-        background: rgba(255, 255, 255, 0.1) !important;
-        border: 2px solid rgba(255, 255, 255, 0.3) !important;
+        background: rgba(255, 255, 255, 0.15) !important;
+        border: 2px solid rgba(255, 255, 255, 0.5) !important;
         border-radius: 8px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        color: white !important;
+        color: #ffffff !important;
         font-weight: 600 !important;
         transition: all 0.3s ease !important;
       `;
       
       label.style.cssText = `
-        color: white !important;
+        color: #ffffff !important;
         font-size: 16px !important;
+        font-weight: 500 !important;
       `;
       
       // Handle selection
@@ -125,20 +126,21 @@ document.addEventListener('DOMContentLoaded', function() {
               
               if (otherOption) {
                 otherOption.style.cssText += `
-                  background: rgba(255, 255, 255, 0.05) !important;
-                  border-color: rgba(255, 255, 255, 0.2) !important;
+                  background: rgba(255, 255, 255, 0.1) !important;
+                  border-color: rgba(255, 255, 255, 0.4) !important;
                   box-shadow: none !important;
                 `;
               }
               if (otherBadge) {
                 otherBadge.style.cssText += `
-                  background: rgba(255, 255, 255, 0.1) !important;
-                  border-color: rgba(255, 255, 255, 0.3) !important;
-                  color: white !important;
+                  background: rgba(255, 255, 255, 0.15) !important;
+                  border-color: rgba(255, 255, 255, 0.5) !important;
+                  color: #ffffff !important;
                 `;
               }
               if (otherLabel) {
                 otherLabel.style.cssText += `
+                  color: #ffffff !important;
                   font-weight: 500 !important;
                 `;
               }
@@ -208,33 +210,55 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
   
-  // Find and setup buttons - try multiple selectors
-  const nextBtn = form.querySelector('.multi-form11_button.is-next') || 
-                  form.querySelector('button[type="button"]:not(.is-back)') ||
-                  form.querySelector('.form-next-btn') ||
-                  form.querySelector('.button:not(.is-secondary)');
-  const backBtn = form.querySelector('.multi-form11_button.is-back') ||
-                  form.querySelector('.form-back-btn');
-  
-  if (nextBtn) {
-    nextBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      goNext();
+  // Find and setup buttons - try multiple selectors for each step
+  function setupButtons() {
+    // Find all next buttons in the form
+    const allNextBtns = form.querySelectorAll('.form-next-btn, button[type="button"]:not(.is-back), .button:not(.is-secondary):not(.is-back)');
+    const allBackBtns = form.querySelectorAll('.form-back-btn, .button.is-secondary, .multi-form11_button.is-back');
+    
+    console.log(`Found ${allNextBtns.length} next buttons and ${allBackBtns.length} back buttons`);
+    
+    // Setup all next buttons
+    allNextBtns.forEach((btn, index) => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        console.log(`Next button ${index} clicked`);
+        goNext();
+      });
     });
-    console.log('✅ Next button found and connected');
-  } else {
-    console.log('❌ Next button not found');
+    
+    // Setup all back buttons
+    allBackBtns.forEach((btn, index) => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        console.log(`Back button ${index} clicked`);
+        goBack();
+      });
+    });
+    
+    if (allNextBtns.length > 0) {
+      console.log('✅ Next buttons connected');
+    } else {
+      console.log('❌ No next buttons found');
+    }
+    
+    if (allBackBtns.length > 0) {
+      console.log('✅ Back buttons connected');
+    }
   }
   
-  if (backBtn) {
-    backBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      goBack();
-    });
-    console.log('✅ Back button found and connected');
-  } else {
-    console.log('❌ Back button not found');
-  }
+  // Setup buttons
+  setupButtons();
+  
+  // Re-setup buttons when step changes
+  const originalShowStep = showStep;
+  showStep = function(step) {
+    originalShowStep(step);
+    setTimeout(() => {
+      setupButtons(); // Re-setup buttons for new step
+      styleRadios(); // Re-apply styles
+    }, 50);
+  };
   
   // Initialize
   styleRadios();
