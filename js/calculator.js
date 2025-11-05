@@ -412,6 +412,36 @@ console.log('🚀 Calculator script loaded');
     let toAutocomplete = null;
     let distanceMatrixService = null;
     
+    function showDistanceMessage(message, type) {
+      removeDistanceMessage();
+      
+      const distanceInput = form.querySelector('#form-distance');
+      if (!distanceInput) return;
+      
+      const wrapper = distanceInput.closest('.multi-form11_field-wrapper');
+      if (!wrapper) return;
+      
+      const messageEl = document.createElement('div');
+      messageEl.className = `distance-message distance-message-${type}`;
+      messageEl.textContent = message;
+      
+      wrapper.appendChild(messageEl);
+      
+      // Auto-remove after 5 seconds
+      setTimeout(() => {
+        if (messageEl.parentNode) {
+          messageEl.remove();
+        }
+      }, 5000);
+    }
+    
+    function removeDistanceMessage() {
+      const existing = form.querySelector('.distance-message');
+      if (existing) {
+        existing.remove();
+      }
+    }
+    
     async function loadGoogleMapsAPI() {
       if (googleMapsLoaded) return true;
       
@@ -593,36 +623,6 @@ console.log('🚀 Calculator script loaded');
           console.error('Distance Matrix error:', status, response);
         }
       });
-    }
-    
-    function showDistanceMessage(message, type) {
-      removeDistanceMessage();
-      
-      const distanceInput = form.querySelector('#form-distance');
-      if (!distanceInput) return;
-      
-      const wrapper = distanceInput.closest('.multi-form11_field-wrapper');
-      if (!wrapper) return;
-      
-      const messageEl = document.createElement('div');
-      messageEl.className = `distance-message distance-message-${type}`;
-      messageEl.textContent = message;
-      
-      wrapper.appendChild(messageEl);
-      
-      // Auto-remove after 5 seconds
-      setTimeout(() => {
-        if (messageEl.parentNode) {
-          messageEl.remove();
-        }
-      }, 5000);
-    }
-    
-    function removeDistanceMessage() {
-      const existing = form.querySelector('.distance-message');
-      if (existing) {
-        existing.remove();
-      }
     }
     
     // Initialize
