@@ -85,8 +85,9 @@ console.log('🚀 Calculator script loaded');
       }
       
       if (progressBar) {
-        // Calculate progress: step 1 = 20%, step 2 = 40%, step 3 = 60%, step 4 = 80%, step 5 = 100%
-        const progress = (step / totalSteps) * 100;
+        // Calculate progress: step 1 = 20%, step 2 = 40%, step 3 = 60%, step 4 = 80%
+        // Use 5 as denominator to get 20%, 40%, 60%, 80% for steps 1-4
+        const progress = (step / 5) * 100;
         
         // Force update with !important to override any conflicting styles
         progressBar.style.setProperty('width', progress + '%', 'important');
