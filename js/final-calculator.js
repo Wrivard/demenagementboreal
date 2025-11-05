@@ -62,30 +62,32 @@ document.addEventListener('DOMContentLoaded', function() {
       
       if (!input || !badge || !label) return;
       
-      // Clean styling
+      // Clean styling with better colors
       radio.style.cssText = `
         display: flex !important;
         align-items: center !important;
         padding: 20px !important;
         margin: 10px 0 !important;
-        background: #2a2a2a !important;
-        border: 2px solid #555 !important;
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 2px solid rgba(255, 255, 255, 0.2) !important;
         border-radius: 12px !important;
         cursor: pointer !important;
+        transition: all 0.3s ease !important;
       `;
       
       badge.style.cssText = `
         width: 36px !important;
         height: 36px !important;
         margin-right: 16px !important;
-        background: #1a1a1a !important;
-        border: 2px solid #555 !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+        border: 2px solid rgba(255, 255, 255, 0.3) !important;
         border-radius: 8px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         color: white !important;
         font-weight: 600 !important;
+        transition: all 0.3s ease !important;
       `;
       
       label.style.cssText = `
@@ -98,14 +100,16 @@ document.addEventListener('DOMContentLoaded', function() {
         if (this.checked) {
           console.log(`Radio selected: ${this.name} = ${this.value}`);
           
-          // Style selected
+          // Style selected with nice blue
           radio.style.cssText += `
-            background: rgba(114, 173, 203, 0.15) !important;
+            background: rgba(114, 173, 203, 0.2) !important;
             border-color: #72adcb !important;
+            box-shadow: 0 0 0 3px rgba(114, 173, 203, 0.3) !important;
           `;
           badge.style.cssText += `
             background: #72adcb !important;
             border-color: #72adcb !important;
+            color: white !important;
           `;
           label.style.cssText += `
             font-weight: 600 !important;
@@ -121,14 +125,16 @@ document.addEventListener('DOMContentLoaded', function() {
               
               if (otherOption) {
                 otherOption.style.cssText += `
-                  background: #2a2a2a !important;
-                  border-color: #555 !important;
+                  background: rgba(255, 255, 255, 0.05) !important;
+                  border-color: rgba(255, 255, 255, 0.2) !important;
+                  box-shadow: none !important;
                 `;
               }
               if (otherBadge) {
                 otherBadge.style.cssText += `
-                  background: #1a1a1a !important;
-                  border-color: #555 !important;
+                  background: rgba(255, 255, 255, 0.1) !important;
+                  border-color: rgba(255, 255, 255, 0.3) !important;
+                  color: white !important;
                 `;
               }
               if (otherLabel) {
@@ -202,9 +208,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
   
-  // Find and setup buttons
-  const nextBtn = form.querySelector('.multi-form11_button.is-next, button[type="button"]:not(.is-back)');
-  const backBtn = form.querySelector('.multi-form11_button.is-back');
+  // Find and setup buttons - try multiple selectors
+  const nextBtn = form.querySelector('.multi-form11_button.is-next') || 
+                  form.querySelector('button[type="button"]:not(.is-back)') ||
+                  form.querySelector('.form-next-btn') ||
+                  form.querySelector('.button:not(.is-secondary)');
+  const backBtn = form.querySelector('.multi-form11_button.is-back') ||
+                  form.querySelector('.form-back-btn');
   
   if (nextBtn) {
     nextBtn.addEventListener('click', function(e) {
