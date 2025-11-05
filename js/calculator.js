@@ -299,15 +299,15 @@ console.log('🚀 Calculator script loaded');
             font-weight: 600;
           `;
         } else {
-          // Unselected state - good contrast
+          // Unselected state - dark background for excellent contrast
           radio.style.cssText += `
-            background: rgba(255, 255, 255, 0.12);
-            border-color: rgba(255, 255, 255, 0.35);
+            background: #2a2a2a;
+            border-color: rgba(255, 255, 255, 0.4);
             box-shadow: none;
           `;
           badge.style.cssText += `
-            background: rgba(255, 255, 255, 0.18);
-            border-color: rgba(255, 255, 255, 0.45);
+            background: #1a1a1a;
+            border-color: rgba(255, 255, 255, 0.5);
             color: #ffffff;
           `;
           label.style.cssText += `
