@@ -348,10 +348,184 @@ console.log('🚀 Calculator script loaded');
       });
     }
     
+    // Style checkboxes with visible checkmarks
+    function styleCheckboxes() {
+      const checkboxes = form.querySelectorAll('.form_checkbox-btn, .w-checkbox');
+      
+      checkboxes.forEach(checkbox => {
+        const input = checkbox.querySelector('input[type="checkbox"]');
+        const icon = checkbox.querySelector('.w-checkbox-input, .form_checkbox-icon');
+        
+        if (!input || !icon) return;
+        
+        // Ensure checkbox has good contrast
+        checkbox.style.cssText += `
+          background: #2a2a2a;
+          border: 2px solid rgba(255, 255, 255, 0.4);
+          padding: 18px 20px;
+          margin: 10px 0;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+        `;
+        
+        icon.style.cssText = `
+          width: 24px;
+          height: 24px;
+          margin-right: 12px;
+          background: #1a1a1a;
+          border: 2px solid rgba(255, 255, 255, 0.5);
+          border-radius: 6px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          position: relative;
+        `;
+        
+        // Update checkbox state
+        function updateCheckbox() {
+          if (input.checked) {
+            icon.style.cssText += `
+              background: #72adcb;
+              border-color: #72adcb;
+            `;
+            // Add visible checkmark SVG
+            icon.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.5 3.5L5 10L2.5 7.5" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+          } else {
+            icon.style.cssText += `
+              background: #1a1a1a;
+              border-color: rgba(255, 255, 255, 0.5);
+            `;
+            icon.innerHTML = '';
+          }
+        }
+        
+        input.addEventListener('change', updateCheckbox);
+        updateCheckbox();
+      });
+    }
+    
+    // Simple address autocomplete for step 4
+    function initAddressAutocomplete() {
+      const fromInput = form.querySelector('#form-address-departure');
+      const toInput = form.querySelector('#form-address-destination');
+      
+      if (!fromInput || !toInput) return;
+      
+      // Simple autocomplete suggestions for Quebec addresses
+      const suggestions = [
+        'Montréal, QC', 'Québec, QC', 'Laval, QC', 'Gatineau, QC',
+        'Sherbrooke, QC', 'Saguenay, QC', 'Trois-Rivières, QC',
+        'Saint-Jean-sur-Richelieu, QC', 'Drummondville, QC', 'Granby, QC',
+        'Montréal-Nord, QC', 'Longueuil, QC', 'Repentigny, QC', 'Brossard, QC'
+      ];
+      
+      function createAutocomplete(input) {
+        let suggestionsList = null;
+        
+        input.addEventListener('input', function() {
+          const value = this.value.toLowerCase();
+          
+          // Remove existing suggestions
+          if (suggestionsList) {
+            suggestionsList.remove();
+          }
+          
+          if (value.length < 2) return;
+          
+          // Filter suggestions
+          const filtered = suggestions.filter(s => s.toLowerCase().includes(value));
+          
+          if (filtered.length === 0) return;
+          
+          // Create suggestions list
+          suggestionsList = document.createElement('div');
+          suggestionsList.className = 'address-autocomplete';
+          suggestionsList.style.cssText = `
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #2a2a2a;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            margin-top: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+          `;
+          
+          filtered.forEach(suggestion => {
+            const item = document.createElement('div');
+            item.style.cssText = `
+              padding: 12px 16px;
+              cursor: pointer;
+              color: #ffffff;
+              border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+              transition: background 0.2s;
+            `;
+            item.textContent = suggestion;
+            
+            item.addEventListener('mouseenter', function() {
+              this.style.background = 'rgba(114, 173, 203, 0.2)';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+              this.style.background = 'transparent';
+            });
+            
+            item.addEventListener('click', function() {
+              input.value = suggestion;
+              if (suggestionsList) {
+                suggestionsList.remove();
+              }
+              suggestionsList = null;
+            });
+            
+            suggestionsList.appendChild(item);
+          });
+          
+          const wrapper = input.closest('.multi-form11_field-wrapper');
+          if (wrapper) {
+            wrapper.style.position = 'relative';
+            wrapper.appendChild(suggestionsList);
+          }
+        });
+        
+        // Close on outside click
+        document.addEventListener('click', function(e) {
+          if (suggestionsList && !suggestionsList.contains(e.target) && e.target !== input) {
+            suggestionsList.remove();
+            suggestionsList = null;
+          }
+        });
+      }
+      
+      createAutocomplete(fromInput);
+      createAutocomplete(toInput);
+    }
+    
     // Initialize
     styleRadios();
+    styleCheckboxes();
     showStep(1);
     setupButtons();
+    
+    // Re-setup on step change
+    const originalShowStep = showStep;
+    showStep = function(step) {
+      originalShowStep(step);
+      setTimeout(() => {
+        setupButtons();
+        styleRadios();
+        styleCheckboxes();
+        if (step === 4) {
+          initAddressAutocomplete();
+        }
+      }, 100);
+    };
     
     console.log('✅ Calculator initialized');
   }
