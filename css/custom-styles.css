@@ -787,6 +787,18 @@ div.multi-form11_form .custom-radio-option:has(input[type="radio"]:checked) {
   margin-right: 8px;
 }
 
+/* Fix checkbox spacing - Add padding to left */
+.w-checkbox-input.w-checkbox-input--inputType-custom.form_checkbox-icon.w--redirected-checked,
+.w-checkbox-input.w-checkbox-input--inputType-custom.form_checkbox-icon {
+  padding-left: 12px !important;
+  margin-left: 12px !important;
+}
+
+.form_checkbox-btn,
+.w-checkbox.form_checkbox-btn {
+  padding-left: 32px !important;
+}
+
 /* ============================================
    Distance Calculation Message Styling
    ============================================ */
