@@ -67,11 +67,15 @@ console.log('🚀 Calculator script loaded');
         }
       }
       
-      // Update progress
-      const progressBar = form.querySelector('#progress-indicator');
+      // Update progress bar - calculate percentage correctly
+      const progressBar = form.querySelector('#progress-indicator, .multi-form11_progress-bar[id="progress-indicator"]');
       if (progressBar) {
+        // Calculate progress: step 1 = 20%, step 2 = 40%, step 3 = 60%, step 4 = 80%, step 5 = 100%
         const progress = (step / totalSteps) * 100;
         progressBar.style.width = progress + '%';
+        console.log(`Progress: ${progress}% (step ${step}/${totalSteps})`);
+      } else {
+        console.warn('Progress bar not found');
       }
       
       // Update step text
@@ -390,8 +394,8 @@ console.log('🚀 Calculator script loaded');
               background: #72adcb;
               border-color: #72adcb;
             `;
-            // Add visible checkmark SVG - white on blue
-            icon.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.5 3.5L5 10L2.5 7.5" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+            // Add visible checkmark SVG - white checkmark on blue background
+            icon.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 4L6 11L3 8" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
           } else {
             icon.style.cssText += `
               background: #f5f5f5;
@@ -501,54 +505,72 @@ console.log('🚀 Calculator script loaded');
       
       // Load Google Maps API first
       loadGoogleMapsAPI().then(loaded => {
-        if (!loaded || !window.google || !window.google.maps) {
+        if (!loaded) {
           // Fallback: allow manual distance entry
           distanceInput.removeAttribute('readonly');
           distanceInput.placeholder = 'Saisissez la distance manuellement (km)';
           return;
         }
         
-        // Initialize Google Places Autocomplete
-        const options = {
-          componentRestrictions: { country: 'ca' },
-          fields: ['formatted_address', 'geometry'],
-          types: ['address']
+        // Wait for Google Maps to be fully loaded
+        const checkGoogleMaps = () => {
+          if (window.google && window.google.maps && window.google.maps.places) {
+            // Initialize Google Places Autocomplete
+            const options = {
+              componentRestrictions: { country: 'ca' },
+              fields: ['formatted_address', 'geometry'],
+              types: ['address']
+            };
+            
+            try {
+              fromAutocomplete = new google.maps.places.Autocomplete(fromInput, options);
+              toAutocomplete = new google.maps.places.Autocomplete(toInput, options);
+              
+              // Initialize Distance Matrix Service
+              distanceMatrixService = new google.maps.DistanceMatrixService();
+              
+              console.log('✅ Google Places Autocomplete initialized');
+              
+              // Listen for place selection on "from" address
+              fromAutocomplete.addListener('place_changed', () => {
+                const place = fromAutocomplete.getPlace();
+                if (place.formatted_address) {
+                  fromInput.value = place.formatted_address;
+                  calculateDistance();
+                }
+              });
+              
+              // Listen for place selection on "to" address
+              toAutocomplete.addListener('place_changed', () => {
+                const place = toAutocomplete.getPlace();
+                if (place.formatted_address) {
+                  toInput.value = place.formatted_address;
+                  calculateDistance();
+                }
+              });
+              
+              // Also calculate on blur events
+              fromInput.addEventListener('blur', () => {
+                setTimeout(() => calculateDistance(), 300);
+              });
+              
+              toInput.addEventListener('blur', () => {
+                setTimeout(() => calculateDistance(), 300);
+              });
+            } catch (error) {
+              console.error('Error initializing Google Places Autocomplete:', error);
+              distanceInput.removeAttribute('readonly');
+              distanceInput.placeholder = 'Saisissez la distance manuellement (km)';
+              showDistanceMessage('Erreur d\'initialisation de Google Places. Vous pouvez saisir la distance manuellement.', 'warning');
+            }
+          } else {
+            // Retry after a short delay
+            setTimeout(checkGoogleMaps, 100);
+          }
         };
         
-        fromAutocomplete = new google.maps.places.Autocomplete(fromInput, options);
-        toAutocomplete = new google.maps.places.Autocomplete(toInput, options);
+        checkGoogleMaps();
         
-        // Initialize Distance Matrix Service
-        distanceMatrixService = new google.maps.DistanceMatrixService();
-        
-        // Listen for place selection on "from" address
-        fromAutocomplete.addListener('place_changed', () => {
-          const place = fromAutocomplete.getPlace();
-          if (place.formatted_address) {
-            fromInput.value = place.formatted_address;
-            calculateDistance();
-          }
-        });
-        
-        // Listen for place selection on "to" address
-        toAutocomplete.addListener('place_changed', () => {
-          const place = toAutocomplete.getPlace();
-          if (place.formatted_address) {
-            toInput.value = place.formatted_address;
-            calculateDistance();
-          }
-        });
-        
-        // Also calculate on blur events
-        fromInput.addEventListener('blur', () => {
-          setTimeout(() => calculateDistance(), 300);
-        });
-        
-        toInput.addEventListener('blur', () => {
-          setTimeout(() => calculateDistance(), 300);
-        });
-        
-        console.log('✅ Google Places Autocomplete initialized');
       });
     }
     
