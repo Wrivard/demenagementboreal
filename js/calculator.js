@@ -473,11 +473,27 @@ console.log('🚀 Calculator script loaded');
         const apiKey = data.apiKey;
         console.log('✅ API key received, length:', apiKey.length);
         
-        // Load Google Maps JavaScript API
-        return new Promise((resolve, reject) => {
+        // Check if Google Maps is already loaded (possibly without API key)
+        const existingScripts = document.querySelectorAll('script[src*="maps.googleapis.com"]');
+        if (existingScripts.length > 0) {
+          console.warn('⚠️ Google Maps script already exists, removing old scripts...');
+          existingScripts.forEach(script => {
+            console.log('Removing script:', script.src);
+            script.remove();
+          });
+          // Reset google object if it exists
           if (window.google && window.google.maps) {
+            delete window.google;
+            console.log('🔄 Reset window.google object');
+          }
+        }
+        
+        // Load Google Maps JavaScript API with API key
+        return new Promise((resolve, reject) => {
+          // Double check - if Google Maps is already loaded with API key, we're good
+          if (window.google && window.google.maps && window.google.maps.places) {
+            console.log('✅ Google Maps already loaded with Places library');
             googleMapsLoaded = true;
-            console.log('✅ Google Maps already loaded');
             resolve(true);
             return;
           }
@@ -488,17 +504,23 @@ console.log('🚀 Calculator script loaded');
           script.async = true;
           script.defer = true;
           
-          console.log('📜 Loading Google Maps script with API key...');
+          console.log('📜 Loading Google Maps script with API key:', scriptUrl.substring(0, 80) + '...');
           
           script.onload = () => {
             googleMapsLoaded = true;
-            console.log('✅ Google Maps API loaded successfully');
+            console.log('✅ Google Maps API loaded successfully with API key');
+            if (window.google && window.google.maps && window.google.maps.places) {
+              console.log('✅ Google Places library confirmed loaded');
+            } else {
+              console.warn('⚠️ Google Maps loaded but Places library not available');
+            }
             resolve(true);
           };
           
           script.onerror = (error) => {
             console.error('❌ Failed to load Google Maps API script:', error);
-            showDistanceMessage('Erreur de chargement de Google Maps. Vous pouvez saisir la distance manuellement.', 'warning');
+            console.error('❌ This might be due to an ad-blocker blocking Google Maps');
+            showDistanceMessage('Erreur de chargement de Google Maps. Vérifiez votre ad-blocker. Vous pouvez saisir la distance manuellement.', 'warning');
             reject(false);
           };
           
