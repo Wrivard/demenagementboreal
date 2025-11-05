@@ -196,21 +196,41 @@
   box-shadow: 0 0 0 2px rgba(114, 173, 203, 0.2) !important;
 }
 
-/* Flatpickr calendar styling */
+/* Flatpickr calendar styling - modern white theme */
 .flatpickr-calendar {
-  background: var(--color-scheme-2--background, #1a1a1a) !important;
-  border: 1px solid var(--color-scheme-2--border, #555555) !important;
-  color: var(--color-scheme-2--text, #ffffff) !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.15) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1) !important;
+  color: #1a1a1a !important;
+  font-family: inherit !important;
 }
 
 .flatpickr-day.selected {
-  background: var(--color-scheme-2--accent, #f58220) !important;
-  color: var(--color-scheme-2--text, #ffffff) !important;
-  border-color: var(--color-scheme-2--accent, #f58220) !important;
+  background: #72adcb !important;
+  color: #ffffff !important;
+  border-color: #72adcb !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 8px rgba(114, 173, 203, 0.3) !important;
+}
+
+.flatpickr-day.today {
+  border-color: #72adcb !important;
+  color: #72adcb !important;
+  background: rgba(114, 173, 203, 0.1) !important;
 }
 
 .flatpickr-day:hover {
-  background: var(--color-scheme-2--foreground, #2a2a2a) !important;
+  background: #f8fafc !important;
+}
+
+.flatpickr-month {
+  color: #1a1a1a !important;
+}
+
+.flatpickr-weekday {
+  color: #64748b !important;
+  font-weight: 600 !important;
 }
 
 /* Quote result styling */
@@ -233,8 +253,25 @@
 }
 
 /* Progress bar animation */
+.multi-form11_progress-bar[data-form="progress-indicator"],
 #progress-indicator {
-  transition: width 0.3s ease;
+  transition: width 0.3s ease !important;
+  background-color: #72adcb !important;
+  height: 100% !important;
+  border-radius: 4px !important;
+}
+
+.multi-form11_progress {
+  position: relative;
+  width: 100%;
+  height: 8px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.multi-form11_progress-bar.current {
+  display: none !important;
 }
 
 /* ============================================

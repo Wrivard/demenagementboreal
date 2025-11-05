@@ -68,15 +68,29 @@ console.log('🚀 Calculator script loaded');
       }
       
       // Update progress bar - scale with current step
-      const progressBar = form.querySelector('[data-form="progress-indicator"], #progress-indicator');
+      const progressBar = form.querySelector('[data-form="progress-indicator"], #progress-indicator, .multi-form11_progress-bar[id="progress-indicator"]');
       if (progressBar) {
         // Calculate progress: step 1 = 20%, step 2 = 40%, step 3 = 60%, step 4 = 80%, step 5 = 100%
         const progress = (step / totalSteps) * 100;
-        progressBar.style.width = progress + '%';
+        
+        // Force update with !important to override any conflicting styles
+        progressBar.style.setProperty('width', progress + '%', 'important');
+        progressBar.style.setProperty('display', 'block', 'important');
+        progressBar.style.setProperty('background-color', '#72adcb', 'important');
         progressBar.setAttribute('data-progress', progress);
+        
         console.log(`Progress: ${progress}% (step ${step}/${totalSteps})`);
       } else {
-        console.warn('Progress bar not found');
+        console.warn('Progress bar not found. Searching for:', [
+          '[data-form="progress-indicator"]',
+          '#progress-indicator',
+          '.multi-form11_progress-bar[id="progress-indicator"]'
+        ]);
+        // Try to find progress wrapper
+        const progressWrapper = form.querySelector('.multi-form11_progress');
+        if (progressWrapper) {
+          console.warn('Found progress wrapper but not indicator');
+        }
       }
       
       // Update step text
@@ -687,11 +701,42 @@ console.log('🚀 Calculator script loaded');
       });
     }
     
+    // Initialize Flatpickr date picker
+    function initDatePicker() {
+      const dateInput = form.querySelector('#form-date');
+      if (!dateInput) return;
+      
+      // Check if Flatpickr is available
+      if (typeof flatpickr === 'undefined') {
+        console.warn('⚠️ Flatpickr not loaded, date picker will not work');
+        return;
+      }
+      
+      try {
+        // Initialize Flatpickr with French locale
+        const datePicker = flatpickr(dateInput, {
+          locale: 'fr',
+          dateFormat: 'd/m/Y',
+          minDate: 'today',
+          allowInput: true,
+          clickOpens: true,
+          placeholder: 'Sélectionner une date',
+          monthSelectorType: 'static',
+          altInput: false
+        });
+        
+        console.log('✅ Date picker initialized');
+      } catch (error) {
+        console.error('❌ Error initializing date picker:', error);
+      }
+    }
+    
     // Initialize
     styleRadios();
     styleCheckboxes();
     showStep(1);
     setupButtons();
+    initDatePicker();
     
     // Load Google Maps API immediately on initialization (not just on step 4)
     // This ensures Google Maps is loaded with API key before any other script tries to use it
@@ -716,6 +761,8 @@ console.log('🚀 Calculator script loaded');
         styleCheckboxes();
         if (step === 4) {
           initAddressAutocomplete();
+          // Re-initialize date picker if needed
+          initDatePicker();
         }
       }, 100);
     };
