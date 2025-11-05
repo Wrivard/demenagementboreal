@@ -1252,7 +1252,16 @@ margin: 0rem !important;
   <div class="st_wrapper"></div>
   <script src="js/webflow.js" type="text/javascript"></script>
   <script src="js/fab-buttons.js"></script>
-  <!-- Clean calculator script - no Google Maps errors -->
-  <script src="js/clean-calculator.js"></script>
+  <!-- Test script loading -->
+  <script>
+    console.log('🔴 BEFORE clean-calculator.js load');
+    console.log('Current time:', new Date().toISOString());
+  </script>
+  <!-- Test script to verify loading works -->
+  <script src="js/test-script.js"></script>
+  <script>
+    console.log('🟢 AFTER clean-calculator.js load');
+    console.log('Script should have loaded');
+  </script>
 </body>
 </html>
