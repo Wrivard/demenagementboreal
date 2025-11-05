@@ -216,14 +216,14 @@ console.log('🚀 Calculator script loaded');
         
         if (!input || !badge || !label) return;
         
-        // Base styles with EXCELLENT contrast - dark background
+        // Base styles with white background and excellent contrast
         radio.style.cssText = `
           display: flex;
           align-items: center;
           padding: 20px;
           margin: 0 0 16px 0;
-          background: #2a2a2a;
-          border: 2px solid rgba(255, 255, 255, 0.4);
+          background: #ffffff;
+          border: 2px solid rgba(0, 0, 0, 0.15);
           border-radius: 12px;
           cursor: pointer;
           transition: all 0.3s ease;
@@ -234,13 +234,13 @@ console.log('🚀 Calculator script loaded');
           width: 36px;
           height: 36px;
           margin-right: 16px;
-          background: #1a1a1a;
-          border: 2px solid rgba(255, 255, 255, 0.5);
+          background: #f5f5f5;
+          border: 2px solid rgba(0, 0, 0, 0.2);
           border-radius: 8px;
           display: flex;
           align-items: center;
           justify-content: center;
-          color: #ffffff;
+          color: #333333;
           font-weight: 700;
           font-size: 15px;
           flex-shrink: 0;
@@ -249,7 +249,7 @@ console.log('🚀 Calculator script loaded');
         
         label.style.cssText = `
           flex: 1;
-          color: #ffffff;
+          color: #1a1a1a;
           font-size: 16px;
           font-weight: 500;
           line-height: 1.5;
@@ -283,11 +283,11 @@ console.log('🚀 Calculator script loaded');
         if (!input || !badge || !label) return;
         
         if (input.checked) {
-          // Selected state - accent blue color
+          // Selected state - accent blue color on white
           radio.style.cssText += `
-            background: rgba(114, 173, 203, 0.25);
+            background: #ffffff;
             border-color: #72adcb;
-            box-shadow: 0 0 0 3px rgba(114, 173, 203, 0.35);
+            box-shadow: 0 0 0 3px rgba(114, 173, 203, 0.2);
           `;
           badge.style.cssText += `
             background: #72adcb;
@@ -295,23 +295,23 @@ console.log('🚀 Calculator script loaded');
             color: #ffffff;
           `;
           label.style.cssText += `
-            color: #ffffff;
+            color: #1a1a1a;
             font-weight: 600;
           `;
         } else {
-          // Unselected state - dark background for excellent contrast
+          // Unselected state - white background with good contrast
           radio.style.cssText += `
-            background: #2a2a2a;
-            border-color: rgba(255, 255, 255, 0.4);
+            background: #ffffff;
+            border-color: rgba(0, 0, 0, 0.15);
             box-shadow: none;
           `;
           badge.style.cssText += `
-            background: #1a1a1a;
-            border-color: rgba(255, 255, 255, 0.5);
-            color: #ffffff;
+            background: #f5f5f5;
+            border-color: rgba(0, 0, 0, 0.2);
+            color: #333333;
           `;
           label.style.cssText += `
-            color: #ffffff;
+            color: #1a1a1a;
             font-weight: 500;
           `;
         }
@@ -358,10 +358,10 @@ console.log('🚀 Calculator script loaded');
         
         if (!input || !icon) return;
         
-        // Ensure checkbox has good contrast
+        // Ensure checkbox has good contrast with white background
         checkbox.style.cssText += `
-          background: #2a2a2a;
-          border: 2px solid rgba(255, 255, 255, 0.4);
+          background: #ffffff;
+          border: 2px solid rgba(0, 0, 0, 0.15);
           padding: 18px 20px;
           margin: 10px 0;
           border-radius: 12px;
@@ -373,8 +373,8 @@ console.log('🚀 Calculator script loaded');
           width: 24px;
           height: 24px;
           margin-right: 12px;
-          background: #1a1a1a;
-          border: 2px solid rgba(255, 255, 255, 0.5);
+          background: #f5f5f5;
+          border: 2px solid rgba(0, 0, 0, 0.2);
           border-radius: 6px;
           display: flex;
           align-items: center;
@@ -390,12 +390,12 @@ console.log('🚀 Calculator script loaded');
               background: #72adcb;
               border-color: #72adcb;
             `;
-            // Add visible checkmark SVG
+            // Add visible checkmark SVG - white on blue
             icon.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.5 3.5L5 10L2.5 7.5" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
           } else {
             icon.style.cssText += `
-              background: #1a1a1a;
-              border-color: rgba(255, 255, 255, 0.5);
+              background: #f5f5f5;
+              border-color: rgba(0, 0, 0, 0.2);
             `;
             icon.innerHTML = '';
           }
