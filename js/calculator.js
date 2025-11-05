@@ -91,6 +91,11 @@ console.log('🚀 Calculator script loaded');
         
         // Force update with !important to override any conflicting styles
         // Set width both as inline style and CSS variable
+        // Disable flex properties that override width
+        progressBar.style.setProperty('flex', 'none', 'important');
+        progressBar.style.setProperty('flex-grow', '0', 'important');
+        progressBar.style.setProperty('flex-shrink', '0', 'important');
+        progressBar.style.setProperty('flex-basis', 'auto', 'important');
         progressBar.style.setProperty('width', progress + '%', 'important');
         progressBar.style.setProperty('--progress-width', progress + '%', 'important');
         progressBar.style.setProperty('display', 'block', 'important');
@@ -101,6 +106,14 @@ console.log('🚀 Calculator script loaded');
         
         // Force a reflow to ensure the width is applied
         void progressBar.offsetWidth;
+        
+        // Double-check and force width again after reflow
+        const computedWidth = window.getComputedStyle(progressBar).width;
+        if (computedWidth === '100%' || computedWidth === progressBar.parentElement.offsetWidth + 'px') {
+          console.warn('⚠️ Width still 100%, forcing again...');
+          progressBar.style.setProperty('width', progress + '%', 'important');
+          progressBar.style.setProperty('flex', 'none', 'important');
+        }
         
         console.log(`Progress: ${progress}% (step ${step}/${totalSteps})`);
         console.log('Progress bar element:', progressBar);

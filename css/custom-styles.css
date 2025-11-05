@@ -260,8 +260,11 @@
   background-color: #e5e5e5 !important; /* Light gray background to see progress clearly */
   border-radius: 4px;
   overflow: hidden;
-  display: flex;
+  display: flex !important;
   align-items: center;
+  flex-direction: row !important;
+  /* Ensure flex container doesn't force children to grow */
+  justify-content: flex-start !important;
 }
 
 .multi-form11_progress-bar[data-form="progress-indicator"],
@@ -274,6 +277,11 @@
   display: block !important;
   min-width: 0 !important;
   max-width: 100% !important;
+  /* Disable flex: 1 from Webflow CSS to allow width to work */
+  flex: none !important;
+  flex-grow: 0 !important;
+  flex-shrink: 0 !important;
+  flex-basis: auto !important;
   width: auto !important; /* Let JavaScript set the width dynamically */
 }
 
@@ -281,6 +289,7 @@
 .multi-form11_progress-bar[data-form="progress-indicator"][data-progress],
 #progress-indicator[data-progress] {
   width: var(--progress-width, 20%) !important;
+  flex-basis: var(--progress-width, 20%) !important;
 }
 
 .multi-form11_progress-bar.current {
