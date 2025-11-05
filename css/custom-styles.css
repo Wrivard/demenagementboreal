@@ -817,3 +817,40 @@ label.w-checkbox.form_checkbox-btn {
   }
 }
 
+/* ============================================
+   Date Picker Icon Fix
+   ============================================ */
+
+/* Fix calendar icon overlapping text in date input */
+.multi-form11_input-field {
+  position: relative;
+}
+
+.multi-form11_input-field .form-icon-left {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.multi-form11_input-field .date-picker-input {
+  padding-left: 48px !important;
+}
+
+.multi-form11_input-field .form-icon-left .icon-embed-xsmall {
+  width: 20px;
+  height: 20px;
+  color: #64748b;
+}
+
+/* Ensure text doesn't overlap with icon */
+.multi-form11_input-field input.date-picker-input {
+  position: relative;
+  z-index: 0;
+}
+

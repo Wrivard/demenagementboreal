@@ -392,11 +392,11 @@ console.log('🚀 Calculator script loaded');
         function updateCheckbox() {
           if (input.checked) {
             icon.style.cssText += `
-              background: #72adcb;
+              background: #ffffff;
               border-color: #72adcb;
             `;
-            // Add visible checkmark SVG - white checkmark on blue background
-            icon.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 4L6 11L3 8" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+            // Add visible checkmark SVG - accent blue checkmark on white background
+            icon.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 4L6 11L3 8" stroke="#72adcb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
           } else {
             icon.style.cssText += `
               background: #f5f5f5;
