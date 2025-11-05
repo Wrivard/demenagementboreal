@@ -391,27 +391,9 @@
   width: 100%;
 }
 
-/* Force custom radio option styles - target actual HTML structure */
-.custom-radio-option,
-label.custom-radio-option,
-html body .custom-radio-option,
-.w-form .custom-radio-option,
-div.multi-form11_form .custom-radio-option,
-.multi-form11_field-wrapper .custom-radio-option {
-  position: relative !important;
-  display: flex !important;
-  align-items: center !important;
-  width: 100% !important;
-  padding: 18px 20px !important;
-  margin: 0 0 14px 0 !important;
-  background-color: #2a2a2a !important;
-  border: 2px solid #555555 !important;
-  border-radius: 12px !important;
-  cursor: pointer !important;
-  transition: all 0.2s ease !important;
-  box-sizing: border-box !important;
-  overflow: hidden !important;
-  min-height: 60px !important;
+/* Clean radio button styles - let JavaScript handle it */
+.custom-radio-option {
+  /* Base styles will be applied by JavaScript */
 }
 
 /* Ensure background is always visible on dark theme */
@@ -434,27 +416,9 @@ div.multi-form11_form .custom-radio-option,
   z-index: -1;
 }
 
-/* Force custom radio badge styles - target actual HTML structure */
-.custom-radio-badge,
-span.custom-radio-badge,
-html body .custom-radio-badge,
-.w-form .custom-radio-badge,
-div.multi-form11_form .custom-radio-badge,
-.multi-form11_field-wrapper .custom-radio-badge {
-  flex-shrink: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 32px !important;
-  height: 32px !important;
-  margin-right: 12px !important;
-  background-color: #1a1a1a !important;
-  border: 2px solid #555555 !important;
-  border-radius: 8px !important;
-  font-weight: 600 !important;
-  font-size: 14px !important;
-  color: #ffffff !important;
-  transition: all 0.2s ease !important;
+/* Clean radio badge styles - let JavaScript handle it */
+.custom-radio-badge {
+  /* Base styles will be applied by JavaScript */
 }
 
 .custom-radio-label {
