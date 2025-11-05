@@ -533,32 +533,66 @@ console.log('🚀 Calculator script loaded');
           }
           
           const script = document.createElement('script');
-          const scriptUrl = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&language=fr`;
+          const scriptUrl = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&language=fr&callback=initGoogleMapsCallback`;
+          
+          // Verify API key is in URL
+          console.log('📜 Loading Google Maps script with API key');
+          console.log('🔑 API key in URL:', scriptUrl.includes('key=') ? 'YES' : 'NO');
+          console.log('🔑 API key length:', apiKey.length);
+          console.log('🔑 Script URL (first 100 chars):', scriptUrl.substring(0, 100));
+          
+          // Set callback for when Google Maps is loaded
+          window.initGoogleMapsCallback = function() {
+            googleMapsLoaded = true;
+            console.log('✅ Google Maps API loaded successfully via callback');
+            if (window.google && window.google.maps && window.google.maps.places) {
+              console.log('✅ Google Places library confirmed loaded');
+              resolve(true);
+            } else {
+              console.warn('⚠️ Google Maps loaded but Places library not available');
+              reject(false);
+            }
+            delete window.initGoogleMapsCallback;
+          };
+          
           script.src = scriptUrl;
           script.async = true;
           script.defer = true;
           
-          console.log('📜 Loading Google Maps script with API key:', scriptUrl.substring(0, 80) + '...');
-          
           script.onload = () => {
-            googleMapsLoaded = true;
-            console.log('✅ Google Maps API loaded successfully with API key');
-            if (window.google && window.google.maps && window.google.maps.places) {
-              console.log('✅ Google Places library confirmed loaded');
-            } else {
-              console.warn('⚠️ Google Maps loaded but Places library not available');
-            }
-            resolve(true);
+            console.log('✅ Google Maps script loaded');
+            // Wait a bit for callback
+            setTimeout(() => {
+              if (window.google && window.google.maps && window.google.maps.places) {
+                if (!googleMapsLoaded) {
+                  googleMapsLoaded = true;
+                  console.log('✅ Google Maps API loaded successfully (onload fallback)');
+                  resolve(true);
+                }
+              }
+            }, 500);
           };
           
           script.onerror = (error) => {
             console.error('❌ Failed to load Google Maps API script:', error);
+            console.error('❌ Script URL was:', scriptUrl.substring(0, 100) + '...');
             console.error('❌ This might be due to an ad-blocker blocking Google Maps');
+            if (window.initGoogleMapsCallback) {
+              delete window.initGoogleMapsCallback;
+            }
             showDistanceMessage('Erreur de chargement de Google Maps. Vérifiez votre ad-blocker. Vous pouvez saisir la distance manuellement.', 'warning');
             reject(false);
           };
           
-          document.head.appendChild(script);
+          // Insert script at the beginning of head to ensure it loads first
+          const firstScript = document.head.querySelector('script');
+          if (firstScript) {
+            document.head.insertBefore(script, firstScript);
+          } else {
+            document.head.appendChild(script);
+          }
+          
+          console.log('📜 Google Maps script tag added to DOM');
         });
       } catch (error) {
         console.error('❌ Error loading Google Maps:', error);
