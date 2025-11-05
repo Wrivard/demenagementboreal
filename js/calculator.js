@@ -216,14 +216,14 @@ console.log('🚀 Calculator script loaded');
         
         if (!input || !badge || !label) return;
         
-        // Base styles with good contrast
+        // Base styles with EXCELLENT contrast - dark background
         radio.style.cssText = `
           display: flex;
           align-items: center;
           padding: 20px;
           margin: 0 0 16px 0;
-          background: rgba(255, 255, 255, 0.12);
-          border: 2px solid rgba(255, 255, 255, 0.35);
+          background: #2a2a2a;
+          border: 2px solid rgba(255, 255, 255, 0.4);
           border-radius: 12px;
           cursor: pointer;
           transition: all 0.3s ease;
@@ -234,8 +234,8 @@ console.log('🚀 Calculator script loaded');
           width: 36px;
           height: 36px;
           margin-right: 16px;
-          background: rgba(255, 255, 255, 0.18);
-          border: 2px solid rgba(255, 255, 255, 0.45);
+          background: #1a1a1a;
+          border: 2px solid rgba(255, 255, 255, 0.5);
           border-radius: 8px;
           display: flex;
           align-items: center;
