@@ -68,7 +68,22 @@ console.log('🚀 Calculator script loaded');
       }
       
       // Update progress bar - scale with current step
-      const progressBar = form.querySelector('[data-form="progress-indicator"], #progress-indicator, .multi-form11_progress-bar[id="progress-indicator"]');
+      // Try multiple selectors to find the progress bar
+      let progressBar = form.querySelector('#progress-indicator');
+      if (!progressBar) {
+        progressBar = form.querySelector('[data-form="progress-indicator"]');
+      }
+      if (!progressBar) {
+        progressBar = form.querySelector('.multi-form11_progress-bar[id="progress-indicator"]');
+      }
+      if (!progressBar) {
+        // Try finding by class and data attribute
+        const progressContainer = form.querySelector('.multi-form11_progress');
+        if (progressContainer) {
+          progressBar = progressContainer.querySelector('.multi-form11_progress-bar:not(.current)');
+        }
+      }
+      
       if (progressBar) {
         // Calculate progress: step 1 = 20%, step 2 = 40%, step 3 = 60%, step 4 = 80%, step 5 = 100%
         const progress = (step / totalSteps) * 100;
@@ -77,19 +92,24 @@ console.log('🚀 Calculator script loaded');
         progressBar.style.setProperty('width', progress + '%', 'important');
         progressBar.style.setProperty('display', 'block', 'important');
         progressBar.style.setProperty('background-color', '#72adcb', 'important');
+        progressBar.style.setProperty('height', '100%', 'important');
+        progressBar.style.setProperty('border-radius', '4px', 'important');
         progressBar.setAttribute('data-progress', progress);
         
         console.log(`Progress: ${progress}% (step ${step}/${totalSteps})`);
+        console.log('Progress bar element:', progressBar);
+        console.log('Progress bar computed width:', window.getComputedStyle(progressBar).width);
       } else {
         console.warn('Progress bar not found. Searching for:', [
-          '[data-form="progress-indicator"]',
           '#progress-indicator',
+          '[data-form="progress-indicator"]',
           '.multi-form11_progress-bar[id="progress-indicator"]'
         ]);
         // Try to find progress wrapper
         const progressWrapper = form.querySelector('.multi-form11_progress');
         if (progressWrapper) {
-          console.warn('Found progress wrapper but not indicator');
+          console.warn('Found progress wrapper:', progressWrapper);
+          console.warn('Progress wrapper children:', progressWrapper.children);
         }
       }
       
@@ -707,10 +727,21 @@ console.log('🚀 Calculator script loaded');
       if (!dateInput) return;
       
       // Disable browser autocomplete completely for date picker
-      dateInput.setAttribute('autocomplete', 'off');
+      dateInput.setAttribute('autocomplete', 'new-password'); // Use 'new-password' to trick browser
       dateInput.setAttribute('data-lpignore', 'true');
       dateInput.setAttribute('data-form-type', 'other');
+      dateInput.setAttribute('spellcheck', 'false');
       dateInput.setAttribute('readonly', 'readonly'); // Prevent browser autocomplete
+      
+      // Prevent browser autocomplete by intercepting input events
+      dateInput.addEventListener('focus', function(e) {
+        e.preventDefault();
+        this.blur();
+        // Open Flatpickr manually
+        if (window.flatpickr && this._flatpickr) {
+          this._flatpickr.open();
+        }
+      }, { capture: true });
         
       // Check if Flatpickr is available
       if (typeof flatpickr === 'undefined') {
@@ -733,7 +764,14 @@ console.log('🚀 Calculator script loaded');
         });
         
         // Remove readonly after Flatpickr initialization (it will handle input)
-        dateInput.removeAttribute('readonly');
+        setTimeout(() => {
+          dateInput.removeAttribute('readonly');
+        }, 100);
+        
+        // Prevent browser autocomplete on change
+        dateInput.addEventListener('input', function(e) {
+          e.stopPropagation();
+        }, { capture: true });
         
         console.log('✅ Date picker initialized');
       } catch (error) {

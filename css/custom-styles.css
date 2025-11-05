@@ -253,14 +253,6 @@
 }
 
 /* Progress bar animation */
-.multi-form11_progress-bar[data-form="progress-indicator"],
-#progress-indicator {
-  transition: width 0.3s ease !important;
-  background-color: #72adcb !important;
-  height: 100% !important;
-  border-radius: 4px !important;
-}
-
 .multi-form11_progress {
   position: relative;
   width: 100%;
@@ -268,10 +260,28 @@
   background-color: rgba(0, 0, 0, 0.1);
   border-radius: 4px;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.multi-form11_progress-bar[data-form="progress-indicator"],
+#progress-indicator,
+.multi-form11_progress-bar:not(.current) {
+  transition: width 0.3s ease !important;
+  background-color: #72adcb !important;
+  height: 100% !important;
+  border-radius: 4px !important;
+  display: block !important;
+  min-width: 0 !important;
 }
 
 .multi-form11_progress-bar.current {
   display: none !important;
+}
+
+/* Ensure progress bar is visible and correctly sized */
+.multi-form11_progress-wrapper {
+  width: 100%;
 }
 
 /* ============================================
@@ -892,8 +902,15 @@ label.w-checkbox.form_checkbox-btn {
 }
 
 /* Disable browser autocomplete dropdown for date picker */
+input.date-picker-input {
+  autocomplete: off !important;
+  -webkit-autocomplete: off !important;
+}
+
 input.date-picker-input::-webkit-calendar-picker-indicator {
   display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
 input.date-picker-input::-webkit-inner-spin-button,
@@ -907,5 +924,17 @@ input.date-picker-input:-webkit-autofill:hover,
 input.date-picker-input:-webkit-autofill:focus {
   -webkit-box-shadow: 0 0 0 30px white inset !important;
   -webkit-text-fill-color: #1a1a1a !important;
+  background-color: white !important;
+}
+
+/* Prevent browser datalist from showing */
+input.date-picker-input::-webkit-list-button {
+  display: none !important;
+}
+
+/* Force readonly appearance to prevent autocomplete */
+input.date-picker-input[readonly] {
+  background-color: #ffffff !important;
+  cursor: pointer !important;
 }
 
