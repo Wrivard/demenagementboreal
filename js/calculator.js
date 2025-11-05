@@ -451,39 +451,53 @@ console.log('🚀 Calculator script loaded');
       if (googleMapsLoaded) return true;
       
       try {
+        console.log('🔑 Fetching Google Maps API key from /api/get-maps-key...');
         // Get API key from serverless function
         const response = await fetch('/api/get-maps-key');
+        
+        if (!response.ok) {
+          console.error('❌ API key endpoint returned error:', response.status, response.statusText);
+          showDistanceMessage('Erreur de récupération de la clé API. Vous pouvez saisir la distance manuellement.', 'warning');
+          return false;
+        }
+        
         const data = await response.json();
+        console.log('📦 API key response:', { success: data.success, hasApiKey: !!data.apiKey });
         
         if (!data.success || !data.apiKey) {
-          console.warn('Google Maps API key not available');
-          showDistanceMessage('Google Maps non disponible. Vous pouvez saisir la distance manuellement.', 'warning');
+          console.warn('⚠️ Google Maps API key not available in response:', data);
+          showDistanceMessage('Clé API Google Maps non disponible. Vérifiez la configuration Vercel. Vous pouvez saisir la distance manuellement.', 'warning');
           return false;
         }
         
         const apiKey = data.apiKey;
+        console.log('✅ API key received, length:', apiKey.length);
         
         // Load Google Maps JavaScript API
         return new Promise((resolve, reject) => {
           if (window.google && window.google.maps) {
             googleMapsLoaded = true;
+            console.log('✅ Google Maps already loaded');
             resolve(true);
             return;
           }
           
           const script = document.createElement('script');
-          script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&language=fr`;
+          const scriptUrl = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&language=fr`;
+          script.src = scriptUrl;
           script.async = true;
           script.defer = true;
           
+          console.log('📜 Loading Google Maps script with API key...');
+          
           script.onload = () => {
             googleMapsLoaded = true;
-            console.log('✅ Google Maps API loaded');
+            console.log('✅ Google Maps API loaded successfully');
             resolve(true);
           };
           
-          script.onerror = () => {
-            console.error('❌ Failed to load Google Maps API');
+          script.onerror = (error) => {
+            console.error('❌ Failed to load Google Maps API script:', error);
             showDistanceMessage('Erreur de chargement de Google Maps. Vous pouvez saisir la distance manuellement.', 'warning');
             reject(false);
           };
@@ -491,7 +505,7 @@ console.log('🚀 Calculator script loaded');
           document.head.appendChild(script);
         });
       } catch (error) {
-        console.error('Error loading Google Maps:', error);
+        console.error('❌ Error loading Google Maps:', error);
         showDistanceMessage('Erreur de chargement de Google Maps. Vous pouvez saisir la distance manuellement.', 'warning');
         return false;
       }
