@@ -693,6 +693,19 @@ console.log('🚀 Calculator script loaded');
     showStep(1);
     setupButtons();
     
+    // Load Google Maps API immediately on initialization (not just on step 4)
+    // This ensures Google Maps is loaded with API key before any other script tries to use it
+    console.log('🚀 Pre-loading Google Maps API...');
+    loadGoogleMapsAPI().then(loaded => {
+      if (loaded) {
+        console.log('✅ Google Maps API pre-loaded successfully');
+      } else {
+        console.warn('⚠️ Google Maps API pre-load failed, will retry on step 4');
+      }
+    }).catch(error => {
+      console.error('❌ Error pre-loading Google Maps API:', error);
+    });
+    
     // Re-setup on step change
     const originalShowStep = showStep;
     showStep = function(step) {
