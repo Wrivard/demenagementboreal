@@ -247,20 +247,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
   
-  // Setup buttons
-  setupButtons();
-  
   // Re-setup buttons when step changes
   const originalShowStep = showStep;
-  showStep = function(step) {
+  function showStepWithSetup(step) {
     originalShowStep(step);
     setTimeout(() => {
       setupButtons(); // Re-setup buttons for new step
       styleRadios(); // Re-apply styles
     }, 50);
-  };
+  }
+  
+  // Override showStep
+  showStep = showStepWithSetup;
   
   // Initialize
+  setupButtons();
   styleRadios();
   showStep(1);
   
