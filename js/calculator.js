@@ -619,8 +619,15 @@ console.log('🚀 Calculator script loaded');
         
         // Wait for Google Maps to be fully loaded - check for places library
         const initPlaces = () => {
-          if (window.google && window.google.maps && window.google.maps.places) {
+          if (window.google && window.google.maps && window.google.maps.places && window.google.maps.places.Autocomplete) {
             try {
+              // Verify API key is working
+              console.log('🔑 Verifying Google Maps API key...');
+              console.log('🔑 Google Maps object:', window.google ? 'exists' : 'missing');
+              console.log('🔑 Google Maps.maps:', window.google.maps ? 'exists' : 'missing');
+              console.log('🔑 Google Maps.places:', window.google.maps.places ? 'exists' : 'missing');
+              console.log('🔑 Google Maps.places.Autocomplete:', window.google.maps.places.Autocomplete ? 'exists' : 'missing');
+              
               // Initialize Google Places Autocomplete - following CALCULATOR_KM_CALCULATION_AND_STYLING.md
               const options = {
                 componentRestrictions: { country: 'ca' },
@@ -635,6 +642,7 @@ console.log('🚀 Calculator script loaded');
               distanceMatrixService = new google.maps.DistanceMatrixService();
               
               console.log('✅ Google Places Autocomplete initialized');
+              console.log('✅ Distance Matrix Service initialized');
               
               // Listen for place selection on "from" address - following guide
               fromAutocomplete.addListener('place_changed', () => {
