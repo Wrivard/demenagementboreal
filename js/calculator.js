@@ -117,7 +117,9 @@ console.log('🚀 Calculator script loaded');
       // Update step text
       const stepText = form.querySelector('.multi-form11_step-tag, #step-indicator');
       if (stepText) {
-        stepText.textContent = `Étape ${step}/${totalSteps}`;
+        // Show step 1-4, not including result step
+        const displayStep = step <= 4 ? step : 4;
+        stepText.textContent = `Étape ${displayStep}/4`;
       }
       
       currentStep = step;
