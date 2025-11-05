@@ -14,7 +14,7 @@ console.log('🚀 Calculator script loaded');
     console.log('✅ Form found, initializing calculator');
     
     let currentStep = 1;
-    const totalSteps = 5;
+    const totalSteps = 4; // Step 1: 20%, Step 2: 40%, Step 3: 60%, Step 4: 80%
     let selectedServiceType = null;
     
     // Find all step elements
