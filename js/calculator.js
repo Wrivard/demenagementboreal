@@ -67,12 +67,13 @@ console.log('🚀 Calculator script loaded');
         }
       }
       
-      // Update progress bar - calculate percentage correctly
-      const progressBar = form.querySelector('#progress-indicator, .multi-form11_progress-bar[id="progress-indicator"]');
+      // Update progress bar - scale with current step
+      const progressBar = form.querySelector('[data-form="progress-indicator"], #progress-indicator');
       if (progressBar) {
         // Calculate progress: step 1 = 20%, step 2 = 40%, step 3 = 60%, step 4 = 80%, step 5 = 100%
         const progress = (step / totalSteps) * 100;
         progressBar.style.width = progress + '%';
+        progressBar.setAttribute('data-progress', progress);
         console.log(`Progress: ${progress}% (step ${step}/${totalSteps})`);
       } else {
         console.warn('Progress bar not found');
@@ -512,17 +513,17 @@ console.log('🚀 Calculator script loaded');
           return;
         }
         
-        // Wait for Google Maps to be fully loaded
-        const checkGoogleMaps = () => {
+        // Wait for Google Maps to be fully loaded - check for places library
+        const initPlaces = () => {
           if (window.google && window.google.maps && window.google.maps.places) {
-            // Initialize Google Places Autocomplete
-            const options = {
-              componentRestrictions: { country: 'ca' },
-              fields: ['formatted_address', 'geometry'],
-              types: ['address']
-            };
-            
             try {
+              // Initialize Google Places Autocomplete - following CALCULATOR_KM_CALCULATION_AND_STYLING.md
+              const options = {
+                componentRestrictions: { country: 'ca' },
+                fields: ['formatted_address', 'geometry'],
+                types: ['address']
+              };
+              
               fromAutocomplete = new google.maps.places.Autocomplete(fromInput, options);
               toAutocomplete = new google.maps.places.Autocomplete(toInput, options);
               
@@ -531,7 +532,7 @@ console.log('🚀 Calculator script loaded');
               
               console.log('✅ Google Places Autocomplete initialized');
               
-              // Listen for place selection on "from" address
+              // Listen for place selection on "from" address - following guide
               fromAutocomplete.addListener('place_changed', () => {
                 const place = fromAutocomplete.getPlace();
                 if (place.formatted_address) {
@@ -540,7 +541,7 @@ console.log('🚀 Calculator script loaded');
                 }
               });
               
-              // Listen for place selection on "to" address
+              // Listen for place selection on "to" address - following guide
               toAutocomplete.addListener('place_changed', () => {
                 const place = toAutocomplete.getPlace();
                 if (place.formatted_address) {
@@ -549,13 +550,13 @@ console.log('🚀 Calculator script loaded');
                 }
               });
               
-              // Also calculate on blur events
+              // Also calculate on blur events - following guide
               fromInput.addEventListener('blur', () => {
-                setTimeout(() => calculateDistance(), 300);
+                calculateDistance();
               });
               
               toInput.addEventListener('blur', () => {
-                setTimeout(() => calculateDistance(), 300);
+                calculateDistance();
               });
             } catch (error) {
               console.error('Error initializing Google Places Autocomplete:', error);
@@ -564,13 +565,16 @@ console.log('🚀 Calculator script loaded');
               showDistanceMessage('Erreur d\'initialisation de Google Places. Vous pouvez saisir la distance manuellement.', 'warning');
             }
           } else {
-            // Retry after a short delay
-            setTimeout(checkGoogleMaps, 100);
+            // Retry after a short delay if places library not loaded yet
+            setTimeout(initPlaces, 100);
           }
         };
         
-        checkGoogleMaps();
-        
+        initPlaces();
+      }).catch(error => {
+        console.error('Error loading Google Maps API:', error);
+        distanceInput.removeAttribute('readonly');
+        distanceInput.placeholder = 'Saisissez la distance manuellement (km)';
       });
     }
     
