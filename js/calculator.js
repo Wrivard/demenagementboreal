@@ -1408,9 +1408,19 @@ console.log('🚀 Calculator script loaded');
           console.log('✅ Emails sent successfully:', result.emailIds);
         } else {
           console.error('❌ Error sending emails:', result.message);
+          if (result.error) {
+            console.error('❌ Error details:', result.error);
+          }
+          if (result.details) {
+            console.error('❌ Error stack:', result.details);
+          }
         }
       } catch (error) {
         console.error('❌ Error sending estimation emails:', error);
+        console.error('❌ Error details:', {
+          message: error.message,
+          stack: error.stack,
+        });
         // Don't show error to user, just log it
       }
     }

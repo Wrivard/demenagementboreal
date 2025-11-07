@@ -1,8 +1,6 @@
 // API endpoint to send estimation emails via Resend (Vercel Serverless Function)
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export default async function handler(req, res) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -21,6 +19,20 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Check if RESEND_API_KEY is configured
+    const resendApiKey = process.env.RESEND_API_KEY;
+    
+    if (!resendApiKey) {
+      console.error('❌ RESEND_API_KEY environment variable not found');
+      return res.status(503).json({
+        success: false,
+        message: 'Resend API key not configured. Please add RESEND_API_KEY to Vercel environment variables.',
+        error: 'RESEND_API_KEY missing'
+      });
+    }
+
+    // Initialize Resend with API key
+    const resend = new Resend(resendApiKey);
     // Parse request body
     let data;
     if (typeof req.body === 'string') {
@@ -264,10 +276,17 @@ export default async function handler(req, res) {
     });
   } catch (error) {
     console.error('❌ Error sending emails:', error);
+    console.error('❌ Error stack:', error.stack);
+    console.error('❌ Error details:', {
+      message: error.message,
+      name: error.name,
+      code: error.code,
+    });
     return res.status(500).json({
       success: false,
       message: 'Erreur lors de l\'envoi des emails',
-      error: error.message,
+      error: error.message || 'Unknown error',
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined,
     });
   }
 }
