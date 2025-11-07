@@ -327,11 +327,26 @@ export default async function handler(req, res) {
       // Return success if at least one email was sent
       const success = userEmailId || ownerEmailId;
 
+      // Collect error details
+      const errors = [];
+      if (userEmailResult.status === 'fulfilled' && userEmailResult.value.error) {
+        errors.push({ type: 'user', error: userEmailResult.value.error });
+      } else if (userEmailResult.status === 'rejected') {
+        errors.push({ type: 'user', error: userEmailResult.reason?.message || userEmailResult.reason });
+      }
+      
+      if (ownerEmailResult.status === 'fulfilled' && ownerEmailResult.value.error) {
+        errors.push({ type: 'owner', error: ownerEmailResult.value.error });
+      } else if (ownerEmailResult.status === 'rejected') {
+        errors.push({ type: 'owner', error: ownerEmailResult.reason?.message || ownerEmailResult.reason });
+      }
+
       console.log('📊 Final result:', {
         success,
         userEmailId,
         ownerEmailId,
-        hasError
+        hasError,
+        errors: errors.length > 0 ? errors : 'none'
       });
 
       return res.status(success ? 200 : 500).json({
@@ -341,6 +356,7 @@ export default async function handler(req, res) {
           user: userEmailId,
           owner: ownerEmailId,
         },
+        errors: errors.length > 0 ? errors : undefined,
       });
     } catch (emailError) {
       console.error('❌ Error in email sending process:', emailError);

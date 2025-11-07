@@ -1421,6 +1421,12 @@ console.log('🚀 Calculator script loaded');
         } else {
           console.error('❌ Error sending emails:', result.message);
           console.error('❌ Full error response:', result);
+          if (result.errors && result.errors.length > 0) {
+            console.error('❌ Email errors:', result.errors);
+            result.errors.forEach((err, index) => {
+              console.error(`❌ Error ${index + 1} (${err.type}):`, err.error);
+            });
+          }
           if (result.error) {
             console.error('❌ Error details:', result.error);
           }
