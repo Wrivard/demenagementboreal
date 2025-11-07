@@ -1367,6 +1367,52 @@ console.log('🚀 Calculator script loaded');
           formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       }, 100);
+      
+      // Send emails via Resend
+      sendEstimationEmails(choices, pricing);
+    }
+    
+    // Send estimation emails to user and owner
+    async function sendEstimationEmails(choices, pricing) {
+      try {
+        // Get user email and name
+        const emailInput = document.querySelector('#form-email');
+        const nameInput = document.querySelector('#form-name');
+        
+        if (!emailInput || !emailInput.value || !nameInput || !nameInput.value) {
+          console.warn('⚠️ Email or name not found, skipping email send');
+          return;
+        }
+        
+        const email = emailInput.value.trim();
+        const name = nameInput.value.trim();
+        
+        console.log('📧 Sending estimation emails...', { email, name });
+        
+        const response = await fetch('/api/send-estimation', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email,
+            name,
+            choices,
+            pricing,
+          }),
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          console.log('✅ Emails sent successfully:', result.emailIds);
+        } else {
+          console.error('❌ Error sending emails:', result.message);
+        }
+      } catch (error) {
+        console.error('❌ Error sending estimation emails:', error);
+        // Don't show error to user, just log it
+      }
     }
     
     // Handle form submission - show price result instead of submitting

@@ -11,6 +11,9 @@
   },
   "keywords": ["webflow", "demenagement", "quebec"],
   "author": "Déménagement Boréal",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "resend": "^3.2.0"
+  }
 }
 
