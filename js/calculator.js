@@ -398,10 +398,14 @@ console.log('🚀 Calculator script loaded');
     // Setup button listeners
     function setupButtons() {
       // Remove existing listeners by cloning buttons
-      const nextButtons = form.querySelectorAll('.form-next-btn, button[type="button"]:not(.is-back)');
+      const nextButtons = form.querySelectorAll('.form-next-btn');
       nextButtons.forEach(btn => {
-        // Remove old listeners
+        // Skip if already has our listener (check by data attribute)
+        if (btn.dataset.listenerAttached === 'true') return;
+        
+        // Remove old listeners by cloning
         const newBtn = btn.cloneNode(true);
+        newBtn.dataset.listenerAttached = 'true';
         btn.parentNode.replaceChild(newBtn, btn);
         
         newBtn.addEventListener('click', function(e) {
@@ -412,9 +416,13 @@ console.log('🚀 Calculator script loaded');
       });
       
       // Find all back buttons
-      const backButtons = form.querySelectorAll('.form-back-btn, .button.is-secondary');
+      const backButtons = form.querySelectorAll('.form-back-btn');
       backButtons.forEach(btn => {
+        // Skip if already has our listener
+        if (btn.dataset.listenerAttached === 'true') return;
+        
         const newBtn = btn.cloneNode(true);
+        newBtn.dataset.listenerAttached = 'true';
         btn.parentNode.replaceChild(newBtn, btn);
         
         newBtn.addEventListener('click', function(e) {
@@ -1192,5 +1200,4 @@ console.log('🚀 Calculator script loaded');
   } else {
     init();
   }
-})();
 })();
