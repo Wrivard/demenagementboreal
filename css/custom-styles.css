@@ -678,13 +678,10 @@ div.multi-form11_form .custom-radio-option:has(input[type="radio"]:checked) {
   float: none !important;
 }
 
-/* Checkbox checkmark */
+/* Checkbox checkmark - Hide Webflow's ::after, we use SVG instead */
 .form_checkbox-icon::after {
-  content: '✓';
-  display: none;
-  color: var(--accent-blue, #72adcb);
-  font-weight: 700;
-  font-size: 18px;
+  content: none !important;
+  display: none !important;
 }
 
 /* Checkbox label */
@@ -732,8 +729,8 @@ div.multi-form11_form .custom-radio-option:has(input[type="radio"]:checked) {
 
 .form_checkbox-btn.is-checked .form_checkbox-icon::after,
 .form_checkbox-btn:has(input[type="checkbox"]:checked) .form_checkbox-icon::after {
-  display: block;
-  color: #ffffff;
+  display: none !important; /* Hide Webflow's ::after, we use SVG instead */
+  content: none !important;
 }
 
 /* Checkbox label when selected - keep text color same, just bold */

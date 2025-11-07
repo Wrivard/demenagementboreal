@@ -272,7 +272,18 @@ console.log('🚀 Calculator script loaded');
       
       // Don't go to step 5 automatically - it's shown via form submission
       if (currentStep < 4) {
-        showStep(currentStep + 1);
+        const nextStepNum = currentStep + 1;
+        showStep(nextStepNum);
+        
+        // Scroll to top of form when going from step 3 to 4 (step 4 is shorter)
+        if (currentStep === 3 && nextStepNum === 4) {
+          setTimeout(() => {
+            const formElement = form.closest('.multi-form11_component') || form;
+            if (formElement) {
+              formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }, 100);
+        }
       }
     }
     
@@ -507,8 +518,10 @@ console.log('🚀 Calculator script loaded');
               position: relative;
               transition: all 0.3s ease;
             `;
+            // Remove any ::after pseudo-element content
+            newIcon.setAttribute('data-no-after', 'true');
             // Add visible checkmark SVG - accent blue checkmark on white background, perfectly centered
-            newIcon.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: block; margin: auto;"><path d="M13 4L6 11L3 8" stroke="#72adcb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+            newIcon.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: block; width: 16px; height: 16px; margin: 0 auto;"><path d="M13 4L6 11L3 8" stroke="#72adcb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
           } else {
             newCheckbox.style.cssText = `
               background: #ffffff;
@@ -1070,51 +1083,116 @@ console.log('🚀 Calculator script loaded');
         }).format(price);
       };
       
+      // Collect user choices for display
+      const choices = [];
+      
+      // Type of residence
+      const residenceSelect = form.querySelector('#res-residence');
+      if (residenceSelect && residenceSelect.value) {
+        const selectedOption = residenceSelect.options[residenceSelect.selectedIndex];
+        const residenceText = selectedOption.text.split('(')[0].trim();
+        choices.push(`Type de résidence: ${residenceText}`);
+      }
+      
+      // Distance
+      const distanceInput = form.querySelector('#form-distance');
+      if (distanceInput && distanceInput.value) {
+        const distance = parseFloat(distanceInput.value) || 0;
+        if (distance > 0) {
+          choices.push(`Distance: ${distance} km`);
+        }
+      }
+      
+      // Extras
+      const extras = form.querySelectorAll('input[name="extras[]"]:checked');
+      if (extras.length > 0) {
+        const extraLabels = Array.from(extras).map(cb => {
+          const label = form.querySelector(`label[for="${cb.id}"] .form_checkbox-label`);
+          return label ? label.textContent.split('(')[0].trim() : '';
+        }).filter(Boolean);
+        if (extraLabels.length > 0) {
+          choices.push(`Extras: ${extraLabels.join(', ')}`);
+        }
+      }
+      
+      // Services supplémentaires
+      const services = form.querySelectorAll('input[name="services[]"]:checked');
+      if (services.length > 0) {
+        const serviceLabels = Array.from(services).map(cb => {
+          const label = form.querySelector(`label[for="${cb.id}"] .form_checkbox-label`);
+          return label ? label.textContent.split('(')[0].trim() : '';
+        }).filter(Boolean);
+        if (serviceLabels.length > 0) {
+          choices.push(`Services: ${serviceLabels.join(', ')}`);
+        }
+      }
+      
+      // Articles complexes
+      const complexItems = form.querySelectorAll('input[name="complex[]"]:checked');
+      if (complexItems.length > 0) {
+        const complexLabels = Array.from(complexItems).map(cb => {
+          const label = form.querySelector(`label[for="${cb.id}"] .form_checkbox-label`);
+          return label ? label.textContent : '';
+        }).filter(Boolean);
+        if (complexLabels.length > 0) {
+          choices.push(`Articles complexes: ${complexLabels.join(', ')}`);
+        }
+      }
+      
+      // Heavy weight
+      const heavyWeightCheckbox = form.querySelector('#heavy-weight');
+      const heavyWeightInput = form.querySelector('#heavy-weight-input');
+      if (heavyWeightCheckbox && heavyWeightCheckbox.checked && heavyWeightInput && heavyWeightInput.value) {
+        const weight = parseFloat(heavyWeightInput.value) || 0;
+        if (weight > 0) {
+          choices.push(`Objets lourds: ${weight} lb`);
+        }
+      }
+      
       resultContent.innerHTML = `
         <div style="text-align: center; padding: 40px 20px;">
           <div style="margin-bottom: 32px;">
             <h3 style="font-size: 24px; font-weight: 700; color: #1a1a1a; margin-bottom: 16px;">
               Estimation de votre déménagement
             </h3>
-            <p style="font-size: 16px; color: #666; margin-bottom: 8px;">
-              Prix de référence estimé
-            </p>
           </div>
           
+          ${choices.length > 0 ? `
+          <div style="background: #f8f9fa; border-radius: 12px; padding: 24px; margin-bottom: 24px; text-align: left;">
+            <div style="font-size: 14px; font-weight: 600; color: #1a1a1a; margin-bottom: 16px;">
+              Récapitulatif de votre demande:
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              ${choices.map(choice => `
+                <div style="font-size: 14px; color: #666; padding: 8px 0; border-bottom: 1px solid #e5e5e5;">
+                  ${choice}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          ` : ''}
+          
           <div style="background: #f8f9fa; border-radius: 16px; padding: 32px; margin-bottom: 24px;">
-            <div style="font-size: 48px; font-weight: 700; color: #72adcb; margin-bottom: 16px;">
-              ${formatPrice(pricing.base)}
+            <div style="font-size: 14px; color: #666; margin-bottom: 12px;">
+              Estimation de prix
             </div>
-            <div style="font-size: 14px; color: #666; margin-bottom: 24px;">
-              Minimum 3 heures à payer (${formatPrice(PRICING.MIN_PRICE)})
-            </div>
-            
-            <div style="border-top: 1px solid #e5e5e5; padding-top: 24px; margin-top: 24px;">
-              <div style="font-size: 14px; color: #666; margin-bottom: 12px;">
-                Fourchette de prix estimée (±25%)
+            <div style="display: flex; justify-content: center; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+              <div style="font-size: 36px; font-weight: 700; color: #72adcb;">
+                ${formatPrice(pricing.min)}
               </div>
-              <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px;">
-                <div style="flex: 1; text-align: center;">
-                  <div style="font-size: 12px; color: #999; margin-bottom: 4px;">Minimum</div>
-                  <div style="font-size: 20px; font-weight: 600; color: #72adcb;">
-                    ${formatPrice(pricing.min)}
-                  </div>
-                </div>
-                <div style="width: 1px; height: 40px; background: #e5e5e5;"></div>
-                <div style="flex: 1; text-align: center;">
-                  <div style="font-size: 12px; color: #999; margin-bottom: 4px;">Maximum</div>
-                  <div style="font-size: 20px; font-weight: 600; color: #72adcb;">
-                    ${formatPrice(pricing.max)}
-                  </div>
-                </div>
+              <div style="font-size: 18px; color: #999; font-weight: 500;">
+                à
+              </div>
+              <div style="font-size: 36px; font-weight: 700; color: #72adcb;">
+                ${formatPrice(pricing.max)}
               </div>
             </div>
           </div>
           
           <div style="background: rgba(114, 173, 203, 0.1); border: 1px solid #72adcb; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
-            <p style="font-size: 14px; color: #72adcb; margin: 0; line-height: 1.6;">
-              <strong>Note:</strong> Cette estimation est indicative et peut varier selon les conditions réelles du déménagement. 
-              Pour une estimation précise, contactez-nous directement.
+            <p style="font-size: 13px; color: #72adcb; margin: 0; line-height: 1.6;">
+              <strong>Note importante:</strong> Ces prix sont sujets à changement lors de la soumission et ne constituent qu'une estimation rapide. 
+              Pour une estimation précise et personnalisée, contactez-nous directement.
             </p>
           </div>
           
@@ -1131,6 +1209,14 @@ console.log('🚀 Calculator script loaded');
       
       // Show result step
       showStep(5);
+      
+      // Scroll to top of result
+      setTimeout(() => {
+        const formElement = form.closest('.multi-form11_component') || form;
+        if (formElement) {
+          formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
     }
     
     // Handle form submission - show price result instead of submitting
