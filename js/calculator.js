@@ -1097,28 +1097,29 @@ console.log('🚀 Calculator script loaded');
       };
       
       // Collect user choices for display
+      // Use document.querySelector to find elements even if they're hidden
       const choices = [];
       
       // Informations personnelles (Step 1)
-      const nameInput = form.querySelector('#form-name');
-      if (nameInput && nameInput.value) {
-        choices.push(`Nom: ${nameInput.value}`);
+      const nameInput = document.querySelector('#form-name');
+      if (nameInput && nameInput.value && nameInput.value.trim()) {
+        choices.push(`Nom: ${nameInput.value.trim()}`);
       }
       
-      const emailInput = form.querySelector('#form-email');
-      if (emailInput && emailInput.value) {
-        choices.push(`Email: ${emailInput.value}`);
+      const emailInput = document.querySelector('#form-email');
+      if (emailInput && emailInput.value && emailInput.value.trim()) {
+        choices.push(`Email: ${emailInput.value.trim()}`);
       }
       
-      const phoneInput = form.querySelector('#form-phone');
-      if (phoneInput && phoneInput.value) {
-        choices.push(`Téléphone: ${phoneInput.value}`);
+      const phoneInput = document.querySelector('#form-phone');
+      if (phoneInput && phoneInput.value && phoneInput.value.trim()) {
+        choices.push(`Téléphone: ${phoneInput.value.trim()}`);
       }
       
       // Type de service (Step 2)
-      const serviceType = form.querySelector('input[name="service-type"]:checked');
+      const serviceType = document.querySelector('input[name="service-type"]:checked');
       if (serviceType) {
-        const serviceLabel = form.querySelector(`label[for="${serviceType.id}"] .custom-radio-label`);
+        const serviceLabel = document.querySelector(`label[for="${serviceType.id}"] .custom-radio-label`);
         if (serviceLabel) {
           choices.push(`Type de service: ${serviceLabel.textContent.trim()}`);
         }
@@ -1127,7 +1128,7 @@ console.log('🚀 Calculator script loaded');
       // Détails du déménagement (Step 3)
       if (selectedServiceType === 'residential') {
         // Type de résidence
-        const residenceSelect = form.querySelector('#res-residence');
+        const residenceSelect = document.querySelector('#res-residence');
         if (residenceSelect && residenceSelect.value) {
           const selectedOption = residenceSelect.options[residenceSelect.selectedIndex];
           const residenceText = selectedOption.text.split('(')[0].trim();
@@ -1135,9 +1136,9 @@ console.log('🚀 Calculator script loaded');
         }
         
         // Étages (sans ascenseur)
-        const floorsRadio = form.querySelector('input[name="floors"]:checked');
+        const floorsRadio = document.querySelector('input[name="floors"]:checked');
         if (floorsRadio) {
-          const floorsLabel = form.querySelector(`label[for="${floorsRadio.id}"] .custom-radio-label`);
+          const floorsLabel = document.querySelector(`label[for="${floorsRadio.id}"] .custom-radio-label`);
           if (floorsLabel) {
             const floorsText = floorsLabel.textContent.split('-')[0].trim();
             choices.push(`Étages: ${floorsText}`);
@@ -1145,11 +1146,20 @@ console.log('🚀 Calculator script loaded');
         }
         
         // Extras
-        const extras = form.querySelectorAll('input[name="extras[]"]:checked');
+        const extras = document.querySelectorAll('input[name="extras[]"]:checked');
         if (extras.length > 0) {
           const extraLabels = Array.from(extras).map(cb => {
-            const label = form.querySelector(`label[for="${cb.id}"] .form_checkbox-label`);
-            return label ? label.textContent.split('(')[0].trim() : '';
+            const label = document.querySelector(`label[for="${cb.id}"] .form_checkbox-label`);
+            if (label) {
+              return label.textContent.split('(')[0].trim();
+            }
+            // Fallback: try to get text from parent label
+            const parentLabel = cb.closest('label');
+            if (parentLabel) {
+              const labelText = parentLabel.querySelector('.form_checkbox-label');
+              return labelText ? labelText.textContent.split('(')[0].trim() : '';
+            }
+            return '';
           }).filter(Boolean);
           if (extraLabels.length > 0) {
             choices.push(`Extras: ${extraLabels.join(', ')}`);
@@ -1157,11 +1167,20 @@ console.log('🚀 Calculator script loaded');
         }
         
         // Services supplémentaires
-        const services = form.querySelectorAll('input[name="services[]"]:checked');
+        const services = document.querySelectorAll('input[name="services[]"]:checked');
         if (services.length > 0) {
           const serviceLabels = Array.from(services).map(cb => {
-            const label = form.querySelector(`label[for="${cb.id}"] .form_checkbox-label`);
-            return label ? label.textContent.split('(')[0].trim() : '';
+            const label = document.querySelector(`label[for="${cb.id}"] .form_checkbox-label`);
+            if (label) {
+              return label.textContent.split('(')[0].trim();
+            }
+            // Fallback: try to get text from parent label
+            const parentLabel = cb.closest('label');
+            if (parentLabel) {
+              const labelText = parentLabel.querySelector('.form_checkbox-label');
+              return labelText ? labelText.textContent.split('(')[0].trim() : '';
+            }
+            return '';
           }).filter(Boolean);
           if (serviceLabels.length > 0) {
             choices.push(`Services supplémentaires: ${serviceLabels.join(', ')}`);
@@ -1169,26 +1188,35 @@ console.log('🚀 Calculator script loaded');
         }
         
         // Articles complexes
-        const complexItems = form.querySelectorAll('input[name="complex[]"]:checked');
+        const complexItems = document.querySelectorAll('input[name="complex[]"]:checked');
         if (complexItems.length > 0) {
           const complexLabels = Array.from(complexItems).map(cb => {
-            const label = form.querySelector(`label[for="${cb.id}"] .form_checkbox-label`);
-            return label ? label.textContent : '';
+            const label = document.querySelector(`label[for="${cb.id}"] .form_checkbox-label`);
+            if (label) {
+              return label.textContent.trim();
+            }
+            // Fallback: try to get text from parent label
+            const parentLabel = cb.closest('label');
+            if (parentLabel) {
+              const labelText = parentLabel.querySelector('.form_checkbox-label');
+              return labelText ? labelText.textContent.trim() : '';
+            }
+            return '';
           }).filter(Boolean);
           if (complexLabels.length > 0) {
             choices.push(`Articles complexes: ${complexLabels.join(', ')}`);
           }
           
           // Autre article complexe (texte)
-          const complexOtherText = form.querySelector('#complex-other-text');
-          if (complexOtherText && complexOtherText.value) {
-            choices.push(`Autre article complexe: ${complexOtherText.value}`);
+          const complexOtherText = document.querySelector('#complex-other-text');
+          if (complexOtherText && complexOtherText.value && complexOtherText.value.trim()) {
+            choices.push(`Autre article complexe: ${complexOtherText.value.trim()}`);
           }
         }
         
         // Heavy weight
-        const heavyWeightCheckbox = form.querySelector('#heavy-weight');
-        const heavyWeightInput = form.querySelector('#heavy-weight-input');
+        const heavyWeightCheckbox = document.querySelector('#heavy-weight');
+        const heavyWeightInput = document.querySelector('#heavy-weight-input');
         if (heavyWeightCheckbox && heavyWeightCheckbox.checked && heavyWeightInput && heavyWeightInput.value) {
           const weight = parseFloat(heavyWeightInput.value) || 0;
           if (weight > 0) {
@@ -1197,31 +1225,40 @@ console.log('🚀 Calculator script loaded');
         }
       } else if (selectedServiceType === 'commercial') {
         // Nom de l'entreprise
-        const companyInput = form.querySelector('#com-company');
-        if (companyInput && companyInput.value) {
-          choices.push(`Nom de l'entreprise: ${companyInput.value}`);
+        const companyInput = document.querySelector('#com-company');
+        if (companyInput && companyInput.value && companyInput.value.trim()) {
+          choices.push(`Nom de l'entreprise: ${companyInput.value.trim()}`);
         }
         
         // Type d'établissement
-        const establishmentSelect = form.querySelector('#com-type');
+        const establishmentSelect = document.querySelector('#com-type');
         if (establishmentSelect && establishmentSelect.value) {
           const selectedOption = establishmentSelect.options[establishmentSelect.selectedIndex];
           choices.push(`Type d'établissement: ${selectedOption.text}`);
         }
         
         // Taille
-        const sizeSelect = form.querySelector('#com-size');
+        const sizeSelect = document.querySelector('#com-size');
         if (sizeSelect && sizeSelect.value) {
           const selectedOption = sizeSelect.options[sizeSelect.selectedIndex];
           choices.push(`Taille: ${selectedOption.text}`);
         }
         
         // Services supplémentaires (commercial)
-        const comServices = form.querySelectorAll('input[name="com-services[]"]:checked');
+        const comServices = document.querySelectorAll('input[name="com-services[]"]:checked');
         if (comServices.length > 0) {
           const comServiceLabels = Array.from(comServices).map(cb => {
-            const label = form.querySelector(`label[for="${cb.id}"] .form_checkbox-label`);
-            return label ? label.textContent : '';
+            const label = document.querySelector(`label[for="${cb.id}"] .form_checkbox-label`);
+            if (label) {
+              return label.textContent.trim();
+            }
+            // Fallback: try to get text from parent label
+            const parentLabel = cb.closest('label');
+            if (parentLabel) {
+              const labelText = parentLabel.querySelector('.form_checkbox-label');
+              return labelText ? labelText.textContent.trim() : '';
+            }
+            return '';
           }).filter(Boolean);
           if (comServiceLabels.length > 0) {
             choices.push(`Services supplémentaires: ${comServiceLabels.join(', ')}`);
@@ -1230,17 +1267,17 @@ console.log('🚀 Calculator script loaded');
       }
       
       // Adresses et distance (Step 4)
-      const addressDeparture = form.querySelector('#form-address-departure');
-      if (addressDeparture && addressDeparture.value) {
-        choices.push(`Adresse de départ: ${addressDeparture.value}`);
+      const addressDeparture = document.querySelector('#form-address-departure');
+      if (addressDeparture && addressDeparture.value && addressDeparture.value.trim()) {
+        choices.push(`Adresse de départ: ${addressDeparture.value.trim()}`);
       }
       
-      const addressDestination = form.querySelector('#form-address-destination');
-      if (addressDestination && addressDestination.value) {
-        choices.push(`Adresse de destination: ${addressDestination.value}`);
+      const addressDestination = document.querySelector('#form-address-destination');
+      if (addressDestination && addressDestination.value && addressDestination.value.trim()) {
+        choices.push(`Adresse de destination: ${addressDestination.value.trim()}`);
       }
       
-      const distanceInput = form.querySelector('#form-distance');
+      const distanceInput = document.querySelector('#form-distance');
       if (distanceInput && distanceInput.value) {
         const distance = parseFloat(distanceInput.value) || 0;
         if (distance > 0) {
@@ -1249,16 +1286,19 @@ console.log('🚀 Calculator script loaded');
       }
       
       // Date de déménagement
-      const dateInput = form.querySelector('#form-date');
-      if (dateInput && dateInput.value) {
-        choices.push(`Date préférée: ${dateInput.value}`);
+      const dateInput = document.querySelector('#form-date');
+      if (dateInput && dateInput.value && dateInput.value.trim()) {
+        choices.push(`Date préférée: ${dateInput.value.trim()}`);
       }
       
       // Message/Commentaires
-      const messageInput = form.querySelector('#form-message');
+      const messageInput = document.querySelector('#form-message');
       if (messageInput && messageInput.value && messageInput.value.trim()) {
         choices.push(`Commentaires: ${messageInput.value.trim()}`);
       }
+      
+      // Debug: log all choices found
+      console.log('📋 All choices collected:', choices);
       
       resultContent.innerHTML = `
         <div style="text-align: center; padding: 40px 20px;">
