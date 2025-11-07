@@ -448,40 +448,52 @@ margin: 0rem !important;
                           <label for="res-residence" class="form_field-label">Type de résidence*</label>
                           <select id="res-residence" name="residence" class="form_input is-select-input w-select" required>
                             <option value="">Sélectionnez...</option>
-                            <option value="apartment">Appartement</option>
-                            <option value="family-house">Maison familiale</option>
-                            <option value="condo">Condominium</option>
-                            <option value="duplex">Duplex</option>
-                            <option value="other">Autre</option>
+                            <option value="studio" data-price="420">Studio - 420$</option>
+                            <option value="apartment-1" data-price="420">Appartement (1 chambre) - 420$</option>
+                            <option value="apartment-2" data-price="510">Appartement (2 chambres) - 510$</option>
+                            <option value="apartment-3" data-price="850">Appartement (3 chambres) - 850$</option>
+                            <option value="apartment-4" data-price="1020">Appartement (4 chambres) - 1020$</option>
+                            <option value="house-small" data-price="1020">Maison Petite - 1020$</option>
+                            <option value="house-large" data-price="1530">Maison Grande - 1530$</option>
                           </select>
                         </div>
                         <div class="multi-form11_field-wrapper">
-                          <label for="res-rooms" class="form_field-label">Nombre de pièces*</label>
-                          <select id="res-rooms" name="rooms" class="form_input is-select-input w-select" required>
-                            <option value="">Sélectionnez...</option>
-                            <option value="1-2">1-2 pièces</option>
-                            <option value="3-4">3-4 pièces</option>
-                            <option value="5-6">5-6 pièces</option>
-                            <option value="7+">7+ pièces</option>
-                          </select>
+                          <label class="form_field-label">Extra</label>
+                          <div class="multi-form11_radio-group">
+                            <label class="form_checkbox-btn w-checkbox">
+                              <div class="w-checkbox-input w-checkbox-input--inputType-custom form_checkbox-icon"></div>
+                              <input type="checkbox" name="extras[]" id="extra-shed" value="shed" data-price="0" style="opacity:0;position:absolute;z-index:-1">
+                              <span class="form_checkbox-label w-form-label" for="extra-shed">Cabanon - 0$</span>
+                            </label>
+                            <label class="form_checkbox-btn w-checkbox">
+                              <div class="w-checkbox-input w-checkbox-input--inputType-custom form_checkbox-icon"></div>
+                              <input type="checkbox" name="extras[]" id="extra-garage" value="garage" data-price="0" style="opacity:0;position:absolute;z-index:-1">
+                              <span class="form_checkbox-label w-form-label" for="extra-garage">Garage - 0$</span>
+                            </label>
+                            <label class="form_checkbox-btn w-checkbox">
+                              <div class="w-checkbox-input w-checkbox-input--inputType-custom form_checkbox-icon"></div>
+                              <input type="checkbox" name="extras[]" id="extra-locker" value="locker" data-price="0" style="opacity:0;position:absolute;z-index:-1">
+                              <span class="form_checkbox-label w-form-label" for="extra-locker">Locker - 0$</span>
+                            </label>
+                          </div>
                         </div>
                         <div class="multi-form11_field-wrapper">
-                          <label class="form_field-label">Étage*</label>
+                          <label class="form_field-label">Étages (sans ascenseur)</label>
                           <div class="custom-radio-group">
                             <label class="custom-radio-option">
-                              <input type="radio" name="floors" id="floor-ground" value="ground-floor" required>
+                              <input type="radio" name="floors" id="floor-ground" value="ground-floor" data-price="0" required>
                               <span class="custom-radio-badge">1</span>
-                              <span class="custom-radio-label">Rez-de-chaussée</span>
+                              <span class="custom-radio-label">Rez-de-chaussée - 0$</span>
                             </label>
                             <label class="custom-radio-option">
-                              <input type="radio" name="floors" id="floor-2nd" value="2nd-floor" required>
+                              <input type="radio" name="floors" id="floor-2nd" value="2nd-floor" data-price="0" required>
                               <span class="custom-radio-badge">2</span>
-                              <span class="custom-radio-label">2ème étage</span>
+                              <span class="custom-radio-label">2ème étage - 0$</span>
                             </label>
                             <label class="custom-radio-option">
-                              <input type="radio" name="floors" id="floor-3rd+" value="3rd-floor+" required>
+                              <input type="radio" name="floors" id="floor-3rd+" value="3rd-floor+" data-price="0" required>
                               <span class="custom-radio-badge">3</span>
-                              <span class="custom-radio-label">3ème étage et plus</span>
+                              <span class="custom-radio-label">3ème étage et plus - 0$</span>
                             </label>
                           </div>
                         </div>
@@ -490,18 +502,23 @@ margin: 0rem !important;
                           <div class="multi-form11_radio-group">
                             <label class="form_checkbox-btn w-checkbox">
                               <div class="w-checkbox-input w-checkbox-input--inputType-custom form_checkbox-icon"></div>
-                              <input type="checkbox" name="services[]" id="service-packing" value="packing" style="opacity:0;position:absolute;z-index:-1">
-                              <span class="form_checkbox-label w-form-label" for="service-packing">Emballage</span>
+                              <input type="checkbox" name="services[]" id="service-no-packing" value="no-packing" data-price="0" style="opacity:0;position:absolute;z-index:-1">
+                              <span class="form_checkbox-label w-form-label" for="service-no-packing">Pas emballage - +0$</span>
                             </label>
                             <label class="form_checkbox-btn w-checkbox">
                               <div class="w-checkbox-input w-checkbox-input--inputType-custom form_checkbox-icon"></div>
-                              <input type="checkbox" name="services[]" id="service-assembly" value="assembly" style="opacity:0;position:absolute;z-index:-1">
-                              <span class="form_checkbox-label w-form-label" for="service-assembly">Démontage/Remontage</span>
+                              <input type="checkbox" name="services[]" id="service-assembly" value="assembly" data-price="0" style="opacity:0;position:absolute;z-index:-1">
+                              <span class="form_checkbox-label w-form-label" for="service-assembly">Montage démontage - +0$</span>
                             </label>
                             <label class="form_checkbox-btn w-checkbox">
                               <div class="w-checkbox-input w-checkbox-input--inputType-custom form_checkbox-icon"></div>
-                              <input type="checkbox" name="services[]" id="service-storage" value="storage" style="opacity:0;position:absolute;z-index:-1">
-                              <span class="form_checkbox-label w-form-label" for="service-storage">Entreposage</span>
+                              <input type="checkbox" name="services[]" id="service-wardrobe-box" value="wardrobe-box" data-price="0" style="opacity:0;position:absolute;z-index:-1">
+                              <span class="form_checkbox-label w-form-label" for="service-wardrobe-box">Service de boite garde robe - +0$</span>
+                            </label>
+                            <label class="form_checkbox-btn w-checkbox">
+                              <div class="w-checkbox-input w-checkbox-input--inputType-custom form_checkbox-icon"></div>
+                              <input type="checkbox" name="services[]" id="service-dropoff" value="dropoff" data-price="hourly" style="opacity:0;position:absolute;z-index:-1">
+                              <span class="form_checkbox-label w-form-label" for="service-dropoff">Drop off / pick up (chargé à l'heure)</span>
                             </label>
                           </div>
                         </div>
@@ -510,20 +527,29 @@ margin: 0rem !important;
                           <div class="multi-form11_radio-group">
                             <label class="form_checkbox-btn w-checkbox">
                               <div class="w-checkbox-input w-checkbox-input--inputType-custom form_checkbox-icon"></div>
-                              <input type="checkbox" name="complex[]" id="complex-piano" value="piano" style="opacity:0;position:absolute;z-index:-1">
-                              <span class="form_checkbox-label w-form-label" for="complex-piano">Piano</span>
+                              <input type="checkbox" name="complex[]" id="complex-mirror" value="mirror" style="opacity:0;position:absolute;z-index:-1">
+                              <span class="form_checkbox-label w-form-label" for="complex-mirror">Grand miroir</span>
                             </label>
                             <label class="form_checkbox-btn w-checkbox">
                               <div class="w-checkbox-input w-checkbox-input--inputType-custom form_checkbox-icon"></div>
-                              <input type="checkbox" name="complex[]" id="complex-safebox" value="safebox" style="opacity:0;position:absolute;z-index:-1">
-                              <span class="form_checkbox-label w-form-label" for="complex-safebox">Coffre-fort</span>
+                              <input type="checkbox" name="complex[]" id="complex-tv" value="tv" style="opacity:0;position:absolute;z-index:-1">
+                              <span class="form_checkbox-label w-form-label" for="complex-tv">Télévision (75+ pouces)</span>
                             </label>
                             <label class="form_checkbox-btn w-checkbox">
                               <div class="w-checkbox-input w-checkbox-input--inputType-custom form_checkbox-icon"></div>
-                              <input type="checkbox" name="complex[]" id="complex-art" value="art" style="opacity:0;position:absolute;z-index:-1">
-                              <span class="form_checkbox-label w-form-label" for="complex-art">Œuvres d'art</span>
+                              <input type="checkbox" name="complex[]" id="complex-other" value="other" style="opacity:0;position:absolute;z-index:-1">
+                              <span class="form_checkbox-label w-form-label" for="complex-other">Autre</span>
                             </label>
                           </div>
+                          <div class="multi-form11_field-wrapper" id="complex-other-field" style="display: none; margin-top: 12px;">
+                            <label for="complex-other-text" class="form_field-label">Spécifiez l'article complexe</label>
+                            <input class="form_input w-input" maxlength="256" name="complex-other-text" placeholder="Décrivez l'article..." type="text" id="complex-other-text">
+                          </div>
+                        </div>
+                        <div class="multi-form11_field-wrapper">
+                          <label for="heavy-weight" class="form_field-label">Objets lourds de plus de 250 lb</label>
+                          <input class="form_input w-input" maxlength="10" name="heavy-weight" placeholder="Poids en lb (ex: 300)" type="number" id="heavy-weight" min="0" step="1">
+                          <div class="text-size-small" style="margin-top: 8px; color: #666;">60¢ par lb de plus que 250 lb</div>
                         </div>
                         <div class="button-group is-right">
                           <button type="button" class="button is-secondary w-button form-back-btn">Retour</button>
@@ -617,8 +643,8 @@ margin: 0rem !important;
                           <input class="form_input w-input" maxlength="256" name="address-destination" placeholder="456 rue Autre, Québec, QC" type="text" id="form-address-destination" required autocomplete="off">
                         </div>
                         <div class="multi-form11_field-wrapper">
-                          <label for="form-distance" class="form_field-label">Distance (km)</label>
-                          <input class="form_input w-input" maxlength="256" name="distance" placeholder="Calcul automatique..." type="number" id="form-distance" min="1" readonly>
+                          <label for="form-distance" class="form_field-label">Distance (km) - 0.90$ par km</label>
+                          <input class="form_input w-input" maxlength="256" name="distance" placeholder="Calcul automatique..." type="number" id="form-distance" min="0" step="0.1" readonly>
                         </div>
                         <div class="multi-form11_field-wrapper">
                           <label for="form-city" class="form_field-label">Ville de destination*</label>

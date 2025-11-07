@@ -14,7 +14,7 @@ console.log('🚀 Calculator script loaded');
     console.log('✅ Form found, initializing calculator');
     
     let currentStep = 1;
-    const totalSteps = 4; // Step 1: 20%, Step 2: 40%, Step 3: 60%, Step 4: 80%
+    const totalSteps = 5; // Step 1: 20%, Step 2: 40%, Step 3: 60%, Step 4: 80%, Step 5: 100% (result)
     let selectedServiceType = null;
     
     // Find all step elements
@@ -94,9 +94,9 @@ console.log('🚀 Calculator script loaded');
       }
       
       if (progressBar) {
-        // Calculate progress: step 1 = 20%, step 2 = 40%, step 3 = 60%, step 4 = 80%
-        // Use 5 as denominator to get 20%, 40%, 60%, 80% for steps 1-4
-        const progress = (step / 5) * 100;
+        // Calculate progress: step 1 = 20%, step 2 = 40%, step 3 = 60%, step 4 = 80%, step 5 = 100%
+        // Use 5 as denominator to get 20%, 40%, 60%, 80%, 100% for steps 1-5
+        const progress = step === 5 ? 100 : (step / 5) * 100;
         
         // Force update with !important to override any conflicting styles
         // Set width both as inline style and CSS variable
@@ -145,9 +145,12 @@ console.log('🚀 Calculator script loaded');
       // Update step text
       const stepText = form.querySelector('.multi-form11_step-tag, #step-indicator');
       if (stepText) {
-        // Show step 1-4, not including result step
-        const displayStep = step <= 4 ? step : 4;
-        stepText.textContent = `Étape ${displayStep}/4`;
+        // Show step 1-4 for form steps, hide for result step (step 5)
+        if (step === 5) {
+          stepText.textContent = 'Résultat';
+        } else {
+          stepText.textContent = `Étape ${step}/4`;
+        }
       }
       
       currentStep = step;
@@ -156,6 +159,9 @@ console.log('🚀 Calculator script loaded');
       setTimeout(() => {
         styleRadios();
         setupButtons();
+        if (step === 3 && selectedServiceType === 'residential') {
+          setupComplexOtherField();
+        }
       }, 100);
     }
     
@@ -263,7 +269,8 @@ console.log('🚀 Calculator script loaded');
         }
       }
       
-      if (currentStep < totalSteps) {
+      // Don't go to step 5 automatically - it's shown via form submission
+      if (currentStep < 4) {
         showStep(currentStep + 1);
       }
     }
@@ -887,12 +894,199 @@ console.log('🚀 Calculator script loaded');
       }
     }
     
+    // Pricing calculation
+    const PRICING = {
+      MIN_HOURS: 3,
+      HOUR_RATE: 140,
+      MIN_PRICE: 3 * 140, // 420$
+      DISTANCE_PER_KM: 0.90,
+      HEAVY_WEIGHT_THRESHOLD: 250,
+      HEAVY_WEIGHT_RATE: 0.60, // per lb over threshold
+      RESIDENCE: {
+        'studio': 420,
+        'apartment-1': 420,
+        'apartment-2': 510,
+        'apartment-3': 850,
+        'apartment-4': 1020,
+        'house-small': 1020,
+        'house-large': 1530
+      }
+    };
+    
+    function calculatePrice() {
+      let total = 0;
+      
+      // Only calculate for residential moves
+      if (selectedServiceType !== 'residential') {
+        return { base: 0, total: 0, min: 0, max: 0 };
+      }
+      
+      // Base price: Type of residence
+      const residenceSelect = form.querySelector('#res-residence');
+      if (residenceSelect && residenceSelect.value) {
+        const residencePrice = PRICING.RESIDENCE[residenceSelect.value] || 0;
+        total += residencePrice;
+      }
+      
+      // Distance cost: 0.90$ per km
+      const distanceInput = form.querySelector('#form-distance');
+      if (distanceInput && distanceInput.value) {
+        const distance = parseFloat(distanceInput.value) || 0;
+        total += distance * PRICING.DISTANCE_PER_KM;
+      }
+      
+      // Heavy objects: 0.60$ per lb over 250 lb
+      const heavyWeightInput = form.querySelector('#heavy-weight');
+      if (heavyWeightInput && heavyWeightInput.value) {
+        const weight = parseFloat(heavyWeightInput.value) || 0;
+        if (weight > PRICING.HEAVY_WEIGHT_THRESHOLD) {
+          const excessWeight = weight - PRICING.HEAVY_WEIGHT_THRESHOLD;
+          total += excessWeight * PRICING.HEAVY_WEIGHT_RATE;
+        }
+      }
+      
+      // Ensure minimum 3 hours (420$)
+      const basePrice = Math.max(total, PRICING.MIN_PRICE);
+      
+      // Calculate price range: 25% under and 25% over
+      const minPrice = Math.round(basePrice * 0.75);
+      const maxPrice = Math.round(basePrice * 1.25);
+      
+      return {
+        base: basePrice,
+        total: basePrice,
+        min: minPrice,
+        max: maxPrice
+      };
+    }
+    
+    function displayPriceResult() {
+      const resultStep = form.querySelector('#result-step');
+      const resultContent = form.querySelector('#quote-result');
+      
+      if (!resultStep || !resultContent) return;
+      
+      const pricing = calculatePrice();
+      
+      // Format prices
+      const formatPrice = (price) => {
+        return new Intl.NumberFormat('fr-CA', {
+          style: 'currency',
+          currency: 'CAD',
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0
+        }).format(price);
+      };
+      
+      resultContent.innerHTML = `
+        <div style="text-align: center; padding: 40px 20px;">
+          <div style="margin-bottom: 32px;">
+            <h3 style="font-size: 24px; font-weight: 700; color: #1a1a1a; margin-bottom: 16px;">
+              Estimation de votre déménagement
+            </h3>
+            <p style="font-size: 16px; color: #666; margin-bottom: 8px;">
+              Prix de référence estimé
+            </p>
+          </div>
+          
+          <div style="background: #f8f9fa; border-radius: 16px; padding: 32px; margin-bottom: 24px;">
+            <div style="font-size: 48px; font-weight: 700; color: #72adcb; margin-bottom: 16px;">
+              ${formatPrice(pricing.base)}
+            </div>
+            <div style="font-size: 14px; color: #666; margin-bottom: 24px;">
+              Minimum 3 heures à payer (${formatPrice(PRICING.MIN_PRICE)})
+            </div>
+            
+            <div style="border-top: 1px solid #e5e5e5; padding-top: 24px; margin-top: 24px;">
+              <div style="font-size: 14px; color: #666; margin-bottom: 12px;">
+                Fourchette de prix estimée (±25%)
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px;">
+                <div style="flex: 1; text-align: center;">
+                  <div style="font-size: 12px; color: #999; margin-bottom: 4px;">Minimum</div>
+                  <div style="font-size: 20px; font-weight: 600; color: #72adcb;">
+                    ${formatPrice(pricing.min)}
+                  </div>
+                </div>
+                <div style="width: 1px; height: 40px; background: #e5e5e5;"></div>
+                <div style="flex: 1; text-align: center;">
+                  <div style="font-size: 12px; color: #999; margin-bottom: 4px;">Maximum</div>
+                  <div style="font-size: 20px; font-weight: 600; color: #72adcb;">
+                    ${formatPrice(pricing.max)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div style="background: rgba(114, 173, 203, 0.1); border: 1px solid #72adcb; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+            <p style="font-size: 14px; color: #72adcb; margin: 0; line-height: 1.6;">
+              <strong>Note:</strong> Cette estimation est indicative et peut varier selon les conditions réelles du déménagement. 
+              Pour une estimation précise, contactez-nous directement.
+            </p>
+          </div>
+          
+          <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+            <a href="tel:4506024832" class="button w-button" style="text-decoration: none; display: inline-block;">
+              Nous appeler
+            </a>
+            <a href="mailto:dettboreal@gmail.com" class="button is-secondary w-button" style="text-decoration: none; display: inline-block;">
+              Nous écrire
+            </a>
+          </div>
+        </div>
+      `;
+      
+      // Show result step
+      showStep(5);
+    }
+    
+    // Handle form submission - show price result instead of submitting
+    const submitButton = form.querySelector('#submit-estimation');
+    if (submitButton) {
+      submitButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Validate step 4
+        const validation = validateStep(4);
+        if (!validation.isValid) {
+          showErrors(validation.errors);
+          return;
+        }
+        
+        // Clear errors and show price result
+        showErrors([]);
+        displayPriceResult();
+      });
+    }
+    
+    // Show/hide "Autre" text field for complex items
+    function setupComplexOtherField() {
+      const complexOtherCheckbox = form.querySelector('#complex-other');
+      const complexOtherField = form.querySelector('#complex-other-field');
+      if (complexOtherCheckbox && complexOtherField) {
+        // Remove existing listeners
+        const newCheckbox = complexOtherCheckbox.cloneNode(true);
+        complexOtherCheckbox.parentNode.replaceChild(newCheckbox, complexOtherCheckbox);
+        
+        newCheckbox.addEventListener('change', function() {
+          if (this.checked) {
+            complexOtherField.style.display = 'block';
+          } else {
+            complexOtherField.style.display = 'none';
+          }
+        });
+      }
+    }
+    
     // Initialize
     styleRadios();
     styleCheckboxes();
     showStep(1);
     setupButtons();
     initDatePicker();
+    setupComplexOtherField();
     
     // Load Google Maps API immediately on initialization (not just on step 4)
     // This ensures Google Maps is loaded with API key before any other script tries to use it
@@ -915,6 +1109,9 @@ console.log('🚀 Calculator script loaded');
         setupButtons();
         styleRadios();
         styleCheckboxes();
+        if (step === 3 && selectedServiceType === 'residential') {
+          setupComplexOtherField();
+        }
         if (step === 4) {
           initAddressAutocomplete();
           // Re-initialize date picker if needed
