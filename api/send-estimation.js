@@ -19,8 +19,16 @@ export default async function handler(req, res) {
   }
 
   try {
+    console.log('📧 Starting email send process...');
+    
     // Check if RESEND_API_KEY is configured
     const resendApiKey = process.env.RESEND_API_KEY;
+    
+    console.log('🔑 API Key check:', {
+      hasApiKey: !!resendApiKey,
+      keyLength: resendApiKey ? resendApiKey.length : 0,
+      keyPrefix: resendApiKey ? resendApiKey.substring(0, 10) + '...' : 'none'
+    });
     
     if (!resendApiKey) {
       console.error('❌ RESEND_API_KEY environment variable not found');
@@ -32,8 +40,11 @@ export default async function handler(req, res) {
     }
 
     // Initialize Resend with API key
+    console.log('🔧 Initializing Resend...');
     const resend = new Resend(resendApiKey);
+    
     // Parse request body
+    console.log('📦 Parsing request body...');
     let data;
     if (typeof req.body === 'string') {
       try {
@@ -46,10 +57,25 @@ export default async function handler(req, res) {
     }
 
     // Validate required fields
+    console.log('✅ Request body parsed:', {
+      hasEmail: !!data.email,
+      hasName: !!data.name,
+      hasChoices: !!data.choices,
+      hasPricing: !!data.pricing,
+      choicesLength: data.choices?.length || 0
+    });
+    
     if (!data.email || !data.name || !data.choices || !data.pricing) {
+      console.error('❌ Missing required fields');
       return res.status(400).json({
         success: false,
-        message: 'Champs requis manquants'
+        message: 'Champs requis manquants',
+        missing: {
+          email: !data.email,
+          name: !data.name,
+          choices: !data.choices,
+          pricing: !data.pricing
+        }
       });
     }
 
@@ -208,72 +234,109 @@ export default async function handler(req, res) {
     `;
 
     // Send both emails
-    const emailResults = await Promise.allSettled([
-      // Email to user (confirmation) - sent to test email for now
-      resend.emails.send({
-        from: 'Déménagement Boréal <onboarding@resend.dev>', // Update with your verified domain
-        to: [testEmail], // For testing, send to test email
-        replyTo: 'dettboreal@gmail.com',
-        subject: `Confirmation de votre estimation - Déménagement Boréal`,
-        html: userEmailHTML,
-      }),
-      // Email to owner (notification) - sent to test email for now
-      resend.emails.send({
-        from: 'Déménagement Boréal <onboarding@resend.dev>', // Update with your verified domain
-        to: [testEmail], // For testing, send to test email
-        replyTo: userEmail,
-        subject: `Nouvelle demande d'estimation - ${userName}`,
-        html: ownerEmailHTML,
-      }),
-    ]);
-
-    // Check results
-    const userEmailResult = emailResults[0];
-    const ownerEmailResult = emailResults[1];
-
-    let userEmailId = null;
-    let ownerEmailId = null;
-    let hasError = false;
-
-    if (userEmailResult.status === 'fulfilled') {
-      const result = userEmailResult.value;
-      if (result.error) {
-        console.error('❌ Error sending user email:', result.error);
-        hasError = true;
-      } else {
-        userEmailId = result.data?.id;
-        console.log('✅ User email sent successfully:', userEmailId);
-      }
-    } else {
-      console.error('❌ Error sending user email:', userEmailResult.reason);
-      hasError = true;
-    }
-
-    if (ownerEmailResult.status === 'fulfilled') {
-      const result = ownerEmailResult.value;
-      if (result.error) {
-        console.error('❌ Error sending owner email:', result.error);
-        hasError = true;
-      } else {
-        ownerEmailId = result.data?.id;
-        console.log('✅ Owner email sent successfully:', ownerEmailId);
-      }
-    } else {
-      console.error('❌ Error sending owner email:', ownerEmailResult.reason);
-      hasError = true;
-    }
-
-    // Return success if at least one email was sent
-    const success = userEmailId || ownerEmailId;
-
-    return res.status(success ? 200 : 500).json({
-      success: !!success,
-      message: success ? 'Emails envoyés avec succès' : 'Erreur lors de l\'envoi des emails',
-      emailIds: {
-        user: userEmailId,
-        owner: ownerEmailId,
-      },
+    console.log('📤 Sending emails...', {
+      to: testEmail,
+      from: 'onboarding@resend.dev'
     });
+    
+    try {
+      const emailResults = await Promise.allSettled([
+        // Email to user (confirmation) - sent to test email for now
+        resend.emails.send({
+          from: 'Déménagement Boréal <onboarding@resend.dev>', // Update with your verified domain
+          to: [testEmail], // For testing, send to test email
+          replyTo: 'dettboreal@gmail.com',
+          subject: `Confirmation de votre estimation - Déménagement Boréal`,
+          html: userEmailHTML,
+        }),
+        // Email to owner (notification) - sent to test email for now
+        resend.emails.send({
+          from: 'Déménagement Boréal <onboarding@resend.dev>', // Update with your verified domain
+          to: [testEmail], // For testing, send to test email
+          replyTo: userEmail,
+          subject: `Nouvelle demande d'estimation - ${userName}`,
+          html: ownerEmailHTML,
+        }),
+      ]);
+      
+      console.log('📬 Email results received:', {
+        userStatus: emailResults[0].status,
+        ownerStatus: emailResults[1].status
+      });
+
+      // Check results
+      const userEmailResult = emailResults[0];
+      const ownerEmailResult = emailResults[1];
+
+      let userEmailId = null;
+      let ownerEmailId = null;
+      let hasError = false;
+
+      if (userEmailResult.status === 'fulfilled') {
+        const result = userEmailResult.value;
+        console.log('📧 User email result:', {
+          hasError: !!result.error,
+          hasData: !!result.data,
+          error: result.error,
+          dataId: result.data?.id
+        });
+        
+        if (result.error) {
+          console.error('❌ Error sending user email:', result.error);
+          hasError = true;
+        } else {
+          userEmailId = result.data?.id;
+          console.log('✅ User email sent successfully:', userEmailId);
+        }
+      } else {
+        console.error('❌ Error sending user email (rejected):', userEmailResult.reason);
+        hasError = true;
+      }
+
+      if (ownerEmailResult.status === 'fulfilled') {
+        const result = ownerEmailResult.value;
+        console.log('📧 Owner email result:', {
+          hasError: !!result.error,
+          hasData: !!result.data,
+          error: result.error,
+          dataId: result.data?.id
+        });
+        
+        if (result.error) {
+          console.error('❌ Error sending owner email:', result.error);
+          hasError = true;
+        } else {
+          ownerEmailId = result.data?.id;
+          console.log('✅ Owner email sent successfully:', ownerEmailId);
+        }
+      } else {
+        console.error('❌ Error sending owner email (rejected):', ownerEmailResult.reason);
+        hasError = true;
+      }
+
+      // Return success if at least one email was sent
+      const success = userEmailId || ownerEmailId;
+
+      console.log('📊 Final result:', {
+        success,
+        userEmailId,
+        ownerEmailId,
+        hasError
+      });
+
+      return res.status(success ? 200 : 500).json({
+        success: !!success,
+        message: success ? 'Emails envoyés avec succès' : 'Erreur lors de l\'envoi des emails',
+        emailIds: {
+          user: userEmailId,
+          owner: ownerEmailId,
+        },
+      });
+    } catch (emailError) {
+      console.error('❌ Error in email sending process:', emailError);
+      console.error('❌ Error stack:', emailError.stack);
+      throw emailError; // Re-throw to be caught by outer catch
+    }
   } catch (error) {
     console.error('❌ Error sending emails:', error);
     console.error('❌ Error stack:', error.stack);
