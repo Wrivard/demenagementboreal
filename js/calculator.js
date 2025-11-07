@@ -1402,17 +1402,33 @@ console.log('🚀 Calculator script loaded');
           }),
         });
         
-        const result = await response.json();
+        console.log('📡 Response status:', response.status, response.statusText);
+        
+        let result;
+        try {
+          const text = await response.text();
+          console.log('📄 Response text:', text);
+          result = JSON.parse(text);
+        } catch (parseError) {
+          console.error('❌ Error parsing response:', parseError);
+          throw new Error(`Failed to parse server response. Status: ${response.status}`);
+        }
+        
+        console.log('📦 Response data:', result);
         
         if (result.success) {
           console.log('✅ Emails sent successfully:', result.emailIds);
         } else {
           console.error('❌ Error sending emails:', result.message);
+          console.error('❌ Full error response:', result);
           if (result.error) {
             console.error('❌ Error details:', result.error);
           }
           if (result.details) {
             console.error('❌ Error stack:', result.details);
+          }
+          if (result.missing) {
+            console.error('❌ Missing fields:', result.missing);
           }
         }
       } catch (error) {
@@ -1420,6 +1436,7 @@ console.log('🚀 Calculator script loaded');
         console.error('❌ Error details:', {
           message: error.message,
           stack: error.stack,
+          name: error.name,
         });
         // Don't show error to user, just log it
       }

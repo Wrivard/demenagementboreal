@@ -1,6 +1,4 @@
 // API endpoint to send estimation emails via Resend (Vercel Serverless Function)
-import { Resend } from 'resend';
-
 export default async function handler(req, res) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -39,9 +37,21 @@ export default async function handler(req, res) {
       });
     }
 
-    // Initialize Resend with API key
+    // Initialize Resend with API key (dynamic import for Vercel compatibility)
     console.log('🔧 Initializing Resend...');
-    const resend = new Resend(resendApiKey);
+    let resend;
+    try {
+      const { Resend } = await import('resend');
+      resend = new Resend(resendApiKey);
+      console.log('✅ Resend initialized successfully');
+    } catch (importError) {
+      console.error('❌ Error importing Resend:', importError);
+      return res.status(500).json({
+        success: false,
+        message: 'Erreur d\'importation Resend: ' + importError.message,
+        error: importError.message
+      });
+    }
     
     // Parse request body
     console.log('📦 Parsing request body...');
