@@ -89,9 +89,9 @@ export default async function handler(req, res) {
       });
     }
 
-    // For testing, send both emails to the Resend account owner's email
-    // Resend only allows sending test emails to the account owner's email address
-    const testEmail = 'williamrivard@live.ca';
+    // For testing, send both emails to wrivard@kua.quebec
+    // Since kua.quebec is verified on Resend, we can send to any email address
+    const testEmail = 'wrivard@kua.quebec';
     const userEmail = data.email;
     const userName = data.name;
     const choices = data.choices || [];
@@ -247,14 +247,14 @@ export default async function handler(req, res) {
     // Send both emails
     console.log('📤 Sending emails...', {
       to: testEmail,
-      from: 'onboarding@resend.dev'
+      from: 'noreply@kua.quebec'
     });
     
     try {
       const emailResults = await Promise.allSettled([
         // Email to user (confirmation) - sent to test email for now
         resend.emails.send({
-          from: 'Déménagement Boréal <onboarding@resend.dev>', // Update with your verified domain
+          from: 'Déménagement Boréal <noreply@kua.quebec>', // Using verified domain kua.quebec
           to: [testEmail], // For testing, send to test email
           replyTo: 'dettboreal@gmail.com',
           subject: `Confirmation de votre estimation - Déménagement Boréal`,
@@ -262,7 +262,7 @@ export default async function handler(req, res) {
         }),
         // Email to owner (notification) - sent to test email for now
         resend.emails.send({
-          from: 'Déménagement Boréal <onboarding@resend.dev>', // Update with your verified domain
+          from: 'Déménagement Boréal <noreply@kua.quebec>', // Using verified domain kua.quebec
           to: [testEmail], // For testing, send to test email
           replyTo: userEmail,
           subject: `Nouvelle demande d'estimation - ${userName}`,
