@@ -1,5 +1,6 @@
 # Moving Calculator: Automatic KM Calculation & Form Styling
 
+<!-- deploy bump: no-op change to trigger Vercel build -->
 ## Table of Contents
 1. [Automatic KM Calculation](#automatic-km-calculation)
 2. [Form Variable Styling](#form-variable-styling)
