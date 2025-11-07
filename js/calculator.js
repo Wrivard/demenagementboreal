@@ -161,6 +161,7 @@ console.log('🚀 Calculator script loaded');
         setupButtons();
         if (step === 3 && selectedServiceType === 'residential') {
           setupComplexOtherField();
+          setupHeavyWeightField();
         }
       }, 100);
     }
@@ -506,8 +507,8 @@ console.log('🚀 Calculator script loaded');
               position: relative;
               transition: all 0.3s ease;
             `;
-            // Add visible checkmark SVG - accent blue checkmark on white background
-            newIcon.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 4L6 11L3 8" stroke="#72adcb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+            // Add visible checkmark SVG - accent blue checkmark on white background, perfectly centered
+            newIcon.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: block; margin: auto;"><path d="M13 4L6 11L3 8" stroke="#72adcb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
           } else {
             newCheckbox.style.cssText = `
               background: #ffffff;
@@ -618,6 +619,7 @@ console.log('🚀 Calculator script loaded');
         console.log('✅ API key received, length:', apiKey.length);
         
         // Check if Google Maps is already loaded (possibly without API key)
+        // Remove ALL Google Maps scripts, including those loaded by Webflow
         const existingScripts = document.querySelectorAll('script[src*="maps.googleapis.com"]');
         if (existingScripts.length > 0) {
           console.warn('⚠️ Google Maps script already exists, removing old scripts...');
@@ -625,12 +627,28 @@ console.log('🚀 Calculator script loaded');
             console.log('Removing script:', script.src);
             script.remove();
           });
-          // Reset google object if it exists
-          if (window.google && window.google.maps) {
+        }
+        
+        // Also remove any Webflow map widgets that might trigger Google Maps loading
+        const webflowMapWidgets = document.querySelectorAll('.w-widget-map');
+        webflowMapWidgets.forEach(widget => {
+          widget.style.display = 'none';
+          // Remove any data attributes that might trigger loading
+          widget.removeAttribute('data-widget-latlng');
+        });
+        
+        // Reset google object if it exists to prevent conflicts
+        if (window.google && window.google.maps) {
+          try {
             delete window.google;
             console.log('🔄 Reset window.google object');
+          } catch (e) {
+            console.warn('⚠️ Could not delete window.google:', e);
           }
         }
+        
+        // Wait a bit to ensure old scripts are fully removed
+        await new Promise(resolve => setTimeout(resolve, 100));
         
         // Load Google Maps JavaScript API with API key
         return new Promise((resolve, reject) => {
@@ -668,6 +686,7 @@ console.log('🚀 Calculator script loaded');
           script.src = scriptUrl;
           script.async = true;
           script.defer = true;
+          script.setAttribute('data-our-script', 'true'); // Mark as our script
           
           script.onload = () => {
             console.log('✅ Google Maps script loaded');
@@ -1008,8 +1027,9 @@ console.log('🚀 Calculator script loaded');
       }
       
       // Heavy objects: 0.60$ per lb over 250 lb
-      const heavyWeightInput = form.querySelector('#heavy-weight');
-      if (heavyWeightInput && heavyWeightInput.value) {
+      const heavyWeightCheckbox = form.querySelector('#heavy-weight');
+      const heavyWeightInput = form.querySelector('#heavy-weight-input');
+      if (heavyWeightCheckbox && heavyWeightCheckbox.checked && heavyWeightInput && heavyWeightInput.value) {
         const weight = parseFloat(heavyWeightInput.value) || 0;
         if (weight > PRICING.HEAVY_WEIGHT_THRESHOLD) {
           const excessWeight = weight - PRICING.HEAVY_WEIGHT_THRESHOLD;
@@ -1152,6 +1172,25 @@ console.log('🚀 Calculator script loaded');
       }
     }
     
+    // Show/hide heavy weight input field
+    function setupHeavyWeightField() {
+      const heavyWeightCheckbox = form.querySelector('#heavy-weight');
+      const heavyWeightField = form.querySelector('#heavy-weight-field');
+      if (heavyWeightCheckbox && heavyWeightField) {
+        // Remove existing listeners
+        const newCheckbox = heavyWeightCheckbox.cloneNode(true);
+        heavyWeightCheckbox.parentNode.replaceChild(newCheckbox, heavyWeightCheckbox);
+        
+        newCheckbox.addEventListener('change', function() {
+          if (this.checked) {
+            heavyWeightField.style.display = 'block';
+          } else {
+            heavyWeightField.style.display = 'none';
+          }
+        });
+      }
+    }
+    
     // Initialize
     styleRadios();
     styleCheckboxes();
@@ -1159,6 +1198,7 @@ console.log('🚀 Calculator script loaded');
     setupButtons();
     initDatePicker();
     setupComplexOtherField();
+    setupHeavyWeightField();
     
     // Load Google Maps API immediately on initialization (not just on step 4)
     // This ensures Google Maps is loaded with API key before any other script tries to use it
@@ -1166,6 +1206,32 @@ console.log('🚀 Calculator script loaded');
     loadGoogleMapsAPI().then(loaded => {
       if (loaded) {
         console.log('✅ Google Maps API pre-loaded successfully');
+        
+        // Monitor and prevent Webflow from loading Google Maps without API key
+        const observer = new MutationObserver((mutations) => {
+          const newScripts = document.querySelectorAll('script[src*="maps.googleapis.com"]:not([data-our-script])');
+          newScripts.forEach(script => {
+            // Check if it's not our script (doesn't have API key or has different callback)
+            if (!script.src.includes('key=') || script.src.includes('callback=_wf_maps_loaded')) {
+              console.warn('⚠️ Removing Webflow Google Maps script without API key:', script.src);
+              script.remove();
+            }
+          });
+        });
+        
+        // Observe for new script tags
+        observer.observe(document.head, { childList: true, subtree: true });
+        
+        // Also periodically check and remove unauthorized scripts
+        setInterval(() => {
+          const unauthorizedScripts = document.querySelectorAll('script[src*="maps.googleapis.com"]:not([data-our-script])');
+          unauthorizedScripts.forEach(script => {
+            if (!script.src.includes('key=') || script.src.includes('callback=_wf_maps_loaded')) {
+              console.warn('⚠️ Removing unauthorized Google Maps script:', script.src);
+              script.remove();
+            }
+          });
+        }, 1000);
       } else {
         console.warn('⚠️ Google Maps API pre-load failed, will retry on step 4');
       }
@@ -1183,6 +1249,7 @@ console.log('🚀 Calculator script loaded');
         styleCheckboxes();
         if (step === 3 && selectedServiceType === 'residential') {
           setupComplexOtherField();
+          setupHeavyWeightField();
         }
         if (step === 4) {
           initAddressAutocomplete();

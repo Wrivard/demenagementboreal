@@ -479,7 +479,7 @@ margin: 0rem !important;
                         </div>
                         <div class="multi-form11_field-wrapper">
                           <label class="form_field-label">Étages (sans ascenseur)</label>
-                          <div class="custom-radio-group">
+                          <div class="custom-radio-group" style="display: flex; flex-direction: column; gap: 12px;">
                             <label class="custom-radio-option">
                               <input type="radio" name="floors" id="floor-ground" value="ground-floor" data-price="0" required>
                               <span class="custom-radio-badge">1</span>
@@ -542,9 +542,19 @@ margin: 0rem !important;
                           </div>
                         </div>
                         <div class="multi-form11_field-wrapper">
-                          <label for="heavy-weight" class="form_field-label">Objets lourds de plus de 250 lb</label>
-                          <input class="form_input w-input" maxlength="10" name="heavy-weight" placeholder="Poids en lb (ex: 300)" type="number" id="heavy-weight" min="0" step="1">
-                          <div class="text-size-small" style="margin-top: 8px; color: #666;">60¢ par lb de plus que 250 lb</div>
+                          <label class="form_field-label">Objets lourds</label>
+                          <div class="multi-form11_radio-group">
+                            <label class="form_checkbox-btn w-checkbox">
+                              <div class="w-checkbox-input w-checkbox-input--inputType-custom form_checkbox-icon"></div>
+                              <input type="checkbox" name="heavy-weight" id="heavy-weight" value="heavy" style="opacity:0;position:absolute;z-index:-1">
+                              <span class="form_checkbox-label w-form-label" for="heavy-weight">Objets lourds de plus de 250 lb</span>
+                            </label>
+                          </div>
+                          <div class="text-size-small" style="margin-top: 8px; color: #666;">Plus de 250 lb = 0.6$ par livre</div>
+                          <div class="multi-form11_field-wrapper" id="heavy-weight-field" style="display: none; margin-top: 12px;">
+                            <label for="heavy-weight-input" class="form_field-label">Poids total en lb</label>
+                            <input class="form_input w-input" maxlength="10" name="heavy-weight-input" placeholder="Ex: 300" type="number" id="heavy-weight-input" min="250" step="1">
+                          </div>
                         </div>
                         <div class="button-group is-right">
                           <button type="button" class="button is-secondary w-button form-back-btn">Retour</button>
@@ -1232,4 +1242,5 @@ margin: 0rem !important;
   <!-- Clean calculator based on guides -->
   <script src="js/calculator.js"></script>
 </body>
+</html>
 </html>
