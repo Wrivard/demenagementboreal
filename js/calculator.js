@@ -435,8 +435,14 @@ console.log('🚀 Calculator script loaded');
         
         if (!input || !icon) return;
         
+        // Remove existing event listeners by cloning
+        const newCheckbox = checkbox.cloneNode(true);
+        const newInput = newCheckbox.querySelector('input[type="checkbox"]');
+        const newIcon = newCheckbox.querySelector('.w-checkbox-input, .form_checkbox-icon');
+        checkbox.parentNode.replaceChild(newCheckbox, checkbox);
+        
         // Ensure checkbox has good contrast with white background
-        checkbox.style.cssText += `
+        newCheckbox.style.cssText = `
           background: #ffffff;
           border: 2px solid rgba(0, 0, 0, 0.15);
           padding: 18px 20px;
@@ -444,9 +450,11 @@ console.log('🚀 Calculator script loaded');
           border-radius: 12px;
           display: flex;
           align-items: center;
+          cursor: pointer;
+          transition: all 0.3s ease;
         `;
         
-        icon.style.cssText = `
+        newIcon.style.cssText = `
           width: 24px;
           height: 24px;
           margin-right: 12px;
@@ -458,27 +466,83 @@ console.log('🚀 Calculator script loaded');
           justify-content: center;
           flex-shrink: 0;
           position: relative;
+          transition: all 0.3s ease;
         `;
         
         // Update checkbox state
         function updateCheckbox() {
-          if (input.checked) {
-            icon.style.cssText += `
+          if (newInput.checked) {
+            newCheckbox.style.cssText = `
               background: #ffffff;
-              border-color: #72adcb;
+              border: 2px solid #72adcb;
+              padding: 18px 20px;
+              margin: 10px 0;
+              border-radius: 12px;
+              display: flex;
+              align-items: center;
+              cursor: pointer;
+              transition: all 0.3s ease;
+              box-shadow: 0 0 0 3px rgba(114, 173, 203, 0.2);
+            `;
+            newIcon.style.cssText = `
+              width: 24px;
+              height: 24px;
+              margin-right: 12px;
+              background: #ffffff;
+              border: 2px solid #72adcb;
+              border-radius: 6px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              flex-shrink: 0;
+              position: relative;
+              transition: all 0.3s ease;
             `;
             // Add visible checkmark SVG - accent blue checkmark on white background
-            icon.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 4L6 11L3 8" stroke="#72adcb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+            newIcon.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 4L6 11L3 8" stroke="#72adcb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
           } else {
-            icon.style.cssText += `
-              background: #f5f5f5;
-              border-color: rgba(0, 0, 0, 0.2);
+            newCheckbox.style.cssText = `
+              background: #ffffff;
+              border: 2px solid rgba(0, 0, 0, 0.15);
+              padding: 18px 20px;
+              margin: 10px 0;
+              border-radius: 12px;
+              display: flex;
+              align-items: center;
+              cursor: pointer;
+              transition: all 0.3s ease;
             `;
-            icon.innerHTML = '';
+            newIcon.style.cssText = `
+              width: 24px;
+              height: 24px;
+              margin-right: 12px;
+              background: #f5f5f5;
+              border: 2px solid rgba(0, 0, 0, 0.2);
+              border-radius: 6px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              flex-shrink: 0;
+              position: relative;
+              transition: all 0.3s ease;
+            `;
+            newIcon.innerHTML = '';
           }
         }
         
-        input.addEventListener('change', updateCheckbox);
+        // Handle checkbox change
+        newInput.addEventListener('change', updateCheckbox);
+        
+        // Handle click on label/checkbox container
+        newCheckbox.addEventListener('click', function(e) {
+          if (e.target !== newInput) {
+            e.preventDefault();
+            newInput.checked = !newInput.checked;
+            newInput.dispatchEvent(new Event('change'));
+          }
+        });
+        
+        // Initial state
         updateCheckbox();
       });
     }
@@ -1128,4 +1192,5 @@ console.log('🚀 Calculator script loaded');
   } else {
     init();
   }
+})();
 })();
