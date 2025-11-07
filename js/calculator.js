@@ -74,6 +74,30 @@ console.log('🚀 Calculator script loaded');
         setTimeout(() => {
           initAddressAutocomplete();
         }, 100);
+        
+        // Scroll to top of form when showing step 4 (it's shorter than step 3)
+        setTimeout(() => {
+          // Try multiple selectors to find the form container
+          let scrollTarget = form.closest('.multi-form11_component');
+          if (!scrollTarget) {
+            scrollTarget = form.closest('.multi-form11_block');
+          }
+          if (!scrollTarget) {
+            scrollTarget = form.closest('section');
+          }
+          if (!scrollTarget) {
+            scrollTarget = form;
+          }
+          
+          if (scrollTarget) {
+            scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Also try scrolling window to top of form
+            const rect = scrollTarget.getBoundingClientRect();
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const targetY = scrollTop + rect.top - 20; // 20px offset from top
+            window.scrollTo({ top: targetY, behavior: 'smooth' });
+          }
+        }, 150);
       }
       
       // Update progress bar - scale with current step
@@ -272,18 +296,7 @@ console.log('🚀 Calculator script loaded');
       
       // Don't go to step 5 automatically - it's shown via form submission
       if (currentStep < 4) {
-        const nextStepNum = currentStep + 1;
-        showStep(nextStepNum);
-        
-        // Scroll to top of form when going from step 3 to 4 (step 4 is shorter)
-        if (currentStep === 3 && nextStepNum === 4) {
-          setTimeout(() => {
-            const formElement = form.closest('.multi-form11_component') || form;
-            if (formElement) {
-              formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-          }, 100);
-        }
+        showStep(currentStep + 1);
       }
     }
     
