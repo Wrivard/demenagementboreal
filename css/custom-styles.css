@@ -952,3 +952,21 @@ input.date-picker-input[readonly] {
   cursor: pointer !important;
 }
 
+/* ============================================
+   Summary Grid - 2 columns on desktop
+   ============================================ */
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  text-align: left;
+}
+
+/* 2 columns on desktop (768px and up) */
+@media screen and (min-width: 768px) {
+  .summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+

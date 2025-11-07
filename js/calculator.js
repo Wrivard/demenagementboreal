@@ -1326,7 +1326,7 @@ console.log('🚀 Calculator script loaded');
             <div style="font-size: 15px; font-weight: 700; color: #1a1a1a; margin-bottom: 16px; text-align: left;">
               Récapitulatif de votre demande
             </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; text-align: left;">
+            <div class="summary-grid">
               ${choices.map(choice => `
                 <div style="font-size: 13px; color: #666; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
                   <span style="font-weight: 600; color: #1a1a1a;">${choice.split(':')[0]}:</span>
