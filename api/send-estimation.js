@@ -89,8 +89,9 @@ export default async function handler(req, res) {
       });
     }
 
-    // For testing, send both emails to wrivard@kua.quebec
-    const testEmail = 'wrivard@kua.quebec';
+    // For testing, send both emails to the Resend account owner's email
+    // Resend only allows sending test emails to the account owner's email address
+    const testEmail = 'williamrivard@live.ca';
     const userEmail = data.email;
     const userName = data.name;
     const choices = data.choices || [];
