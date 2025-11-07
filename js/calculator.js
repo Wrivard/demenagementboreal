@@ -1301,57 +1301,56 @@ console.log('🚀 Calculator script loaded');
       console.log('📋 All choices collected:', choices);
       
       resultContent.innerHTML = `
-        <div style="text-align: center; padding: 40px 20px;">
-          <div style="margin-bottom: 32px;">
-            <h3 style="font-size: 24px; font-weight: 700; color: #1a1a1a; margin-bottom: 16px;">
-              Estimation de votre déménagement
-            </h3>
+        <div style="padding: 24px 20px; max-width: 800px; margin: 0 auto;">
+          <!-- Price at the top - Most important -->
+          <div style="background: linear-gradient(135deg, #72adcb 0%, #5a9bb8 100%); border-radius: 16px; padding: 32px 24px; margin-bottom: 24px; text-align: center; box-shadow: 0 4px 12px rgba(114, 173, 203, 0.2);">
+            <div style="font-size: 13px; color: rgba(255, 255, 255, 0.9); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">
+              Estimation de prix
+            </div>
+            <div style="display: flex; justify-content: center; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+              <div style="font-size: 42px; font-weight: 700; color: #ffffff; line-height: 1.2;">
+                ${formatPrice(pricing.min)}
+              </div>
+              <div style="font-size: 20px; color: rgba(255, 255, 255, 0.8); font-weight: 500;">
+                à
+              </div>
+              <div style="font-size: 42px; font-weight: 700; color: #ffffff; line-height: 1.2;">
+                ${formatPrice(pricing.max)}
+              </div>
+            </div>
           </div>
           
           ${choices.length > 0 ? `
-          <div style="background: #f8f9fa; border-radius: 12px; padding: 24px; margin-bottom: 24px; text-align: left;">
-            <div style="font-size: 14px; font-weight: 600; color: #1a1a1a; margin-bottom: 16px;">
-              Récapitulatif de votre demande:
+          <!-- Summary - Compact and organized -->
+          <div style="background: #ffffff; border: 1px solid #e5e5e5; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+            <div style="font-size: 15px; font-weight: 700; color: #1a1a1a; margin-bottom: 16px; text-align: left;">
+              Récapitulatif de votre demande
             </div>
-            <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; text-align: left;">
               ${choices.map(choice => `
-                <div style="font-size: 14px; color: #666; padding: 8px 0; border-bottom: 1px solid #e5e5e5;">
-                  ${choice}
+                <div style="font-size: 13px; color: #666; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                  <span style="font-weight: 600; color: #1a1a1a;">${choice.split(':')[0]}:</span>
+                  <span style="margin-left: 4px;">${choice.split(':').slice(1).join(':').trim()}</span>
                 </div>
               `).join('')}
             </div>
           </div>
           ` : ''}
           
-          <div style="background: #f8f9fa; border-radius: 16px; padding: 32px; margin-bottom: 24px;">
-            <div style="font-size: 14px; color: #666; margin-bottom: 12px;">
-              Estimation de prix
-            </div>
-            <div style="display: flex; justify-content: center; align-items: baseline; gap: 12px; flex-wrap: wrap;">
-              <div style="font-size: 36px; font-weight: 700; color: #72adcb;">
-                ${formatPrice(pricing.min)}
-              </div>
-              <div style="font-size: 18px; color: #999; font-weight: 500;">
-                à
-              </div>
-              <div style="font-size: 36px; font-weight: 700; color: #72adcb;">
-                ${formatPrice(pricing.max)}
-              </div>
-            </div>
-          </div>
-          
-          <div style="background: rgba(114, 173, 203, 0.1); border: 1px solid #72adcb; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
-            <p style="font-size: 13px; color: #72adcb; margin: 0; line-height: 1.6;">
+          <!-- Disclaimer - Compact -->
+          <div style="background: rgba(114, 173, 203, 0.08); border-left: 3px solid #72adcb; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+            <p style="font-size: 12px; color: #72adcb; margin: 0; line-height: 1.5; text-align: left;">
               <strong>Note importante:</strong> Ces prix sont sujets à changement lors de la soumission et ne constituent qu'une estimation rapide. 
               Pour une estimation précise et personnalisée, contactez-nous directement.
             </p>
           </div>
           
-          <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
-            <a href="tel:4506024832" class="button w-button" style="text-decoration: none; display: inline-block;">
+          <!-- Action buttons -->
+          <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+            <a href="tel:4506024832" class="button w-button" style="text-decoration: none; display: inline-block; flex: 1; min-width: 150px; max-width: 200px;">
               Nous appeler
             </a>
-            <a href="mailto:dettboreal@gmail.com" class="button is-secondary w-button" style="text-decoration: none; display: inline-block;">
+            <a href="mailto:dettboreal@gmail.com" class="button is-secondary w-button" style="text-decoration: none; display: inline-block; flex: 1; min-width: 150px; max-width: 200px;">
               Nous écrire
             </a>
           </div>
