@@ -146,12 +146,8 @@ export default async function handler(req, res) {
               Estimation de prix
             </h2>
             <div style="text-align: center; padding: 20px 0;">
-              <div style="font-size: 36px; font-weight: 700; color: #72adcb; margin-bottom: 8px;">
-                ${formatPrice(pricing.min)}
-              </div>
-              <div style="font-size: 16px; color: #999; margin-bottom: 8px;">à</div>
-              <div style="font-size: 36px; font-weight: 700; color: #72adcb;">
-                ${formatPrice(pricing.max)}
+              <div style="font-size: 36px; font-weight: 700; color: #72adcb; line-height: 1.2;">
+                ${formatPrice(pricing.min)} <span style="font-size: 20px; color: #999; font-weight: 500; margin: 0 8px;">à</span> ${formatPrice(pricing.max)}
               </div>
             </div>
           </div>
@@ -212,12 +208,8 @@ export default async function handler(req, res) {
               Estimation de prix
             </h2>
             <div style="text-align: center; padding: 20px 0;">
-              <div style="font-size: 36px; font-weight: 700; color: #72adcb; margin-bottom: 8px;">
-                ${formatPrice(pricing.min)}
-              </div>
-              <div style="font-size: 16px; color: #999; margin-bottom: 8px;">à</div>
-              <div style="font-size: 36px; font-weight: 700; color: #72adcb;">
-                ${formatPrice(pricing.max)}
+              <div style="font-size: 36px; font-weight: 700; color: #72adcb; line-height: 1.2;">
+                ${formatPrice(pricing.min)} <span style="font-size: 20px; color: #999; font-weight: 500; margin: 0 8px;">à</span> ${formatPrice(pricing.max)}
               </div>
             </div>
           </div>
