@@ -752,8 +752,8 @@ margin: 0rem !important;
                       <div class="form_field-wrapper"><label for="Contact-5-Last-Name" class="form_field-label">Nom de famille</label><input class="form_input w-input" maxlength="256" name="Contact-5-Last-Name" data-name="Contact 5 Last Name" placeholder="" type="text" id="Contact-5-Last-Name" required=""></div>
                       <div class="form_field-wrapper"><label for="Contact-5-Email" class="form_field-label">Courriel</label><input class="form_input w-input" maxlength="256" name="Contact-5-Email" data-name="Contact 5 Email" placeholder="" type="email" id="Contact-5-Email" required=""></div>
                       <div class="form_field-wrapper"><label for="Contact-5-Message" class="form_field-label">Message</label><textarea id="Contact-5-Message" name="Contact-5-Message" maxlength="5000" data-name="Contact 5 Message" placeholder="Type your message..." required="" class="form_input is-text-area w-input"></textarea></div>
-                      <div class="margin-bottom margin-xsmall"><label id="Contact-5-Checkbox" class="w-checkbox form_checkbox">
-                          <div class="w-checkbox-input w-checkbox-input--inputType-custom form_checkbox-icon"></div><input type="checkbox" name="Contact-5-Checkbox" id="Contact-5-Checkbox" data-name="Contact 5 Checkbox" required="" style="opacity:0;position:absolute;z-index:-1"><span for="Contact-5-Checkbox" class="form_checkbox-label w-form-label">J&#x27;accepte les conditions</span>
+                      <div class="margin-bottom margin-xsmall"><label class="w-checkbox form_checkbox">
+                          <div class="w-checkbox-input w-checkbox-input--inputType-custom form_checkbox-icon"></div><input type="checkbox" name="Contact-5-Checkbox" id="Contact-5-Checkbox" data-name="Contact 5 Checkbox" required="" style="opacity:0;position:absolute;z-index:-1"><span class="form_checkbox-label w-form-label">J&#x27;accepte les conditions</span>
                         </label></div><input type="submit" data-wait="Please wait..." id="w-node-d3f15fa2-f0da-97d9-2dad-d96f49926e12-c05ee9b7" class="button w-button" value="Envoyer">
                     </form>
                     <div class="form_message-success-wrapper w-form-done">
@@ -1253,6 +1253,17 @@ margin: 0rem !important;
           
           // Immediately hide all messages
           hideAllWebflowMessages();
+          
+          // Validate checkbox
+          const checkbox = form.querySelector('#Contact-5-Checkbox');
+          if (checkbox && !checkbox.checked) {
+            if (errorMessage) {
+              errorMessage.style.display = 'block';
+              errorMessage.querySelector('.error-text').textContent = 'Veuillez accepter les conditions pour continuer.';
+              errorMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+            return;
+          }
           
           // Disable submit button and show loading state
           if (submitButton) {
