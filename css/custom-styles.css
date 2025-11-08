@@ -1,4 +1,25 @@
 /* ============================================
+   Global fix for CSS Grid rendering artifacts
+   Prevents angled lines across all sections
+   ============================================ */
+
+/* Global fix for CSS Grid rendering artifacts - prevents angled lines across all sections */
+/* This applies CSS containment to all sections to prevent grid rendering artifacts from bleeding between sections */
+section[class*="section_"] {
+  position: relative;
+  isolation: isolate;
+  contain: layout style paint;
+  transform: translateZ(0);
+  will-change: auto;
+}
+
+/* Apply containment to all Webflow grid containers to prevent artifacts */
+.w-layout-grid {
+  position: relative;
+  contain: layout;
+}
+
+/* ============================================
    Floating Action Buttons (Back to Top + Messenger)
    ============================================ */
 
