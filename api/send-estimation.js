@@ -97,6 +97,9 @@ export default async function handler(req, res) {
     const choices = data.choices || [];
     const pricing = data.pricing || {};
 
+    // Logo URL - encode to handle special characters
+    const logoUrl = encodeURI('https://demenagementboreal.ca/images/black_textlogo_white_background-removebg-preview.png');
+
     // Format price
     const formatPrice = (price) => {
       return new Intl.NumberFormat('fr-CA', {
@@ -138,7 +141,7 @@ export default async function handler(req, res) {
             
             <!-- Logo section -->
             <div style="text-align: center; padding: 32px 24px 24px 24px; border-bottom: 1px solid #e5e5e5;">
-              <img src="https://demenagementboreal.ca/images/black_textlogo_white_background-removebg-preview.png" alt="Déménagement Boréal" style="max-width: 200px; height: auto; margin: 0 auto; display: block;">
+              <img src="${logoUrl}" alt="Déménagement Boréal" style="max-width: 200px; height: auto; margin: 0 auto; display: block;">
             </div>
             
             <!-- Content -->
@@ -213,7 +216,7 @@ export default async function handler(req, res) {
             
             <!-- Logo section -->
             <div style="text-align: center; padding: 32px 24px 24px 24px; border-bottom: 1px solid #e5e5e5;">
-              <img src="https://demenagementboreal.ca/images/black_textlogo_white_background-removebg-preview.png" alt="Déménagement Boréal" style="max-width: 200px; height: auto; margin: 0 auto; display: block;">
+              <img src="${logoUrl}" alt="Déménagement Boréal" style="max-width: 200px; height: auto; margin: 0 auto; display: block;">
             </div>
             
             <!-- Content -->
