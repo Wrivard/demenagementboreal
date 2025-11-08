@@ -138,7 +138,7 @@ export default async function handler(req, res) {
             
             <!-- Logo section -->
             <div style="text-align: center; padding: 32px 24px 24px 24px; border-bottom: 1px solid #e5e5e5;">
-              <img src="https://www.demenagementboreal.ca/images/relume-516844.png" alt="Déménagement Boréal" style="max-width: 200px; height: auto; margin: 0 auto;">
+              <img src="https://www.demenagementboreal.ca/images/black_textlogo_white_background-removebg-preview.png" alt="Déménagement Boréal" style="max-width: 200px; height: auto; margin: 0 auto;">
             </div>
             
             <!-- Content -->
@@ -213,7 +213,7 @@ export default async function handler(req, res) {
             
             <!-- Logo section -->
             <div style="text-align: center; padding: 32px 24px 24px 24px; border-bottom: 1px solid #e5e5e5;">
-              <img src="https://www.demenagementboreal.ca/images/relume-516844.png" alt="Déménagement Boréal" style="max-width: 200px; height: auto; margin: 0 auto;">
+              <img src="https://www.demenagementboreal.ca/images/black_textlogo_white_background-removebg-preview.png" alt="Déménagement Boréal" style="max-width: 200px; height: auto; margin: 0 auto;">
             </div>
             
             <!-- Content -->
