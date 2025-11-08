@@ -98,7 +98,7 @@ export default async function handler(req, res) {
     const pricing = data.pricing || {};
 
     // Logo URL - encode to handle special characters
-    const logoUrl = encodeURI('https://demenagementboreal.ca/images/black_textlogo_white_background-removebg-preview.png');
+    const logoUrl = encodeURI('https://www.demenagementboreal.ca/images/black_textlogo_white_background-removebg-preview.png');
 
     // Format price
     const formatPrice = (price) => {
