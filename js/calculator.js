@@ -224,8 +224,11 @@
         setupButtons();
         if (step === 3) {
           // Setup complex other field and heavy weight field for both residential and commercial
-          setupComplexOtherField();
-          setupHeavyWeightField();
+          // Additional delay to ensure section is fully visible
+          setTimeout(() => {
+            setupComplexOtherField();
+            setupHeavyWeightField();
+          }, 150);
         }
       }, 100);
     }
@@ -1567,10 +1570,10 @@
         const newCheckbox = complexOtherCheckbox.cloneNode(true);
         complexOtherCheckbox.parentNode.replaceChild(newCheckbox, complexOtherCheckbox);
         
-        // Function to update field visibility - using Webflow alignment fixes approach
+        // Function to update field visibility - AGGRESSIVE Webflow override approach
         function updateFieldVisibility() {
           if (newCheckbox.checked) {
-            // Ensure all parent elements are visible
+            // STEP 1: Ensure all parent elements are visible
             let current = complexOtherField;
             while (current && current !== document.body) {
               const computedStyle = window.getComputedStyle(current);
@@ -1581,16 +1584,15 @@
               current = current.parentElement;
             }
             
-            // Add class to trigger CSS rules (Webflow alignment fixes approach)
+            // STEP 2: COMPLETELY REMOVE the style attribute instead of modifying it
+            // This prevents Webflow from reapplying display: none
+            complexOtherField.removeAttribute('style');
+            
+            // STEP 3: Add class to trigger CSS rules
             complexOtherField.classList.add('show-field');
-            // Remove inline style attribute that has display: none
-            const currentStyle = complexOtherField.getAttribute('style');
-            if (currentStyle) {
-              // Remove display: none from inline style
-              const newStyle = currentStyle.replace(/display\s*:\s*none[^;]*;?/gi, '').replace(/margin-top\s*:\s*8px[^;]*;?/gi, '');
-              complexOtherField.setAttribute('style', newStyle + '; margin-top: 8px;');
-            }
-            // Force display with !important using setProperty (Webflow alignment fixes approach)
+            
+            // STEP 4: Force ALL visibility properties with !important using setProperty
+            // This overrides any inline styles Webflow might add
             complexOtherField.style.setProperty('display', 'block', 'important');
             complexOtherField.style.setProperty('visibility', 'visible', 'important');
             complexOtherField.style.setProperty('opacity', '1', 'important');
@@ -1599,39 +1601,47 @@
             complexOtherField.style.setProperty('margin-top', '8px', 'important');
             complexOtherField.style.setProperty('max-height', 'none', 'important');
             complexOtherField.style.setProperty('min-height', 'auto', 'important');
-            // Remove any inline styles that might hide it
+            complexOtherField.style.setProperty('width', '100%', 'important');
+            
+            // STEP 5: Remove any hidden attributes
             complexOtherField.removeAttribute('hidden');
-            // Also ensure parent is visible
+            complexOtherField.removeAttribute('aria-hidden');
+            
+            // STEP 6: Ensure parent is visible
             const parent = complexOtherField.parentElement;
             if (parent) {
               parent.style.setProperty('display', 'block', 'important');
               parent.style.setProperty('visibility', 'visible', 'important');
             }
-            // Make text field required when checkbox is checked
+            
+            // STEP 7: Make text field required and visible
             complexOtherText.setAttribute('required', 'required');
-            // Also force text field visibility
+            complexOtherText.removeAttribute('style'); // Remove any inline styles
             complexOtherText.style.setProperty('display', 'block', 'important');
             complexOtherText.style.setProperty('visibility', 'visible', 'important');
             complexOtherText.style.setProperty('opacity', '1', 'important');
             complexOtherText.style.setProperty('width', '100%', 'important');
-            // Focus the text field when shown (with small delay)
+            complexOtherText.removeAttribute('hidden');
+            complexOtherText.removeAttribute('aria-hidden');
+            
+            // STEP 8: Focus the text field when shown (with small delay)
             setTimeout(() => {
               complexOtherText.focus();
             }, 50);
           } else {
-            // Remove class
+            // Hide field when unchecked
             complexOtherField.classList.remove('show-field');
-            // Hide field
             complexOtherField.style.setProperty('display', 'none', 'important');
             complexOtherField.style.setProperty('visibility', 'hidden', 'important');
-            // Remove required when checkbox is unchecked
             complexOtherText.removeAttribute('required');
             complexOtherText.value = ''; // Clear value when hidden
           }
         }
         
-        // Initial state
-        updateFieldVisibility();
+        // Initial state - call after a small delay to ensure section is visible
+        setTimeout(() => {
+          updateFieldVisibility();
+        }, 50);
         
         // Listen for checkbox changes
         newCheckbox.addEventListener('change', updateFieldVisibility);
@@ -1645,33 +1655,54 @@
           });
         }
         
-        // Monitor for style changes that might hide the field (Webflow alignment fixes approach)
-        if (complexOtherField && newCheckbox.checked) {
-          const styleObserver = new MutationObserver(() => {
-            if (newCheckbox.checked) {
+        // AGGRESSIVE MutationObserver - monitor for ANY style changes that might hide the field
+        const styleObserver = new MutationObserver((mutations) => {
+          if (newCheckbox.checked) {
+            let needsUpdate = false;
+            
+            mutations.forEach((mutation) => {
+              if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                const styleAttr = complexOtherField.getAttribute('style');
+                // If style attribute contains display: none, remove it immediately
+                if (styleAttr && styleAttr.includes('display') && styleAttr.includes('none')) {
+                  needsUpdate = true;
+                }
+              }
+              
+              // Check computed style
               const computedStyle = window.getComputedStyle(complexOtherField);
               if (computedStyle.display === 'none' || computedStyle.visibility === 'hidden') {
-                // Force visibility again if Webflow tries to hide it
-                updateFieldVisibility();
+                needsUpdate = true;
               }
-            }
-          });
-          
-          // Observe style attribute changes
-          styleObserver.observe(complexOtherField, {
-            attributes: true,
-            attributeFilter: ['style', 'class']
-          });
-          
-          // Also observe parent for visibility changes
-          const parent = complexOtherField.parentElement;
-          if (parent) {
-            styleObserver.observe(parent, {
-              attributes: true,
-              attributeFilter: ['style', 'class']
             });
+            
+            if (needsUpdate) {
+              // Force visibility again if Webflow tries to hide it
+              updateFieldVisibility();
+            }
           }
+        });
+        
+        // Observe style attribute changes on the field itself
+        styleObserver.observe(complexOtherField, {
+          attributes: true,
+          attributeFilter: ['style', 'class', 'hidden', 'aria-hidden']
+        });
+        
+        // Also observe parent for visibility changes
+        const parent = complexOtherField.parentElement;
+        if (parent) {
+          styleObserver.observe(parent, {
+            attributes: true,
+            attributeFilter: ['style', 'class', 'hidden', 'aria-hidden']
+          });
         }
+        
+        // Also observe the text input field
+        styleObserver.observe(complexOtherText, {
+          attributes: true,
+          attributeFilter: ['style', 'class', 'hidden', 'aria-hidden']
+        });
       }
     }
     
@@ -1768,8 +1799,11 @@
         styleCheckboxes();
         if (step === 3) {
           // Setup complex other field and heavy weight field for both residential and commercial
-          setupComplexOtherField();
-          setupHeavyWeightField();
+          // Additional delay to ensure section is fully visible
+          setTimeout(() => {
+            setupComplexOtherField();
+            setupHeavyWeightField();
+          }, 150);
         }
         if (step === 4) {
           initAddressAutocomplete();
