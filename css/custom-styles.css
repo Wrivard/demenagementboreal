@@ -996,7 +996,7 @@ input.date-picker-input[readonly] {
    Clean, aligned, with blue checked state and animation
    ============================================ */
 
-/* Contact form checkbox container - align with other fields - left aligned, override Webflow's padding-left */
+/* Contact form checkbox container - align with other fields - left aligned, override Webflow's padding-left and pseudo-elements */
 .contact5_form .w-checkbox.form_checkbox {
   display: flex !important;
   align-items: center;
@@ -1009,6 +1009,16 @@ input.date-picker-input[readonly] {
   align-self: flex-start;
   justify-content: flex-start;
   text-align: left;
+  clear: both;
+}
+
+/* Override Webflow's ::before and ::after pseudo-elements that create float layout */
+.contact5_form .w-checkbox.form_checkbox::before,
+.contact5_form .w-checkbox.form_checkbox::after {
+  display: none !important;
+  content: none !important;
+  clear: none !important;
+  grid-area: unset !important;
 }
 
 /* Checkbox icon - clean square box */
@@ -1123,14 +1133,19 @@ input.date-picker-input[readonly] {
   transform: scale(1.02);
 }
 
-/* Ensure checkbox wrapper aligns with form fields - left aligned, matching form_field-wrapper */
+/* Ensure checkbox wrapper aligns with form fields - left aligned, matching form_field-wrapper exactly */
 .contact5_form .margin-bottom.margin-xsmall {
   margin: 0 !important;
+  margin-bottom: 0 !important;
+  margin-top: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
   padding: 0 !important;
   width: 100%;
   display: block;
   text-align: left;
   position: relative;
+  box-sizing: border-box;
 }
 
 /* Align checkbox container with form field wrappers - left aligned, override Webflow's padding-left */
@@ -1138,12 +1153,17 @@ input.date-picker-input[readonly] {
   margin: 0 !important;
   padding: 0 !important;
   padding-left: 0 !important; /* Override Webflow's padding-left: 20px */
+  padding-right: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
   width: 100%;
-  display: flex;
+  display: flex !important;
   align-items: center;
   justify-content: flex-start;
   text-align: left;
   position: relative;
+  box-sizing: border-box;
+  clear: both;
 }
 
 /* Override Webflow's checkbox input float and negative margin - align to left */
