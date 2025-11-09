@@ -1591,5 +1591,11 @@ input.date-picker-input[readonly] {
   .banner9_text-wrapper .text-size-small {
     font-size: 0.85em !important;
   }
+  
+  /* Hide valeur component (layout416) on mobile */
+  .section_layout416,
+  .layout416_component {
+    display: none !important;
+  }
 }
 
