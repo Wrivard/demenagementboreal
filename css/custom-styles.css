@@ -1581,5 +1581,10 @@ html, body {
   h2.heading-style-h2 {
     font-size: calc(2.75rem * 0.9) !important; /* 2.475rem = 90% of 2.75rem */
   }
+  
+  /* Footer - add spacing under "Politiques des cookies" link on mobile */
+  .footer3_legal-list {
+    margin-bottom: 1rem !important;
+  }
 }
 
