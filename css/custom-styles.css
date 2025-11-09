@@ -1564,3 +1564,21 @@ html, body {
   margin-top: 1.5rem !important; /* Reduce top margin */
 }
 
+/* ============================================
+   Mobile Heading Size Reduction
+   ============================================ */
+
+/* Mobile breakpoint: 767px and below */
+@media screen and (max-width: 767px) {
+  /* Reduce heading sizes by 10% on mobile */
+  .heading-style-h1,
+  h1.heading-style-h1 {
+    font-size: 0.9em !important;
+  }
+  
+  .heading-style-h2,
+  h2.heading-style-h2 {
+    font-size: 0.9em !important;
+  }
+}
+
