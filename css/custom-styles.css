@@ -1574,7 +1574,7 @@ html, body {
   /* Webflow mobile sizes: h1 = 3rem, h2 = 2.75rem */
   .heading-style-h1,
   h1.heading-style-h1 {
-    font-size: calc(3rem * 0.9) !important; /* 2.7rem = 90% of 3rem */
+    font-size: calc(3rem * 0.83) !important; /* 2.49rem = 83% of 3rem */
   }
   
   .heading-style-h2,
