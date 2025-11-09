@@ -1045,12 +1045,21 @@ input.date-picker-input[readonly] {
   background-image: none !important;
 }
 
-/* Also hide any Webflow checkmark SVG or icon */
+/* Also hide any Webflow checkmark SVG, icon, or child elements */
 .contact5_form .form_checkbox-icon.w--redirected-checked svg,
-.contact5_form .w-checkbox-input.w--redirected-checked svg {
+.contact5_form .w-checkbox-input.w--redirected-checked svg,
+.contact5_form .w-checkbox-input--inputType-custom.w--redirected-checked svg,
+.contact5_form .form_checkbox-icon.w--redirected-checked *:not(input),
+.contact5_form .w-checkbox-input.w--redirected-checked *:not(input) {
   display: none !important;
   opacity: 0 !important;
   visibility: hidden !important;
+}
+
+/* Override Webflow's checked background to use our blue color */
+.contact5_form .form_checkbox-icon.w--redirected-checked {
+  background-color: #72adcb !important;
+  border-color: #72adcb !important;
 }
 
 /* Checkbox icon when checked - blue background with smooth animation */
