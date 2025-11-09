@@ -1286,29 +1286,24 @@ input.date-picker-input[readonly] {
    Mobile Optimization - Prevent Overflow
    ============================================ */
 
-/* Base mobile styles - prevent horizontal overflow */
-html, body {
-  overflow-x: hidden !important;
-  max-width: 100vw !important;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-/* Ensure all containers don't overflow */
-.container-medium,
-.container-small,
-.container-large,
-.multi-form11_component,
-.multi-form11_form {
-  max-width: 100% !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-}
-
-/* Mobile breakpoint: 767px and below */
+/* Base mobile styles - prevent horizontal overflow (only on mobile) */
 @media screen and (max-width: 767px) {
+  html, body {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+  }
+
+  /* Ensure all containers don't overflow on mobile */
+  .container-medium,
+  .container-small,
+  .container-large,
+  .multi-form11_component,
+  .multi-form11_form {
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
   /* Form container optimization */
   .multi-form11_form-content {
     padding: 16px !important;
