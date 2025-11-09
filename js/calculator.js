@@ -222,7 +222,8 @@
       setTimeout(() => {
         styleRadios();
         setupButtons();
-        if (step === 3 && selectedServiceType === 'residential') {
+        if (step === 3) {
+          // Setup complex other field and heavy weight field for both residential and commercial
           setupComplexOtherField();
           setupHeavyWeightField();
         }
@@ -1530,9 +1531,20 @@
     
     // Show/hide "Autre" text field for complex items
     function setupComplexOtherField() {
-      const complexOtherCheckbox = form.querySelector('#complex-other');
-      const complexOtherField = form.querySelector('#complex-other-field');
-      const complexOtherText = form.querySelector('#complex-other-text');
+      // Try to find the checkbox - it might be in residential or commercial questions
+      let complexOtherCheckbox = form.querySelector('#complex-other');
+      let complexOtherField = form.querySelector('#complex-other-field');
+      let complexOtherText = form.querySelector('#complex-other-text');
+      
+      // If not found, try searching in visible step 3 content
+      if (!complexOtherCheckbox || !complexOtherField || !complexOtherText) {
+        const step3 = form.querySelector('[data-step="3"]');
+        if (step3) {
+          complexOtherCheckbox = step3.querySelector('#complex-other');
+          complexOtherField = step3.querySelector('#complex-other-field');
+          complexOtherText = step3.querySelector('#complex-other-text');
+        }
+      }
       
       if (complexOtherCheckbox && complexOtherField && complexOtherText) {
         // Remove existing listeners to prevent duplicates
@@ -1543,11 +1555,16 @@
         function updateFieldVisibility() {
           if (newCheckbox.checked) {
             complexOtherField.style.display = 'block';
+            complexOtherField.style.visibility = 'visible';
             // Make text field required when checkbox is checked
             complexOtherText.setAttribute('required', 'required');
-            complexOtherText.focus(); // Focus the text field when shown
+            // Focus the text field when shown (with small delay)
+            setTimeout(() => {
+              complexOtherText.focus();
+            }, 50);
           } else {
             complexOtherField.style.display = 'none';
+            complexOtherField.style.visibility = 'hidden';
             // Remove required when checkbox is unchecked
             complexOtherText.removeAttribute('required');
             complexOtherText.value = ''; // Clear value when hidden
@@ -1662,7 +1679,8 @@
         setupButtons();
         styleRadios();
         styleCheckboxes();
-        if (step === 3 && selectedServiceType === 'residential') {
+        if (step === 3) {
+          // Setup complex other field and heavy weight field for both residential and commercial
           setupComplexOtherField();
           setupHeavyWeightField();
         }
