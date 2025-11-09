@@ -1586,5 +1586,15 @@ html, body {
   .footer3_legal-list {
     margin-bottom: 1rem !important;
   }
+  
+  /* Banner - reduce text size on mobile to prevent overflow */
+  .banner9_text-wrapper {
+    font-size: 0.85em !important;
+  }
+  
+  .banner9_text-wrapper .text-weight-semibold,
+  .banner9_text-wrapper .text-size-small {
+    font-size: 0.85em !important;
+  }
 }
 
