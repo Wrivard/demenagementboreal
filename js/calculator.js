@@ -1310,26 +1310,26 @@
           complexLabels.push(complexOtherText.value.trim());
         }
         
-        // Add to choices if there are any complex items or text
-        if (complexLabels.length > 0) {
-          choices.push(`Articles complexes: ${complexLabels.join(', ')}`);
-        }
-        
-        // Heavy weight
+        // Heavy weight - include in Articles complexes section
         const heavyWeightCheckbox = document.querySelector('#heavy-weight');
         const heavyWeightInput = document.querySelector('#heavy-weight-input');
         if (heavyWeightCheckbox && heavyWeightCheckbox.checked) {
           if (heavyWeightInput && heavyWeightInput.value) {
             const weight = parseFloat(heavyWeightInput.value) || 0;
             if (weight > 0) {
-              choices.push(`Objets lourds: ${weight} lb (0.6$ par livre au-delà de 250 lb)`);
+              complexLabels.push(`Objets lourds: ${weight} lb (0.6$ par livre au-delà de 250 lb)`);
             } else {
-              choices.push(`Objets lourds: Objets de plus de 250 lb (0.6$ par livre)`);
+              complexLabels.push(`Objets lourds de plus de 250 lb (0.6$ par livre)`);
             }
           } else {
             // Checkbox checked but no weight entered
-            choices.push(`Objets lourds: Objets de plus de 250 lb (0.6$ par livre)`);
+            complexLabels.push(`Objets lourds de plus de 250 lb (0.6$ par livre)`);
           }
+        }
+        
+        // Add to choices if there are any complex items, text, or heavy objects
+        if (complexLabels.length > 0) {
+          choices.push(`Articles complexes: ${complexLabels.join(', ')}`);
         }
       } else if (selectedServiceType === 'commercial') {
         // Nom de l'entreprise
