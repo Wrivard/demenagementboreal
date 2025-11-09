@@ -1142,6 +1142,8 @@ input.date-picker-input[readonly] {
   text-align: left;
   position: relative;
   box-sizing: border-box;
+  left: 0 !important;
+  transform: translateX(0) !important;
 }
 
 /* Align checkbox container with form field wrappers - left aligned, override Webflow's padding-left */
@@ -1160,14 +1162,34 @@ input.date-picker-input[readonly] {
   position: relative;
   box-sizing: border-box;
   clear: both;
+  left: 0 !important;
+  transform: translateX(0) !important;
+  margin-left: 0 !important;
 }
 
 /* Override Webflow's checkbox input float and negative margin - align to left */
 .contact5_form .w-checkbox-input,
-.contact5_form .w-checkbox-input--inputType-custom {
+.contact5_form .w-checkbox-input--inputType-custom,
+.contact5_form .form_field-wrapper .w-checkbox-input,
+.contact5_form .form_field-wrapper .w-checkbox-input--inputType-custom {
   float: none !important;
   margin: 0 12px 0 0 !important; /* Remove Webflow's negative margin (-20px), use normal spacing */
+  margin-left: 0 !important;
+  margin-right: 12px !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
   line-height: normal;
+  position: relative !important;
+  left: 0 !important;
+  transform: translateX(0) !important;
+}
+
+/* Force checkbox to align with form inputs - match the exact left position */
+.contact5_form .form_field-wrapper:has(.w-checkbox.form_checkbox) .w-checkbox.form_checkbox {
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+  left: 0 !important;
+  transform: translateX(0) !important;
   position: relative !important;
 }
 
