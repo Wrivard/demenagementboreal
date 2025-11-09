@@ -996,13 +996,14 @@ input.date-picker-input[readonly] {
    Clean, aligned, with blue checked state and animation
    ============================================ */
 
-/* Contact form checkbox container - align with other fields - left aligned */
+/* Contact form checkbox container - align with other fields - left aligned, override Webflow's padding-left */
 .contact5_form .w-checkbox.form_checkbox {
-  display: flex;
+  display: flex !important;
   align-items: center;
   width: 100%;
-  margin: 0;
-  padding: 0;
+  margin: 0 !important;
+  padding: 0 !important;
+  padding-left: 0 !important; /* Override Webflow's padding-left: 20px */
   cursor: pointer;
   position: relative;
   align-self: flex-start;
@@ -1122,29 +1123,35 @@ input.date-picker-input[readonly] {
   transform: scale(1.02);
 }
 
-/* Ensure checkbox wrapper aligns with form fields - left aligned */
+/* Ensure checkbox wrapper aligns with form fields - left aligned, matching form_field-wrapper */
 .contact5_form .margin-bottom.margin-xsmall {
-  margin: 0;
-  padding: 0;
+  margin: 0 !important;
+  padding: 0 !important;
   width: 100%;
   display: block;
   text-align: left;
+  position: relative;
 }
 
-/* Align checkbox container with form field wrappers - left aligned */
+/* Align checkbox container with form field wrappers - left aligned, override Webflow's padding-left */
 .contact5_form .margin-bottom.margin-xsmall .w-checkbox.form_checkbox {
-  margin: 0;
-  padding: 0;
+  margin: 0 !important;
+  padding: 0 !important;
+  padding-left: 0 !important; /* Override Webflow's padding-left: 20px */
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   text-align: left;
+  position: relative;
 }
 
-/* Override any Webflow default checkbox styles */
-.contact5_form .w-checkbox-input {
+/* Override Webflow's checkbox input float and negative margin - align to left */
+.contact5_form .w-checkbox-input,
+.contact5_form .w-checkbox-input--inputType-custom {
   float: none !important;
-  margin: 0 !important;
+  margin: 0 12px 0 0 !important; /* Remove Webflow's negative margin (-20px), use normal spacing */
+  line-height: normal;
+  position: relative !important;
 }
 
