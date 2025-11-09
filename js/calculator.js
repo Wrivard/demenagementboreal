@@ -1286,8 +1286,9 @@
         
         // Articles complexes
         const complexItems = document.querySelectorAll('input[name="complex[]"]:checked');
+        const complexLabels = [];
         if (complexItems.length > 0) {
-          const complexLabels = Array.from(complexItems).map(cb => {
+          const labels = Array.from(complexItems).map(cb => {
             const label = document.querySelector(`label[for="${cb.id}"] .form_checkbox-label`);
             if (label) {
               return label.textContent.trim();
@@ -1300,15 +1301,18 @@
             }
             return '';
           }).filter(Boolean);
-          if (complexLabels.length > 0) {
-            choices.push(`Articles complexes: ${complexLabels.join(', ')}`);
-          }
-          
-          // Autre article complexe (texte)
-          const complexOtherText = document.querySelector('#complex-other-text');
-          if (complexOtherText && complexOtherText.value && complexOtherText.value.trim()) {
-            choices.push(`Autre article complexe: ${complexOtherText.value.trim()}`);
-          }
+          complexLabels.push(...labels);
+        }
+        
+        // Autre article complexe (texte) - always check, independent of checkboxes
+        const complexOtherText = document.querySelector('#complex-other-text');
+        if (complexOtherText && complexOtherText.value && complexOtherText.value.trim()) {
+          complexLabels.push(complexOtherText.value.trim());
+        }
+        
+        // Add to choices if there are any complex items or text
+        if (complexLabels.length > 0) {
+          choices.push(`Articles complexes: ${complexLabels.join(', ')}`);
         }
         
         // Heavy weight
