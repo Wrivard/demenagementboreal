@@ -1655,28 +1655,27 @@
           });
         }
         
-        // AGGRESSIVE MutationObserver - monitor for ANY style changes that might hide the field
+        // AGGRESSIVE MutationObserver - IMMEDIATELY remove style attribute if it contains display: none
         const styleObserver = new MutationObserver((mutations) => {
           if (newCheckbox.checked) {
-            let needsUpdate = false;
-            
             mutations.forEach((mutation) => {
               if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
                 const styleAttr = complexOtherField.getAttribute('style');
-                // If style attribute contains display: none, remove it immediately
-                if (styleAttr && styleAttr.includes('display') && styleAttr.includes('none')) {
-                  needsUpdate = true;
+                // IMMEDIATELY remove style attribute if it contains display: none or visibility: hidden
+                if (styleAttr && (styleAttr.includes('display') && styleAttr.includes('none') || 
+                    styleAttr.includes('visibility') && styleAttr.includes('hidden'))) {
+                  // Remove the style attribute IMMEDIATELY, then reapply visibility
+                  complexOtherField.removeAttribute('style');
+                  // Reapply visibility immediately
+                  updateFieldVisibility();
+                  return; // Exit early to prevent multiple updates
                 }
-              }
-              
-              // Check computed style
-              const computedStyle = window.getComputedStyle(complexOtherField);
-              if (computedStyle.display === 'none' || computedStyle.visibility === 'hidden') {
-                needsUpdate = true;
               }
             });
             
-            if (needsUpdate) {
+            // Also check computed style as backup
+            const computedStyle = window.getComputedStyle(complexOtherField);
+            if (computedStyle.display === 'none' || computedStyle.visibility === 'hidden') {
               // Force visibility again if Webflow tries to hide it
               updateFieldVisibility();
             }
@@ -1702,6 +1701,36 @@
         styleObserver.observe(complexOtherText, {
           attributes: true,
           attributeFilter: ['style', 'class', 'hidden', 'aria-hidden']
+        });
+        
+        // CONTINUOUS CHECK - Backup in case MutationObserver doesn't catch it fast enough
+        // Check every 100ms if checkbox is checked and field is hidden, then force visibility
+        const continuousCheck = setInterval(() => {
+          if (newCheckbox.checked) {
+            const styleAttr = complexOtherField.getAttribute('style');
+            const computedStyle = window.getComputedStyle(complexOtherField);
+            
+            // If style attribute contains display: none or visibility: hidden, remove it immediately
+            if (styleAttr && (styleAttr.includes('display') && styleAttr.includes('none') || 
+                styleAttr.includes('visibility') && styleAttr.includes('hidden'))) {
+              complexOtherField.removeAttribute('style');
+              updateFieldVisibility();
+            }
+            // Also check computed style as backup
+            else if (computedStyle.display === 'none' || computedStyle.visibility === 'hidden') {
+              updateFieldVisibility();
+            }
+          } else {
+            // Stop checking when checkbox is unchecked
+            clearInterval(continuousCheck);
+          }
+        }, 100);
+        
+        // Clean up interval when checkbox is unchecked
+        newCheckbox.addEventListener('change', () => {
+          if (!newCheckbox.checked) {
+            clearInterval(continuousCheck);
+          }
         });
       }
     }
