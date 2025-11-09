@@ -1383,9 +1383,9 @@ html, body {
     word-wrap: break-word !important;
   }
   
-  /* Button groups - stack vertically */
+  /* Button groups - stack vertically with "Suivant" on top */
   .button-group {
-    flex-direction: column !important;
+    flex-direction: column-reverse !important; /* Reverse order: Suivant on top, Retour below */
     gap: 12px !important;
   }
   
@@ -1507,6 +1507,10 @@ html, body {
   
   .custom-radio-label {
     font-size: 14px !important;
+  }
+  
+  .button-group {
+    flex-direction: column-reverse !important; /* Keep reverse order on very small screens */
   }
   
   .button-group .button {
