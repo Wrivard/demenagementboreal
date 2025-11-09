@@ -1282,6 +1282,278 @@ input.date-picker-input[readonly] {
   margin-bottom: 0 !important;
 }
 
+/* ============================================
+   Mobile Optimization - Prevent Overflow
+   ============================================ */
+
+/* Base mobile styles - prevent horizontal overflow */
+html, body {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Ensure all containers don't overflow */
+.container-medium,
+.container-small,
+.container-large,
+.multi-form11_component,
+.multi-form11_form {
+  max-width: 100% !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Mobile breakpoint: 767px and below */
+@media screen and (max-width: 767px) {
+  /* Form container optimization */
+  .multi-form11_form-content {
+    padding: 16px !important;
+  }
+  
+  .multi-form11_field-wrapper {
+    margin-bottom: 20px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* Form inputs - reduce padding and ensure no overflow */
+  .form_input,
+  .w-input,
+  .w-select,
+  select.form_input {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 12px 16px !important;
+    font-size: 16px !important; /* Prevent zoom on iOS */
+    box-sizing: border-box !important;
+  }
+  
+  /* Form labels */
+  .form_field-label {
+    font-size: 14px !important;
+    margin-bottom: 8px !important;
+    word-wrap: break-word !important;
+  }
+  
+  /* Radio buttons - reduce padding */
+  .form_radio-btn {
+    padding: 14px 16px !important;
+    margin-bottom: 10px !important;
+  }
+  
+  .form_radio-btn-label,
+  .form_radio-btn .w-form-label {
+    font-size: 15px !important;
+    word-wrap: break-word !important;
+  }
+  
+  /* Checkbox buttons - reduce padding */
+  .form_checkbox-btn {
+    padding: 14px 16px !important;
+    margin-bottom: 10px !important;
+  }
+  
+  .form_checkbox-label,
+  .form_checkbox-btn .w-form-label {
+    font-size: 15px !important;
+    word-wrap: break-word !important;
+  }
+  
+  /* Checkbox icon - slightly smaller on mobile */
+  .form_checkbox-icon,
+  .w-checkbox-input.form_checkbox-icon {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    min-height: 28px !important;
+    margin-right: 10px !important;
+  }
+  
+  /* Custom radio options */
+  .custom-radio-option {
+    padding: 10px 14px !important;
+  }
+  
+  .custom-radio-label {
+    font-size: 15px !important;
+    word-wrap: break-word !important;
+  }
+  
+  /* Button groups - stack vertically */
+  .button-group {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+  
+  .button-group .button {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 14px 20px !important;
+    font-size: 16px !important;
+  }
+  
+  /* Progress bar */
+  .multi-form11_progress {
+    margin: 16px 0 !important;
+  }
+  
+  /* Step indicator */
+  .multi-form11_step-tag {
+    font-size: 14px !important;
+    padding: 8px 12px !important;
+  }
+  
+  /* Summary grid - single column on mobile */
+  .summary-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+  
+  /* Container padding reduction */
+  .container-medium,
+  .container-small,
+  .container-large {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+  
+  /* Inline error messages */
+  .inline-error-message {
+    font-size: 13px !important;
+    padding: 10px 14px !important;
+    margin-top: 12px !important;
+  }
+  
+  /* Distance message */
+  .distance-message {
+    font-size: 13px !important;
+    padding: 10px 14px !important;
+  }
+  
+  /* Date picker input field */
+  .multi-form11_input-field .date-picker-input {
+    padding-left: 44px !important;
+    font-size: 16px !important;
+  }
+  
+  .multi-form11_input-field .form-icon-left {
+    left: 14px !important;
+  }
+  
+  /* Text wrapping for long content */
+  .w-richtext,
+  .text-size-small,
+  .text-size-medium {
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    hyphens: auto !important;
+  }
+  
+  /* Complex other field */
+  #complex-other-field {
+    margin-top: 12px !important;
+  }
+  
+  #complex-other-text {
+    font-size: 16px !important;
+    padding: 12px 16px !important;
+  }
+  
+  /* Heavy weight field */
+  #heavy-weight-field {
+    margin-top: 12px !important;
+  }
+  
+  #heavy-weight-input {
+    font-size: 16px !important;
+    padding: 12px 16px !important;
+  }
+}
+
+/* Small mobile breakpoint: 479px and below */
+@media screen and (max-width: 479px) {
+  /* Further reduce padding on very small screens */
+  .multi-form11_form-content {
+    padding: 12px !important;
+  }
+  
+  .form_input,
+  .w-input,
+  .w-select {
+    padding: 10px 14px !important;
+    font-size: 16px !important;
+  }
+  
+  .form_radio-btn,
+  .form_checkbox-btn {
+    padding: 12px 14px !important;
+    margin-bottom: 8px !important;
+  }
+  
+  .form_radio-btn-label,
+  .form_checkbox-label,
+  .form_radio-btn .w-form-label,
+  .form_checkbox-btn .w-form-label {
+    font-size: 14px !important;
+  }
+  
+  .custom-radio-option {
+    padding: 8px 12px !important;
+  }
+  
+  .custom-radio-label {
+    font-size: 14px !important;
+  }
+  
+  .button-group .button {
+    padding: 12px 18px !important;
+    font-size: 15px !important;
+  }
+  
+  .form_field-label {
+    font-size: 13px !important;
+  }
+  
+  /* Checkbox icon - even smaller on very small screens */
+  .form_checkbox-icon,
+  .w-checkbox-input.form_checkbox-icon {
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px !important;
+    min-height: 24px !important;
+    margin-right: 8px !important;
+  }
+  
+  /* Step indicator - smaller */
+  .multi-form11_step-tag {
+    font-size: 13px !important;
+    padding: 6px 10px !important;
+  }
+  
+  /* Container padding - minimal on very small screens */
+  .container-medium,
+  .container-small,
+  .container-large {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+  
+  /* Inline error messages - smaller */
+  .inline-error-message {
+    font-size: 12px !important;
+    padding: 8px 12px !important;
+  }
+  
+  .distance-message {
+    font-size: 12px !important;
+    padding: 8px 12px !important;
+  }
+}
+
 /* Reduce button group spacing in step 3 */
 .residential-questions .button-group,
 .commercial-questions .button-group {
