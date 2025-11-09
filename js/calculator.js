@@ -748,56 +748,120 @@
               }
               
               // Initialize Google Places Autocomplete - following CALCULATOR_KM_CALCULATION_AND_STYLING.md
+              // Use strict bounds to prevent invalid coordinates
               const options = {
                 componentRestrictions: { country: 'ca' },
                 fields: ['formatted_address', 'geometry'],
-                types: ['address']
+                types: ['address'],
+                bounds: new google.maps.LatLngBounds(
+                  new google.maps.LatLng(41.0, -81.0), // Southwest corner of Canada
+                  new google.maps.LatLng(83.0, -52.0)  // Northeast corner of Canada
+                )
               };
               
               // Clear any existing autocomplete instances
               if (fromAutocomplete) {
-                google.maps.event.clearInstanceListeners(fromInput);
+                try {
+                  google.maps.event.clearInstanceListeners(fromInput);
+                } catch (e) {
+                  // Ignore errors when clearing listeners
+                }
               }
               if (toAutocomplete) {
-                google.maps.event.clearInstanceListeners(toInput);
+                try {
+                  google.maps.event.clearInstanceListeners(toInput);
+                } catch (e) {
+                  // Ignore errors when clearing listeners
+                }
               }
               
-              fromAutocomplete = new google.maps.places.Autocomplete(fromInput, options);
-              toAutocomplete = new google.maps.places.Autocomplete(toInput, options);
+              try {
+                fromAutocomplete = new google.maps.places.Autocomplete(fromInput, options);
+                toAutocomplete = new google.maps.places.Autocomplete(toInput, options);
+              } catch (error) {
+                // If autocomplete fails, allow manual entry
+                distanceInput.removeAttribute('readonly');
+                distanceInput.placeholder = 'Saisissez la distance manuellement (km)';
+                return;
+              }
               
               // Initialize Distance Matrix Service
-              distanceMatrixService = new google.maps.DistanceMatrixService();
+              try {
+                distanceMatrixService = new google.maps.DistanceMatrixService();
+              } catch (error) {
+                // If Distance Matrix Service fails, allow manual entry
+                distanceInput.removeAttribute('readonly');
+                distanceInput.placeholder = 'Saisissez la distance manuellement (km)';
+                return;
+              }
               
               // Listen for place selection on "from" address - following guide
               fromAutocomplete.addListener('place_changed', () => {
-                const place = fromAutocomplete.getPlace();
-                if (place.formatted_address) {
-                  fromInput.value = place.formatted_address;
-                  calculateDistance();
+                try {
+                  const place = fromAutocomplete.getPlace();
+                  if (place && place.formatted_address) {
+                    // Validate geometry before using
+                    if (place.geometry && place.geometry.location) {
+                      const lat = place.geometry.location.lat();
+                      const lng = place.geometry.location.lng();
+                      // Check if coordinates are valid numbers
+                      if (isNaN(lat) || isNaN(lng) || !isFinite(lat) || !isFinite(lng)) {
+                        // Invalid coordinates, skip
+                        return;
+                      }
+                    }
+                    fromInput.value = place.formatted_address;
+                    calculateDistance();
+                  }
+                } catch (error) {
+                  // Silently handle errors
                 }
               });
               
               // Listen for place selection on "to" address - following guide
               toAutocomplete.addListener('place_changed', () => {
-                const place = toAutocomplete.getPlace();
-                if (place.formatted_address) {
-                  toInput.value = place.formatted_address;
-                  calculateDistance();
+                try {
+                  const place = toAutocomplete.getPlace();
+                  if (place && place.formatted_address) {
+                    // Validate geometry before using
+                    if (place.geometry && place.geometry.location) {
+                      const lat = place.geometry.location.lat();
+                      const lng = place.geometry.location.lng();
+                      // Check if coordinates are valid numbers
+                      if (isNaN(lat) || isNaN(lng) || !isFinite(lat) || !isFinite(lng)) {
+                        // Invalid coordinates, skip
+                        return;
+                      }
+                    }
+                    toInput.value = place.formatted_address;
+                    calculateDistance();
+                  }
+                } catch (error) {
+                  // Silently handle errors
                 }
               });
               
               // Also calculate on blur events - following guide
               fromInput.addEventListener('blur', () => {
-                calculateDistance();
+                try {
+                  calculateDistance();
+                } catch (error) {
+                  // Silently handle errors
+                }
               });
               
               toInput.addEventListener('blur', () => {
-                calculateDistance();
+                try {
+                  calculateDistance();
+                } catch (error) {
+                  // Silently handle errors
+                }
               });
             } catch (error) {
+              // Handle errors gracefully
               distanceInput.removeAttribute('readonly');
               distanceInput.placeholder = 'Saisissez la distance manuellement (km)';
-              showDistanceMessage('Erreur d\'initialisation de Google Places. Vous pouvez saisir la distance manuellement.', 'warning');
+              // Don't show error message to avoid cluttering the UI
             }
           } else {
             // Retry after a short delay if places library not loaded yet
@@ -853,41 +917,63 @@
         avoidTolls: false
       };
       
-      distanceMatrixService.getDistanceMatrix(request, (response, status) => {
-        if (status === 'OK' && response && response.rows && response.rows[0] && response.rows[0].elements && response.rows[0].elements[0].status === 'OK') {
-          const element = response.rows[0].elements[0];
-          const distanceKm = Math.round(element.distance.value / 1000);
-          
-          // Update distance input
-          distanceInput.value = distanceKm;
-          distanceInput.disabled = false;
-          distanceInput.placeholder = 'Calcul automatique...';
-          
-          // Show success message
-          showDistanceMessage(`Distance calculée: ${element.distance.text}`, 'success');
-        } else {
-          // Handle errors
-          distanceInput.placeholder = 'Erreur de calcul';
-          distanceInput.disabled = false;
-          
-          let errorMessage = 'Impossible de calculer la distance.';
-          if (status === 'ZERO_RESULTS') {
-            errorMessage = 'Aucun résultat trouvé pour ces adresses.';
-          } else if (status === 'REQUEST_DENIED') {
-            errorMessage = 'Erreur d\'autorisation. La clé API Google Maps n\'est pas valide ou n\'a pas les permissions nécessaires. Vérifiez la configuration Vercel.';
-          } else if (status === 'OVER_QUERY_LIMIT') {
-            errorMessage = 'Limite de requêtes dépassée.';
-          } else if (status === 'INVALID_REQUEST') {
-            errorMessage = 'Requête invalide. Vérifiez les adresses.';
-          } else {
-            if (response && response.error_message) {
-              errorMessage += ' ' + response.error_message;
+      try {
+        distanceMatrixService.getDistanceMatrix(request, (response, status) => {
+          try {
+            if (status === 'OK' && response && response.rows && response.rows[0] && response.rows[0].elements && response.rows[0].elements[0].status === 'OK') {
+              const element = response.rows[0].elements[0];
+              const distanceValue = element.distance && element.distance.value ? element.distance.value : 0;
+              const distanceKm = Math.round(distanceValue / 1000);
+              
+              // Validate distance is a valid number
+              if (isNaN(distanceKm) || !isFinite(distanceKm) || distanceKm <= 0) {
+                distanceInput.placeholder = 'Erreur de calcul';
+                distanceInput.disabled = false;
+                return;
+              }
+              
+              // Update distance input
+              distanceInput.value = distanceKm;
+              distanceInput.disabled = false;
+              distanceInput.placeholder = 'Calcul automatique...';
+              
+              // Show success message
+              if (element.distance && element.distance.text) {
+                showDistanceMessage(`Distance calculée: ${element.distance.text}`, 'success');
+              }
+            } else {
+              // Handle errors
+              distanceInput.placeholder = 'Erreur de calcul';
+              distanceInput.disabled = false;
+              
+              let errorMessage = 'Impossible de calculer la distance.';
+              if (status === 'ZERO_RESULTS') {
+                errorMessage = 'Aucun résultat trouvé pour ces adresses.';
+              } else if (status === 'REQUEST_DENIED') {
+                errorMessage = 'Erreur d\'autorisation. La clé API Google Maps n\'est pas valide ou n\'a pas les permissions nécessaires. Vérifiez la configuration Vercel.';
+              } else if (status === 'OVER_QUERY_LIMIT') {
+                errorMessage = 'Limite de requêtes dépassée.';
+              } else if (status === 'INVALID_REQUEST') {
+                errorMessage = 'Requête invalide. Vérifiez les adresses.';
+              } else {
+                if (response && response.error_message) {
+                  errorMessage += ' ' + response.error_message;
+                }
+              }
+              
+              showDistanceMessage(errorMessage, 'error');
             }
+          } catch (error) {
+            // Handle errors gracefully
+            distanceInput.placeholder = 'Erreur de calcul';
+            distanceInput.disabled = false;
           }
-          
-          showDistanceMessage(errorMessage, 'error');
-        }
-      });
+        });
+      } catch (error) {
+        // Handle errors gracefully
+        distanceInput.placeholder = 'Erreur de calcul';
+        distanceInput.disabled = false;
+      }
     }
     
     // Initialize Flatpickr date picker
