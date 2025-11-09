@@ -1,5 +1,4 @@
 // Clean Multi-Step Calculator - No Google Maps, no alerts, clean design
-console.log('🚀 Calculator script loaded');
 
 (function() {
   'use strict';
@@ -7,11 +6,8 @@ console.log('🚀 Calculator script loaded');
   function init() {
     const form = document.getElementById('estimation-form');
     if (!form) {
-      console.error('Form not found');
       return;
     }
-    
-    console.log('✅ Form found, initializing calculator');
     
     let currentStep = 1;
     const totalSteps = 5; // Step 1: 20%, Step 2: 40%, Step 3: 60%, Step 4: 80%, Step 5: 100% (result)
@@ -28,7 +24,6 @@ console.log('🚀 Calculator script loaded');
     
     // Show specific step
     function showStep(step) {
-      console.log(`Showing step ${step}`);
       
       // Hide all steps
       Object.values(steps).forEach(stepEl => {
@@ -69,7 +64,6 @@ console.log('🚀 Calculator script loaded');
       
       // Initialize address autocomplete when step 4 is shown
       if (step === 4) {
-        console.log('📍 Step 4 shown, initializing address autocomplete...');
         // Small delay to ensure DOM is ready
         setTimeout(() => {
           initAddressAutocomplete();
@@ -143,35 +137,17 @@ console.log('🚀 Calculator script loaded');
         // Double-check and force width again after reflow
         const computedWidth = window.getComputedStyle(progressBar).width;
         if (computedWidth === '100%' || computedWidth === progressBar.parentElement.offsetWidth + 'px') {
-          console.warn('⚠️ Width still 100%, forcing again...');
           progressBar.style.setProperty('width', progress + '%', 'important');
           progressBar.style.setProperty('flex', 'none', 'important');
-        }
-        
-        console.log(`Progress: ${progress}% (step ${step}/${totalSteps})`);
-        console.log('Progress bar element:', progressBar);
-        console.log('Progress bar computed width:', window.getComputedStyle(progressBar).width);
-        console.log('Progress bar inline style width:', progressBar.style.width);
-      } else {
-        console.warn('Progress bar not found. Searching for:', [
-          '#progress-indicator',
-          '[data-form="progress-indicator"]',
-          '.multi-form11_progress-bar[id="progress-indicator"]'
-        ]);
-        // Try to find progress wrapper
-        const progressWrapper = form.querySelector('.multi-form11_progress');
-        if (progressWrapper) {
-          console.warn('Found progress wrapper:', progressWrapper);
-          console.warn('Progress wrapper children:', progressWrapper.children);
         }
       }
       
       // Update step text
       const stepText = form.querySelector('.multi-form11_step-tag, #step-indicator');
       if (stepText) {
-        // Show step 1-4 for form steps, "Estimation" for step 5
+        // Show step 1-4 for form steps, "Résultats" for step 5
         if (step === 5) {
-          stepText.textContent = 'Estimation';
+          stepText.textContent = 'Résultats';
         } else {
           stepText.textContent = `Step ${step}/5`;
         }
@@ -290,7 +266,6 @@ console.log('🚀 Calculator script loaded');
         const serviceType = form.querySelector('input[name="service-type"]:checked');
         if (serviceType) {
           selectedServiceType = serviceType.value;
-          console.log('Service type:', selectedServiceType);
         }
       }
       
@@ -622,38 +597,29 @@ console.log('🚀 Calculator script loaded');
       if (googleMapsLoaded) return true;
       
       try {
-        console.log('🔑 Fetching Google Maps API key from /api/get-maps-key...');
         // Get API key from serverless function
         const response = await fetch('/api/get-maps-key');
         
         if (!response.ok) {
-          console.error('❌ API key endpoint returned error:', response.status, response.statusText);
           showDistanceMessage('Erreur de récupération de la clé API. Vous pouvez saisir la distance manuellement.', 'warning');
           return false;
         }
         
         const data = await response.json();
-        console.log('📦 API key response:', { success: data.success, hasApiKey: !!data.apiKey });
         
         if (!data.success || !data.apiKey) {
-          console.warn('⚠️ Google Maps API key not available in response:', data);
           showDistanceMessage('Clé API Google Maps non disponible. Vérifiez la configuration Vercel. Vous pouvez saisir la distance manuellement.', 'warning');
           return false;
         }
         
         const apiKey = data.apiKey;
-        console.log('✅ API key received, length:', apiKey.length);
         
         // Check if Google Maps is already loaded (possibly without API key)
         // Remove ALL Google Maps scripts, including those loaded by Webflow
-        const existingScripts = document.querySelectorAll('script[src*="maps.googleapis.com"]');
-        if (existingScripts.length > 0) {
-          console.warn('⚠️ Google Maps script already exists, removing old scripts...');
-          existingScripts.forEach(script => {
-            console.log('Removing script:', script.src);
-            script.remove();
-          });
-        }
+        const existingScripts = document.querySelectorAll('script[src*="maps.googleapis.com"]:not([data-our-script])');
+        existingScripts.forEach(script => {
+          script.remove();
+        });
         
         // Also remove any Webflow map widgets that might trigger Google Maps loading
         const webflowMapWidgets = document.querySelectorAll('.w-widget-map');
@@ -663,16 +629,6 @@ console.log('🚀 Calculator script loaded');
           widget.removeAttribute('data-widget-latlng');
         });
         
-        // Reset google object if it exists to prevent conflicts
-        if (window.google && window.google.maps) {
-          try {
-            delete window.google;
-            console.log('🔄 Reset window.google object');
-          } catch (e) {
-            console.warn('⚠️ Could not delete window.google:', e);
-          }
-        }
-        
         // Wait a bit to ensure old scripts are fully removed
         await new Promise(resolve => setTimeout(resolve, 100));
         
@@ -680,7 +636,6 @@ console.log('🚀 Calculator script loaded');
         return new Promise((resolve, reject) => {
           // Double check - if Google Maps is already loaded with API key, we're good
           if (window.google && window.google.maps && window.google.maps.places) {
-            console.log('✅ Google Maps already loaded with Places library');
             googleMapsLoaded = true;
             resolve(true);
             return;
@@ -689,21 +644,12 @@ console.log('🚀 Calculator script loaded');
           const script = document.createElement('script');
           const scriptUrl = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&language=fr&callback=initGoogleMapsCallback`;
           
-          // Verify API key is in URL
-          console.log('📜 Loading Google Maps script with API key');
-          console.log('🔑 API key in URL:', scriptUrl.includes('key=') ? 'YES' : 'NO');
-          console.log('🔑 API key length:', apiKey.length);
-          console.log('🔑 Script URL (first 100 chars):', scriptUrl.substring(0, 100));
-          
           // Set callback for when Google Maps is loaded
           window.initGoogleMapsCallback = function() {
             googleMapsLoaded = true;
-            console.log('✅ Google Maps API loaded successfully via callback');
             if (window.google && window.google.maps && window.google.maps.places) {
-              console.log('✅ Google Places library confirmed loaded');
               resolve(true);
             } else {
-              console.warn('⚠️ Google Maps loaded but Places library not available');
               reject(false);
             }
             delete window.initGoogleMapsCallback;
@@ -715,13 +661,11 @@ console.log('🚀 Calculator script loaded');
           script.setAttribute('data-our-script', 'true'); // Mark as our script
           
           script.onload = () => {
-            console.log('✅ Google Maps script loaded');
             // Wait a bit for callback
             setTimeout(() => {
               if (window.google && window.google.maps && window.google.maps.places) {
                 if (!googleMapsLoaded) {
                   googleMapsLoaded = true;
-                  console.log('✅ Google Maps API loaded successfully (onload fallback)');
                   resolve(true);
                 }
               }
@@ -729,9 +673,6 @@ console.log('🚀 Calculator script loaded');
           };
           
           script.onerror = (error) => {
-            console.error('❌ Failed to load Google Maps API script:', error);
-            console.error('❌ Script URL was:', scriptUrl.substring(0, 100) + '...');
-            console.error('❌ This might be due to an ad-blocker blocking Google Maps');
             if (window.initGoogleMapsCallback) {
               delete window.initGoogleMapsCallback;
             }
@@ -746,11 +687,8 @@ console.log('🚀 Calculator script loaded');
           } else {
             document.head.appendChild(script);
           }
-          
-          console.log('📜 Google Maps script tag added to DOM');
         });
       } catch (error) {
-        console.error('❌ Error loading Google Maps:', error);
         showDistanceMessage('Erreur de chargement de Google Maps. Vous pouvez saisir la distance manuellement.', 'warning');
         return false;
       }
@@ -776,16 +714,8 @@ console.log('🚀 Calculator script loaded');
         const initPlaces = () => {
           if (window.google && window.google.maps && window.google.maps.places && window.google.maps.places.Autocomplete) {
             try {
-              // Verify API key is working
-              console.log('🔑 Verifying Google Maps API key...');
-              console.log('🔑 Google Maps object:', window.google ? 'exists' : 'missing');
-              console.log('🔑 Google Maps.maps:', window.google.maps ? 'exists' : 'missing');
-              console.log('🔑 Google Maps.places:', window.google.maps.places ? 'exists' : 'missing');
-              console.log('🔑 Google Maps.places.Autocomplete:', window.google.maps.places.Autocomplete ? 'exists' : 'missing');
-              
               // Re-check inputs exist at this point
               if (!fromInput || !toInput) {
-                console.error('❌ Address inputs not found when initializing autocomplete');
                 return;
               }
               
@@ -809,11 +739,6 @@ console.log('🚀 Calculator script loaded');
               
               // Initialize Distance Matrix Service
               distanceMatrixService = new google.maps.DistanceMatrixService();
-              
-              console.log('✅ Google Places Autocomplete initialized');
-              console.log('✅ Distance Matrix Service initialized');
-              console.log('✅ From input:', fromInput);
-              console.log('✅ To input:', toInput);
               
               // Listen for place selection on "from" address - following guide
               fromAutocomplete.addListener('place_changed', () => {
@@ -842,7 +767,6 @@ console.log('🚀 Calculator script loaded');
                 calculateDistance();
               });
             } catch (error) {
-              console.error('Error initializing Google Places Autocomplete:', error);
               distanceInput.removeAttribute('readonly');
               distanceInput.placeholder = 'Saisissez la distance manuellement (km)';
               showDistanceMessage('Erreur d\'initialisation de Google Places. Vous pouvez saisir la distance manuellement.', 'warning');
@@ -855,7 +779,6 @@ console.log('🚀 Calculator script loaded');
         
         initPlaces();
       }).catch(error => {
-        console.error('Error loading Google Maps API:', error);
         distanceInput.removeAttribute('readonly');
         distanceInput.placeholder = 'Saisissez la distance manuellement (km)';
       });
@@ -903,8 +826,6 @@ console.log('🚀 Calculator script loaded');
       };
       
       distanceMatrixService.getDistanceMatrix(request, (response, status) => {
-        console.log('📊 Distance Matrix response:', { status, response });
-        
         if (status === 'OK' && response && response.rows && response.rows[0] && response.rows[0].elements && response.rows[0].elements[0].status === 'OK') {
           const element = response.rows[0].elements[0];
           const distanceKm = Math.round(element.distance.value / 1000);
@@ -926,27 +847,17 @@ console.log('🚀 Calculator script loaded');
             errorMessage = 'Aucun résultat trouvé pour ces adresses.';
           } else if (status === 'REQUEST_DENIED') {
             errorMessage = 'Erreur d\'autorisation. La clé API Google Maps n\'est pas valide ou n\'a pas les permissions nécessaires. Vérifiez la configuration Vercel.';
-            console.error('❌ REQUEST_DENIED - Vérifiez que:');
-            console.error('  1. La clé API est configurée dans Vercel (GOOGLE_MAPS_API_KEY)');
-            console.error('  2. Les APIs suivantes sont activées dans Google Cloud Console:');
-            console.error('     - Maps JavaScript API');
-            console.error('     - Places API');
-            console.error('     - Distance Matrix API');
-            console.error('  3. Les restrictions de la clé API permettent votre domaine');
           } else if (status === 'OVER_QUERY_LIMIT') {
             errorMessage = 'Limite de requêtes dépassée.';
           } else if (status === 'INVALID_REQUEST') {
             errorMessage = 'Requête invalide. Vérifiez les adresses.';
           } else {
-            console.error('❌ Distance Matrix error:', status, response);
             if (response && response.error_message) {
-              console.error('❌ Error message:', response.error_message);
               errorMessage += ' ' + response.error_message;
             }
           }
           
           showDistanceMessage(errorMessage, 'error');
-          console.error('Distance Matrix error details:', { status, response });
         }
       });
     }
@@ -975,7 +886,6 @@ console.log('🚀 Calculator script loaded');
         
       // Check if Flatpickr is available
       if (typeof flatpickr === 'undefined') {
-        console.warn('⚠️ Flatpickr not loaded, date picker will not work');
         return;
       }
       
@@ -1002,10 +912,7 @@ console.log('🚀 Calculator script loaded');
         dateInput.addEventListener('input', function(e) {
           e.stopPropagation();
         }, { capture: true });
-        
-        console.log('✅ Date picker initialized');
       } catch (error) {
-        console.error('❌ Error initializing date picker:', error);
         // Re-enable input if Flatpickr fails
         dateInput.removeAttribute('readonly');
       }
@@ -1297,9 +1204,6 @@ console.log('🚀 Calculator script loaded');
         choices.push(`Commentaires: ${messageInput.value.trim()}`);
       }
       
-      // Debug: log all choices found
-      console.log('📋 All choices collected:', choices);
-      
       resultContent.innerHTML = `
         <div style="padding: 24px 20px; max-width: 800px; margin: 0 auto;">
           <!-- Price at the top - Most important -->
@@ -1380,14 +1284,11 @@ console.log('🚀 Calculator script loaded');
         const nameInput = document.querySelector('#form-name');
         
         if (!emailInput || !emailInput.value || !nameInput || !nameInput.value) {
-          console.warn('⚠️ Email or name not found, skipping email send');
           return;
         }
         
         const email = emailInput.value.trim();
         const name = nameInput.value.trim();
-        
-        console.log('📧 Sending estimation emails...', { email, name });
         
         const response = await fetch('/api/send-estimation', {
           method: 'POST',
@@ -1402,49 +1303,21 @@ console.log('🚀 Calculator script loaded');
           }),
         });
         
-        console.log('📡 Response status:', response.status, response.statusText);
-        
         let result;
         try {
           const text = await response.text();
-          console.log('📄 Response text:', text);
           result = JSON.parse(text);
         } catch (parseError) {
-          console.error('❌ Error parsing response:', parseError);
-          throw new Error(`Failed to parse server response. Status: ${response.status}`);
+          // Silently fail - don't interrupt user experience
+          return;
         }
         
-        console.log('📦 Response data:', result);
-        
-        if (result.success) {
-          console.log('✅ Emails sent successfully:', result.emailIds);
-        } else {
-          console.error('❌ Error sending emails:', result.message);
-          console.error('❌ Full error response:', result);
-          if (result.errors && result.errors.length > 0) {
-            console.error('❌ Email errors:', result.errors);
-            result.errors.forEach((err, index) => {
-              console.error(`❌ Error ${index + 1} (${err.type}):`, err.error);
-            });
-          }
-          if (result.error) {
-            console.error('❌ Error details:', result.error);
-          }
-          if (result.details) {
-            console.error('❌ Error stack:', result.details);
-          }
-          if (result.missing) {
-            console.error('❌ Missing fields:', result.missing);
-          }
+        if (!result.success) {
+          // Silently fail - don't interrupt user experience
+          return;
         }
       } catch (error) {
-        console.error('❌ Error sending estimation emails:', error);
-        console.error('❌ Error details:', {
-          message: error.message,
-          stack: error.stack,
-          name: error.name,
-        });
-        // Don't show error to user, just log it
+        // Silently fail - don't interrupt user experience
       }
     }
     
@@ -1472,18 +1345,37 @@ console.log('🚀 Calculator script loaded');
     function setupComplexOtherField() {
       const complexOtherCheckbox = form.querySelector('#complex-other');
       const complexOtherField = form.querySelector('#complex-other-field');
-      if (complexOtherCheckbox && complexOtherField) {
-        // Remove existing listeners
-        const newCheckbox = complexOtherCheckbox.cloneNode(true);
-        complexOtherCheckbox.parentNode.replaceChild(newCheckbox, complexOtherCheckbox);
-        
-        newCheckbox.addEventListener('change', function() {
-          if (this.checked) {
+      const complexOtherText = form.querySelector('#complex-other-text');
+      
+      if (complexOtherCheckbox && complexOtherField && complexOtherText) {
+        // Function to update field visibility
+        function updateFieldVisibility() {
+          if (complexOtherCheckbox.checked) {
             complexOtherField.style.display = 'block';
+            // Make text field required when checkbox is checked
+            complexOtherText.setAttribute('required', 'required');
           } else {
             complexOtherField.style.display = 'none';
+            // Remove required when checkbox is unchecked
+            complexOtherText.removeAttribute('required');
+            complexOtherText.value = ''; // Clear value when hidden
           }
-        });
+        }
+        
+        // Initial state
+        updateFieldVisibility();
+        
+        // Listen for checkbox changes
+        complexOtherCheckbox.addEventListener('change', updateFieldVisibility);
+        
+        // Also listen for clicks on the label wrapper
+        const checkboxLabel = complexOtherCheckbox.closest('.form_checkbox-btn');
+        if (checkboxLabel) {
+          checkboxLabel.addEventListener('click', function(e) {
+            // Small delay to let the checkbox state update first
+            setTimeout(updateFieldVisibility, 10);
+          });
+        }
       }
     }
     
@@ -1517,18 +1409,14 @@ console.log('🚀 Calculator script loaded');
     
     // Load Google Maps API immediately on initialization (not just on step 4)
     // This ensures Google Maps is loaded with API key before any other script tries to use it
-    console.log('🚀 Pre-loading Google Maps API...');
     loadGoogleMapsAPI().then(loaded => {
       if (loaded) {
-        console.log('✅ Google Maps API pre-loaded successfully');
-        
         // Monitor and prevent Webflow from loading Google Maps without API key
-        const observer = new MutationObserver((mutations) => {
+        const observer = new MutationObserver(() => {
           const newScripts = document.querySelectorAll('script[src*="maps.googleapis.com"]:not([data-our-script])');
           newScripts.forEach(script => {
             // Check if it's not our script (doesn't have API key or has different callback)
             if (!script.src.includes('key=') || script.src.includes('callback=_wf_maps_loaded')) {
-              console.warn('⚠️ Removing Webflow Google Maps script without API key:', script.src);
               script.remove();
             }
           });
@@ -1542,16 +1430,13 @@ console.log('🚀 Calculator script loaded');
           const unauthorizedScripts = document.querySelectorAll('script[src*="maps.googleapis.com"]:not([data-our-script])');
           unauthorizedScripts.forEach(script => {
             if (!script.src.includes('key=') || script.src.includes('callback=_wf_maps_loaded')) {
-              console.warn('⚠️ Removing unauthorized Google Maps script:', script.src);
               script.remove();
             }
           });
         }, 1000);
-      } else {
-        console.warn('⚠️ Google Maps API pre-load failed, will retry on step 4');
       }
-    }).catch(error => {
-      console.error('❌ Error pre-loading Google Maps API:', error);
+    }).catch(() => {
+      // Silently fail - will retry on step 4
     });
     
     // Re-setup on step change
@@ -1574,7 +1459,6 @@ console.log('🚀 Calculator script loaded');
       }, 100);
     };
     
-    console.log('✅ Calculator initialized');
   }
   
   if (document.readyState === 'loading') {
