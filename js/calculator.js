@@ -88,13 +88,33 @@
     // Show specific step
     function showStep(step) {
       
-      // Hide all steps
-      Object.values(steps).forEach(stepEl => {
-        if (stepEl) {
-          stepEl.style.display = 'none';
-          stepEl.classList.remove('active');
+      // Hide all steps - use querySelectorAll to get ALL elements with each data-step
+      // This ensures we hide both residential-questions and commercial-questions when they both have data-step="3"
+      for (let i = 1; i <= totalSteps; i++) {
+        const stepElements = form.querySelectorAll(`[data-step="${i}"]`);
+        stepElements.forEach(stepEl => {
+          if (stepEl) {
+            stepEl.style.display = 'none';
+            stepEl.classList.remove('active');
+          }
+        });
+      }
+      
+      // ALWAYS hide residential and commercial questions when not on step 3
+      // This prevents them from showing when moving to step 4
+      const residential = form.querySelector('.residential-questions');
+      const commercial = form.querySelector('.commercial-questions');
+      
+      if (step !== 3) {
+        if (residential) {
+          residential.style.display = 'none';
+          residential.classList.remove('active');
         }
-      });
+        if (commercial) {
+          commercial.style.display = 'none';
+          commercial.classList.remove('active');
+        }
+      }
       
       // Show current step
       if (steps[step]) {
@@ -104,9 +124,6 @@
       
       // Handle conditional step 3
       if (step === 3) {
-        const residential = form.querySelector('.residential-questions');
-        const commercial = form.querySelector('.commercial-questions');
-        
         if (residential) {
           residential.style.display = 'none';
           residential.classList.remove('active');
