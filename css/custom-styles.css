@@ -1571,14 +1571,15 @@ html, body {
 /* Mobile breakpoint: 767px and below */
 @media screen and (max-width: 767px) {
   /* Reduce heading sizes by 10% on mobile */
+  /* Webflow mobile sizes: h1 = 3rem, h2 = 2.75rem */
   .heading-style-h1,
   h1.heading-style-h1 {
-    font-size: 0.9em !important;
+    font-size: calc(3rem * 0.9) !important; /* 2.7rem = 90% of 3rem */
   }
   
   .heading-style-h2,
   h2.heading-style-h2 {
-    font-size: 0.9em !important;
+    font-size: calc(2.75rem * 0.9) !important; /* 2.475rem = 90% of 2.75rem */
   }
 }
 
