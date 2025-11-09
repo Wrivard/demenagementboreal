@@ -169,11 +169,11 @@ console.log('🚀 Calculator script loaded');
       // Update step text
       const stepText = form.querySelector('.multi-form11_step-tag, #step-indicator');
       if (stepText) {
-        // Show step 1-4 for form steps, hide for result step (step 5)
+        // Show step 1-4 for form steps, "Estimation" for step 5
         if (step === 5) {
-          stepText.textContent = 'Résultat';
+          stepText.textContent = 'Estimation';
         } else {
-          stepText.textContent = `Étape ${step}/4`;
+          stepText.textContent = `Step ${step}/5`;
         }
       }
       
