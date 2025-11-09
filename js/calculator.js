@@ -1,70 +1,5 @@
-// Clean Multi-Step Calculator - No Google Maps, no alerts, clean design
-
-// IMMEDIATE: Prevent Google Maps from loading multiple times
-// This runs BEFORE anything else to catch scripts loaded by Webflow
-(function() {
-  'use strict';
-  
-  // Remove any existing Google Maps scripts immediately
-  function removeAllGoogleMapsScripts() {
-    const allMapsScripts = document.querySelectorAll('script[src*="maps.googleapis.com"]');
-    allMapsScripts.forEach(script => {
-      script.remove();
-    });
-    
-    // Also remove Webflow map widgets
-    const webflowMapWidgets = document.querySelectorAll('.w-widget-map');
-    webflowMapWidgets.forEach(widget => {
-      widget.style.display = 'none';
-      widget.removeAttribute('data-widget-latlng');
-      widget.removeAttribute('data-widget-address');
-    });
-  }
-  
-  // Run immediately
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', removeAllGoogleMapsScripts);
-  } else {
-    removeAllGoogleMapsScripts();
-  }
-  
-  // Also monitor for new scripts being added
-  const earlyObserver = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
-      mutation.addedNodes.forEach((node) => {
-        if (node.nodeName === 'SCRIPT' && node.src && node.src.includes('maps.googleapis.com')) {
-          // Remove any Google Maps script that doesn't have our marker
-          if (!node.hasAttribute('data-our-script')) {
-            node.remove();
-          }
-        }
-      });
-    });
-  });
-  
-  // Start observing immediately
-  if (document.head) {
-    earlyObserver.observe(document.head, { childList: true, subtree: true });
-  }
-  if (document.body) {
-    earlyObserver.observe(document.body, { childList: true, subtree: true });
-  }
-  
-  // Also observe document for when head/body are created
-  const docObserver = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
-      mutation.addedNodes.forEach((node) => {
-        if (node.nodeName === 'HEAD' || node.nodeName === 'BODY') {
-          earlyObserver.observe(node, { childList: true, subtree: true });
-        }
-      });
-    });
-  });
-  
-  if (document.documentElement) {
-    docObserver.observe(document.documentElement, { childList: true });
-  }
-})();
+// Clean Multi-Step Calculator - Google Maps only for address autocomplete
+// Note: Contact section uses Google My Map (iframe embed), not Google Maps API
 
 (function() {
   'use strict';
@@ -688,31 +623,18 @@
       window._googleMapsLoading = true;
       
       try {
-        // First, aggressively remove ALL existing Google Maps scripts and reset
-        const allMapsScripts = document.querySelectorAll('script[src*="maps.googleapis.com"]');
-        allMapsScripts.forEach(script => {
-          script.remove();
-        });
-        
-        // Remove any Webflow map widgets that might trigger Google Maps loading
-        const webflowMapWidgets = document.querySelectorAll('.w-widget-map');
-        webflowMapWidgets.forEach(widget => {
-          widget.style.display = 'none';
-          widget.removeAttribute('data-widget-latlng');
-          widget.removeAttribute('data-widget-address');
-        });
-        
-        // Reset google object if it exists to prevent conflicts
-        if (window.google) {
-          try {
-            delete window.google;
-          } catch (e) {
-            // Ignore errors
+        // Remove any existing Google Maps scripts that don't have our marker
+        // Only remove scripts without API key (Webflow's scripts)
+        const existingScripts = document.querySelectorAll('script[src*="maps.googleapis.com"]:not([data-our-script])');
+        existingScripts.forEach(script => {
+          // Only remove scripts without API key or with Webflow callbacks
+          if (!script.src.includes('key=') || script.src.includes('callback=_wf_maps_loaded') || script.src.includes('maps-api-v3')) {
+            script.remove();
           }
-        }
+        });
         
         // Wait a bit to ensure old scripts are fully removed
-        await new Promise(resolve => setTimeout(resolve, 200));
+        await new Promise(resolve => setTimeout(resolve, 100));
         
         // Get API key from serverless function
         const response = await fetch('/api/get-maps-key');
@@ -1527,9 +1449,11 @@
           mutations.forEach((mutation) => {
             mutation.addedNodes.forEach((node) => {
               if (node.nodeName === 'SCRIPT' && node.src && (node.src.includes('maps.googleapis.com') || node.src.includes('maps-api-v3'))) {
-                // Remove ANY Google Maps script that doesn't have our marker
+                // Only remove scripts without API key or with Webflow callbacks
                 if (!node.hasAttribute('data-our-script')) {
-                  node.remove();
+                  if (!node.src.includes('key=') || node.src.includes('callback=_wf_maps_loaded') || node.src.includes('maps-api-v3')) {
+                    node.remove();
+                  }
                 }
               }
             });
@@ -1547,10 +1471,12 @@
             return;
           }
           
-          // Remove ALL Google Maps scripts that aren't ours (no conditions)
+          // Only remove scripts without API key (Webflow's scripts)
           const unauthorizedScripts = document.querySelectorAll('script[src*="maps.googleapis.com"]:not([data-our-script])');
           unauthorizedScripts.forEach(script => {
-            script.remove();
+            if (!script.src.includes('key=') || script.src.includes('callback=_wf_maps_loaded') || script.src.includes('maps-api-v3')) {
+              script.remove();
+            }
           });
           
           // Also remove any scripts with maps-api-v3 (Webflow's version)
@@ -1558,15 +1484,7 @@
           webflowScripts.forEach(script => {
             script.remove();
           });
-          
-          // Also check for Webflow map widgets
-          const webflowMapWidgets = document.querySelectorAll('.w-widget-map');
-          webflowMapWidgets.forEach(widget => {
-            widget.style.display = 'none';
-            widget.removeAttribute('data-widget-latlng');
-            widget.removeAttribute('data-widget-address');
-          });
-        }, 250); // Check more frequently
+        }, 500);
       }
     }).catch(() => {
       // Silently fail - will retry on step 4
