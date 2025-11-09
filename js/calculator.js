@@ -1570,7 +1570,20 @@
         const newCheckbox = complexOtherCheckbox.cloneNode(true);
         complexOtherCheckbox.parentNode.replaceChild(newCheckbox, complexOtherCheckbox);
         
-        // Function to update field visibility - AGGRESSIVE Webflow override approach
+        // RADICAL APPROACH: Clone the field element to remove style attribute from HTML
+        // This prevents Webflow from reapplying display: none from the original HTML
+        const originalField = complexOtherField;
+        const clonedField = originalField.cloneNode(true);
+        // Remove style attribute from cloned element
+        clonedField.removeAttribute('style');
+        // Replace original with cloned version
+        originalField.parentNode.replaceChild(clonedField, originalField);
+        // Update reference to use cloned element (reassign existing variable)
+        complexOtherField = clonedField;
+        // Re-find the text input in the cloned element
+        complexOtherText = complexOtherField.querySelector('#complex-other-text');
+        
+        // Function to update field visibility - RADICAL Webflow override approach
         function updateFieldVisibility() {
           if (newCheckbox.checked) {
             // STEP 1: Ensure all parent elements are visible
@@ -1584,7 +1597,7 @@
               current = current.parentElement;
             }
             
-            // STEP 2: COMPLETELY REMOVE the style attribute instead of modifying it
+            // STEP 2: COMPLETELY REMOVE the style attribute - ALWAYS
             // This prevents Webflow from reapplying display: none
             complexOtherField.removeAttribute('style');
             
@@ -1615,26 +1628,30 @@
             }
             
             // STEP 7: Make text field required and visible
-            complexOtherText.setAttribute('required', 'required');
-            complexOtherText.removeAttribute('style'); // Remove any inline styles
-            complexOtherText.style.setProperty('display', 'block', 'important');
-            complexOtherText.style.setProperty('visibility', 'visible', 'important');
-            complexOtherText.style.setProperty('opacity', '1', 'important');
-            complexOtherText.style.setProperty('width', '100%', 'important');
-            complexOtherText.removeAttribute('hidden');
-            complexOtherText.removeAttribute('aria-hidden');
-            
-            // STEP 8: Focus the text field when shown (with small delay)
-            setTimeout(() => {
-              complexOtherText.focus();
-            }, 50);
+            if (complexOtherText) {
+              complexOtherText.setAttribute('required', 'required');
+              complexOtherText.removeAttribute('style'); // Remove any inline styles
+              complexOtherText.style.setProperty('display', 'block', 'important');
+              complexOtherText.style.setProperty('visibility', 'visible', 'important');
+              complexOtherText.style.setProperty('opacity', '1', 'important');
+              complexOtherText.style.setProperty('width', '100%', 'important');
+              complexOtherText.removeAttribute('hidden');
+              complexOtherText.removeAttribute('aria-hidden');
+              
+              // STEP 8: Focus the text field when shown (with small delay)
+              setTimeout(() => {
+                complexOtherText.focus();
+              }, 50);
+            }
           } else {
             // Hide field when unchecked
             complexOtherField.classList.remove('show-field');
             complexOtherField.style.setProperty('display', 'none', 'important');
             complexOtherField.style.setProperty('visibility', 'hidden', 'important');
-            complexOtherText.removeAttribute('required');
-            complexOtherText.value = ''; // Clear value when hidden
+            if (complexOtherText) {
+              complexOtherText.removeAttribute('required');
+              complexOtherText.value = ''; // Clear value when hidden
+            }
           }
         }
         
@@ -1705,31 +1722,77 @@
         
         // CONTINUOUS CHECK - Backup in case MutationObserver doesn't catch it fast enough
         // Check every 100ms if checkbox is checked and field is hidden, then force visibility
-        const continuousCheck = setInterval(() => {
-          if (newCheckbox.checked) {
-            const styleAttr = complexOtherField.getAttribute('style');
-            const computedStyle = window.getComputedStyle(complexOtherField);
-            
-            // If style attribute contains display: none or visibility: hidden, remove it immediately
-            if (styleAttr && (styleAttr.includes('display') && styleAttr.includes('none') || 
-                styleAttr.includes('visibility') && styleAttr.includes('hidden'))) {
-              complexOtherField.removeAttribute('style');
-              updateFieldVisibility();
-            }
-            // Also check computed style as backup
-            else if (computedStyle.display === 'none' || computedStyle.visibility === 'hidden') {
-              updateFieldVisibility();
-            }
-          } else {
-            // Stop checking when checkbox is unchecked
-            clearInterval(continuousCheck);
-          }
-        }, 100);
+        let continuousCheckInterval = null;
+        let continuousCheckRAF = null;
         
-        // Clean up interval when checkbox is unchecked
+        function startContinuousCheck() {
+          // setInterval backup check
+          continuousCheckInterval = setInterval(() => {
+            if (newCheckbox.checked) {
+              const styleAttr = complexOtherField.getAttribute('style');
+              const computedStyle = window.getComputedStyle(complexOtherField);
+              
+              // If style attribute contains display: none or visibility: hidden, remove it immediately
+              if (styleAttr && (styleAttr.includes('display') && styleAttr.includes('none') || 
+                  styleAttr.includes('visibility') && styleAttr.includes('hidden'))) {
+                complexOtherField.removeAttribute('style');
+                updateFieldVisibility();
+              }
+              // Also check computed style as backup
+              else if (computedStyle.display === 'none' || computedStyle.visibility === 'hidden') {
+                updateFieldVisibility();
+              }
+            } else {
+              // Stop checking when checkbox is unchecked
+              stopContinuousCheck();
+            }
+          }, 100);
+          
+          // requestAnimationFrame check - runs every frame (more aggressive)
+          function rafCheck() {
+            if (newCheckbox.checked) {
+              const styleAttr = complexOtherField.getAttribute('style');
+              
+              // If style attribute contains display: none or visibility: hidden, remove it immediately
+              if (styleAttr && (styleAttr.includes('display') && styleAttr.includes('none') || 
+                  styleAttr.includes('visibility') && styleAttr.includes('hidden'))) {
+                complexOtherField.removeAttribute('style');
+                updateFieldVisibility();
+              }
+              
+              // Continue checking
+              continuousCheckRAF = requestAnimationFrame(rafCheck);
+            } else {
+              stopContinuousCheck();
+            }
+          }
+          
+          // Start RAF loop
+          continuousCheckRAF = requestAnimationFrame(rafCheck);
+        }
+        
+        function stopContinuousCheck() {
+          if (continuousCheckInterval) {
+            clearInterval(continuousCheckInterval);
+            continuousCheckInterval = null;
+          }
+          if (continuousCheckRAF) {
+            cancelAnimationFrame(continuousCheckRAF);
+            continuousCheckRAF = null;
+          }
+        }
+        
+        // Start continuous check if checkbox is checked
+        if (newCheckbox.checked) {
+          startContinuousCheck();
+        }
+        
+        // Clean up when checkbox is unchecked
         newCheckbox.addEventListener('change', () => {
-          if (!newCheckbox.checked) {
-            clearInterval(continuousCheck);
+          if (newCheckbox.checked) {
+            startContinuousCheck();
+          } else {
+            stopContinuousCheck();
           }
         });
       }
