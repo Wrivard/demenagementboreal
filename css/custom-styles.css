@@ -1257,67 +1257,22 @@ input.date-picker-input[readonly] {
   margin-top: 8px !important; /* Reduce from 12px to 8px */
 }
 
-/* Force complex-other-field to show when needed - AGGRESSIVE Webflow override approach */
-/* Target all possible states and selectors */
-#complex-other-field,
-#complex-other-field[style*="display: block"],
-#complex-other-field.show-field,
-#complex-other-field[style*="block"],
-.residential-questions #complex-other-field,
-.commercial-questions #complex-other-field,
-.residential-questions #complex-other-field.show-field,
-.commercial-questions #complex-other-field.show-field,
-[data-step="3"] #complex-other-field,
-[data-step="3"] #complex-other-field.show-field {
+/* Complex other field - always visible text input (no checkbox needed) */
+#complex-other-field {
+  display: block !important;
+  visibility: visible !important;
   position: relative !important;
   width: 100% !important;
   box-sizing: border-box !important;
   margin-top: 8px !important;
-  height: auto !important;
-  max-height: none !important;
-  min-height: auto !important;
-  overflow: visible !important;
 }
 
-/* Force visibility when checkbox is checked - override ANY inline styles */
-#complex-other-field.show-field,
-.residential-questions #complex-other-field.show-field,
-.commercial-questions #complex-other-field.show-field,
-[data-step="3"] #complex-other-field.show-field {
+#complex-other-field #complex-other-text,
+#complex-other-field .form_input,
+#complex-other-field input {
   display: block !important;
   visibility: visible !important;
-  opacity: 1 !important;
-}
-
-/* Force complex-other-text input to be visible - AGGRESSIVE override */
-#complex-other-field.show-field #complex-other-text,
-#complex-other-field.show-field .form_input,
-#complex-other-field.show-field input,
-#complex-other-field.show-field input[type="text"],
-#complex-other-field.show-field input.w-input,
-.residential-questions #complex-other-field.show-field #complex-other-text,
-.commercial-questions #complex-other-field.show-field #complex-other-text {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
   width: 100% !important;
-  position: relative !important;
-  box-sizing: border-box !important;
-}
-
-/* Override any Webflow styles that might hide the field */
-#complex-other-field[style*="display: none"] {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-
-/* Ensure parent containers don't hide the field */
-.multi-form11_field-wrapper:has(#complex-other-field.show-field),
-.residential-questions:has(#complex-other-field.show-field),
-.commercial-questions:has(#complex-other-field.show-field) {
-  display: block !important;
-  visibility: visible !important;
 }
 
 /* Reduce text size spacing in step 3 */

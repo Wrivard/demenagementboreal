@@ -223,10 +223,9 @@
         styleRadios();
         setupButtons();
         if (step === 3) {
-          // Setup complex other field and heavy weight field for both residential and commercial
+          // Setup heavy weight field for both residential and commercial
           // Additional delay to ensure section is fully visible
           setTimeout(() => {
-            setupComplexOtherField();
             setupHeavyWeightField();
           }, 150);
         }
@@ -1532,272 +1531,6 @@
       });
     }
     
-    // Show/hide "Autre" text field for complex items
-    function setupComplexOtherField() {
-      // Try to find the checkbox - it might be in residential or commercial questions
-      let complexOtherCheckbox = form.querySelector('#complex-other');
-      let complexOtherField = form.querySelector('#complex-other-field');
-      let complexOtherText = form.querySelector('#complex-other-text');
-      
-      // If not found, try searching in visible step 3 content
-      if (!complexOtherCheckbox || !complexOtherField || !complexOtherText) {
-        const step3 = form.querySelector('[data-step="3"]');
-        if (step3) {
-          complexOtherCheckbox = step3.querySelector('#complex-other');
-          complexOtherField = step3.querySelector('#complex-other-field');
-          complexOtherText = step3.querySelector('#complex-other-text');
-        }
-      }
-      
-      // Also try searching in residential and commercial questions
-      if (!complexOtherCheckbox || !complexOtherField || !complexOtherText) {
-        const residential = form.querySelector('.residential-questions');
-        const commercial = form.querySelector('.commercial-questions');
-        if (residential) {
-          complexOtherCheckbox = residential.querySelector('#complex-other') || complexOtherCheckbox;
-          complexOtherField = residential.querySelector('#complex-other-field') || complexOtherField;
-          complexOtherText = residential.querySelector('#complex-other-text') || complexOtherText;
-        }
-        if (commercial && (!complexOtherCheckbox || !complexOtherField || !complexOtherText)) {
-          complexOtherCheckbox = commercial.querySelector('#complex-other') || complexOtherCheckbox;
-          complexOtherField = commercial.querySelector('#complex-other-field') || complexOtherField;
-          complexOtherText = commercial.querySelector('#complex-other-text') || complexOtherText;
-        }
-      }
-      
-      if (complexOtherCheckbox && complexOtherField && complexOtherText) {
-        // Remove existing listeners to prevent duplicates
-        const newCheckbox = complexOtherCheckbox.cloneNode(true);
-        complexOtherCheckbox.parentNode.replaceChild(newCheckbox, complexOtherCheckbox);
-        
-        // RADICAL APPROACH: Clone the field element to remove style attribute from HTML
-        // This prevents Webflow from reapplying display: none from the original HTML
-        const originalField = complexOtherField;
-        const clonedField = originalField.cloneNode(true);
-        // Remove style attribute from cloned element
-        clonedField.removeAttribute('style');
-        // Replace original with cloned version
-        originalField.parentNode.replaceChild(clonedField, originalField);
-        // Update reference to use cloned element (reassign existing variable)
-        complexOtherField = clonedField;
-        // Re-find the text input in the cloned element
-        complexOtherText = complexOtherField.querySelector('#complex-other-text');
-        
-        // Function to update field visibility - RADICAL Webflow override approach
-        function updateFieldVisibility() {
-          if (newCheckbox.checked) {
-            // STEP 1: Ensure all parent elements are visible
-            let current = complexOtherField;
-            while (current && current !== document.body) {
-              const computedStyle = window.getComputedStyle(current);
-              if (computedStyle.display === 'none' || computedStyle.visibility === 'hidden') {
-                current.style.setProperty('display', 'block', 'important');
-                current.style.setProperty('visibility', 'visible', 'important');
-              }
-              current = current.parentElement;
-            }
-            
-            // STEP 2: COMPLETELY REMOVE the style attribute - ALWAYS
-            // This prevents Webflow from reapplying display: none
-            complexOtherField.removeAttribute('style');
-            
-            // STEP 3: Add class to trigger CSS rules
-            complexOtherField.classList.add('show-field');
-            
-            // STEP 4: Force ALL visibility properties with !important using setProperty
-            // This overrides any inline styles Webflow might add
-            complexOtherField.style.setProperty('display', 'block', 'important');
-            complexOtherField.style.setProperty('visibility', 'visible', 'important');
-            complexOtherField.style.setProperty('opacity', '1', 'important');
-            complexOtherField.style.setProperty('height', 'auto', 'important');
-            complexOtherField.style.setProperty('overflow', 'visible', 'important');
-            complexOtherField.style.setProperty('margin-top', '8px', 'important');
-            complexOtherField.style.setProperty('max-height', 'none', 'important');
-            complexOtherField.style.setProperty('min-height', 'auto', 'important');
-            complexOtherField.style.setProperty('width', '100%', 'important');
-            
-            // STEP 5: Remove any hidden attributes
-            complexOtherField.removeAttribute('hidden');
-            complexOtherField.removeAttribute('aria-hidden');
-            
-            // STEP 6: Ensure parent is visible
-            const parent = complexOtherField.parentElement;
-            if (parent) {
-              parent.style.setProperty('display', 'block', 'important');
-              parent.style.setProperty('visibility', 'visible', 'important');
-            }
-            
-            // STEP 7: Make text field required and visible
-            if (complexOtherText) {
-              complexOtherText.setAttribute('required', 'required');
-              complexOtherText.removeAttribute('style'); // Remove any inline styles
-              complexOtherText.style.setProperty('display', 'block', 'important');
-              complexOtherText.style.setProperty('visibility', 'visible', 'important');
-              complexOtherText.style.setProperty('opacity', '1', 'important');
-              complexOtherText.style.setProperty('width', '100%', 'important');
-              complexOtherText.removeAttribute('hidden');
-              complexOtherText.removeAttribute('aria-hidden');
-              
-              // STEP 8: Focus the text field when shown (with small delay)
-              setTimeout(() => {
-                complexOtherText.focus();
-              }, 50);
-            }
-          } else {
-            // Hide field when unchecked
-            complexOtherField.classList.remove('show-field');
-            complexOtherField.style.setProperty('display', 'none', 'important');
-            complexOtherField.style.setProperty('visibility', 'hidden', 'important');
-            if (complexOtherText) {
-              complexOtherText.removeAttribute('required');
-              complexOtherText.value = ''; // Clear value when hidden
-            }
-          }
-        }
-        
-        // Initial state - call after a small delay to ensure section is visible
-        setTimeout(() => {
-          updateFieldVisibility();
-        }, 50);
-        
-        // Listen for checkbox changes
-        newCheckbox.addEventListener('change', updateFieldVisibility);
-        
-        // Also listen for clicks on the label wrapper
-        const checkboxLabel = newCheckbox.closest('.form_checkbox-btn');
-        if (checkboxLabel) {
-          checkboxLabel.addEventListener('click', function(e) {
-            // Small delay to let the checkbox state update first
-            setTimeout(updateFieldVisibility, 10);
-          });
-        }
-        
-        // AGGRESSIVE MutationObserver - IMMEDIATELY remove style attribute if it contains display: none
-        const styleObserver = new MutationObserver((mutations) => {
-          if (newCheckbox.checked) {
-            mutations.forEach((mutation) => {
-              if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-                const styleAttr = complexOtherField.getAttribute('style');
-                // IMMEDIATELY remove style attribute if it contains display: none or visibility: hidden
-                if (styleAttr && (styleAttr.includes('display') && styleAttr.includes('none') || 
-                    styleAttr.includes('visibility') && styleAttr.includes('hidden'))) {
-                  // Remove the style attribute IMMEDIATELY, then reapply visibility
-                  complexOtherField.removeAttribute('style');
-                  // Reapply visibility immediately
-                  updateFieldVisibility();
-                  return; // Exit early to prevent multiple updates
-                }
-              }
-            });
-            
-            // Also check computed style as backup
-            const computedStyle = window.getComputedStyle(complexOtherField);
-            if (computedStyle.display === 'none' || computedStyle.visibility === 'hidden') {
-              // Force visibility again if Webflow tries to hide it
-              updateFieldVisibility();
-            }
-          }
-        });
-        
-        // Observe style attribute changes on the field itself
-        styleObserver.observe(complexOtherField, {
-          attributes: true,
-          attributeFilter: ['style', 'class', 'hidden', 'aria-hidden']
-        });
-        
-        // Also observe parent for visibility changes
-        const parent = complexOtherField.parentElement;
-        if (parent) {
-          styleObserver.observe(parent, {
-            attributes: true,
-            attributeFilter: ['style', 'class', 'hidden', 'aria-hidden']
-          });
-        }
-        
-        // Also observe the text input field
-        styleObserver.observe(complexOtherText, {
-          attributes: true,
-          attributeFilter: ['style', 'class', 'hidden', 'aria-hidden']
-        });
-        
-        // CONTINUOUS CHECK - Backup in case MutationObserver doesn't catch it fast enough
-        // Check every 100ms if checkbox is checked and field is hidden, then force visibility
-        let continuousCheckInterval = null;
-        let continuousCheckRAF = null;
-        
-        function startContinuousCheck() {
-          // setInterval backup check
-          continuousCheckInterval = setInterval(() => {
-            if (newCheckbox.checked) {
-              const styleAttr = complexOtherField.getAttribute('style');
-              const computedStyle = window.getComputedStyle(complexOtherField);
-              
-              // If style attribute contains display: none or visibility: hidden, remove it immediately
-              if (styleAttr && (styleAttr.includes('display') && styleAttr.includes('none') || 
-                  styleAttr.includes('visibility') && styleAttr.includes('hidden'))) {
-                complexOtherField.removeAttribute('style');
-                updateFieldVisibility();
-              }
-              // Also check computed style as backup
-              else if (computedStyle.display === 'none' || computedStyle.visibility === 'hidden') {
-                updateFieldVisibility();
-              }
-            } else {
-              // Stop checking when checkbox is unchecked
-              stopContinuousCheck();
-            }
-          }, 100);
-          
-          // requestAnimationFrame check - runs every frame (more aggressive)
-          function rafCheck() {
-            if (newCheckbox.checked) {
-              const styleAttr = complexOtherField.getAttribute('style');
-              
-              // If style attribute contains display: none or visibility: hidden, remove it immediately
-              if (styleAttr && (styleAttr.includes('display') && styleAttr.includes('none') || 
-                  styleAttr.includes('visibility') && styleAttr.includes('hidden'))) {
-                complexOtherField.removeAttribute('style');
-                updateFieldVisibility();
-              }
-              
-              // Continue checking
-              continuousCheckRAF = requestAnimationFrame(rafCheck);
-            } else {
-              stopContinuousCheck();
-            }
-          }
-          
-          // Start RAF loop
-          continuousCheckRAF = requestAnimationFrame(rafCheck);
-        }
-        
-        function stopContinuousCheck() {
-          if (continuousCheckInterval) {
-            clearInterval(continuousCheckInterval);
-            continuousCheckInterval = null;
-          }
-          if (continuousCheckRAF) {
-            cancelAnimationFrame(continuousCheckRAF);
-            continuousCheckRAF = null;
-          }
-        }
-        
-        // Start continuous check if checkbox is checked
-        if (newCheckbox.checked) {
-          startContinuousCheck();
-        }
-        
-        // Clean up when checkbox is unchecked
-        newCheckbox.addEventListener('change', () => {
-          if (newCheckbox.checked) {
-            startContinuousCheck();
-          } else {
-            stopContinuousCheck();
-          }
-        });
-      }
-    }
-    
     // Show/hide heavy weight input field
     function setupHeavyWeightField() {
       const heavyWeightCheckbox = form.querySelector('#heavy-weight');
@@ -1823,7 +1556,6 @@
     showStep(1);
     setupButtons();
     initDatePicker();
-    setupComplexOtherField();
     setupHeavyWeightField();
     
     // Load Google Maps API immediately on initialization (not just on step 4)
@@ -1890,10 +1622,9 @@
         styleRadios();
         styleCheckboxes();
         if (step === 3) {
-          // Setup complex other field and heavy weight field for both residential and commercial
+          // Setup heavy weight field for both residential and commercial
           // Additional delay to ensure section is fully visible
           setTimeout(() => {
-            setupComplexOtherField();
             setupHeavyWeightField();
           }, 150);
         }
