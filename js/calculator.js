@@ -1546,6 +1546,22 @@
         }
       }
       
+      // Also try searching in residential and commercial questions
+      if (!complexOtherCheckbox || !complexOtherField || !complexOtherText) {
+        const residential = form.querySelector('.residential-questions');
+        const commercial = form.querySelector('.commercial-questions');
+        if (residential) {
+          complexOtherCheckbox = residential.querySelector('#complex-other') || complexOtherCheckbox;
+          complexOtherField = residential.querySelector('#complex-other-field') || complexOtherField;
+          complexOtherText = residential.querySelector('#complex-other-text') || complexOtherText;
+        }
+        if (commercial && (!complexOtherCheckbox || !complexOtherField || !complexOtherText)) {
+          complexOtherCheckbox = commercial.querySelector('#complex-other') || complexOtherCheckbox;
+          complexOtherField = commercial.querySelector('#complex-other-field') || complexOtherField;
+          complexOtherText = commercial.querySelector('#complex-other-text') || complexOtherText;
+        }
+      }
+      
       if (complexOtherCheckbox && complexOtherField && complexOtherText) {
         // Remove existing listeners to prevent duplicates
         const newCheckbox = complexOtherCheckbox.cloneNode(true);
@@ -1563,10 +1579,21 @@
             complexOtherField.style.setProperty('height', 'auto', 'important');
             complexOtherField.style.setProperty('overflow', 'visible', 'important');
             complexOtherField.style.setProperty('margin-top', '8px', 'important');
+            complexOtherField.style.setProperty('max-height', 'none', 'important');
+            complexOtherField.style.setProperty('min-height', 'auto', 'important');
             // Remove any inline styles that might hide it
             complexOtherField.removeAttribute('hidden');
+            // Also ensure parent is visible
+            const parent = complexOtherField.parentElement;
+            if (parent) {
+              parent.style.setProperty('display', 'block', 'important');
+              parent.style.setProperty('visibility', 'visible', 'important');
+            }
             // Make text field required when checkbox is checked
             complexOtherText.setAttribute('required', 'required');
+            // Also force text field visibility
+            complexOtherText.style.setProperty('display', 'block', 'important');
+            complexOtherText.style.setProperty('visibility', 'visible', 'important');
             // Focus the text field when shown (with small delay)
             setTimeout(() => {
               complexOtherText.focus();
