@@ -1,5 +1,71 @@
 // Clean Multi-Step Calculator - No Google Maps, no alerts, clean design
 
+// IMMEDIATE: Prevent Google Maps from loading multiple times
+// This runs BEFORE anything else to catch scripts loaded by Webflow
+(function() {
+  'use strict';
+  
+  // Remove any existing Google Maps scripts immediately
+  function removeAllGoogleMapsScripts() {
+    const allMapsScripts = document.querySelectorAll('script[src*="maps.googleapis.com"]');
+    allMapsScripts.forEach(script => {
+      script.remove();
+    });
+    
+    // Also remove Webflow map widgets
+    const webflowMapWidgets = document.querySelectorAll('.w-widget-map');
+    webflowMapWidgets.forEach(widget => {
+      widget.style.display = 'none';
+      widget.removeAttribute('data-widget-latlng');
+      widget.removeAttribute('data-widget-address');
+    });
+  }
+  
+  // Run immediately
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', removeAllGoogleMapsScripts);
+  } else {
+    removeAllGoogleMapsScripts();
+  }
+  
+  // Also monitor for new scripts being added
+  const earlyObserver = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      mutation.addedNodes.forEach((node) => {
+        if (node.nodeName === 'SCRIPT' && node.src && node.src.includes('maps.googleapis.com')) {
+          // Remove any Google Maps script that doesn't have our marker
+          if (!node.hasAttribute('data-our-script')) {
+            node.remove();
+          }
+        }
+      });
+    });
+  });
+  
+  // Start observing immediately
+  if (document.head) {
+    earlyObserver.observe(document.head, { childList: true, subtree: true });
+  }
+  if (document.body) {
+    earlyObserver.observe(document.body, { childList: true, subtree: true });
+  }
+  
+  // Also observe document for when head/body are created
+  const docObserver = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      mutation.addedNodes.forEach((node) => {
+        if (node.nodeName === 'HEAD' || node.nodeName === 'BODY') {
+          earlyObserver.observe(node, { childList: true, subtree: true });
+        }
+      });
+    });
+  });
+  
+  if (document.documentElement) {
+    docObserver.observe(document.documentElement, { childList: true });
+  }
+})();
+
 (function() {
   'use strict';
   
@@ -1460,12 +1526,10 @@
         const observer = new MutationObserver((mutations) => {
           mutations.forEach((mutation) => {
             mutation.addedNodes.forEach((node) => {
-              if (node.nodeName === 'SCRIPT' && node.src && node.src.includes('maps.googleapis.com')) {
-                // Check if it's not our script (doesn't have API key or has different callback)
+              if (node.nodeName === 'SCRIPT' && node.src && (node.src.includes('maps.googleapis.com') || node.src.includes('maps-api-v3'))) {
+                // Remove ANY Google Maps script that doesn't have our marker
                 if (!node.hasAttribute('data-our-script')) {
-                  if (!node.src.includes('key=') || node.src.includes('callback=_wf_maps_loaded') || node.src.includes('maps-api-v3')) {
-                    node.remove();
-                  }
+                  node.remove();
                 }
               }
             });
@@ -1483,11 +1547,16 @@
             return;
           }
           
+          // Remove ALL Google Maps scripts that aren't ours (no conditions)
           const unauthorizedScripts = document.querySelectorAll('script[src*="maps.googleapis.com"]:not([data-our-script])');
           unauthorizedScripts.forEach(script => {
-            if (!script.src.includes('key=') || script.src.includes('callback=_wf_maps_loaded') || script.src.includes('maps-api-v3')) {
-              script.remove();
-            }
+            script.remove();
+          });
+          
+          // Also remove any scripts with maps-api-v3 (Webflow's version)
+          const webflowScripts = document.querySelectorAll('script[src*="maps-api-v3"]');
+          webflowScripts.forEach(script => {
+            script.remove();
           });
           
           // Also check for Webflow map widgets
@@ -1497,7 +1566,7 @@
             widget.removeAttribute('data-widget-latlng');
             widget.removeAttribute('data-widget-address');
           });
-        }, 500);
+        }, 250); // Check more frequently
       }
     }).catch(() => {
       // Silently fail - will retry on step 4
