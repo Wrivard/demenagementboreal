@@ -316,10 +316,10 @@
         errorEl.style.cssText = `
           margin-top: 16px;
           padding: 12px 16px;
-          background: rgba(114, 173, 203, 0.1);
-          border: 1px solid #72adcb;
+          background: rgba(220, 38, 38, 0.1);
+          border: 1px solid #dc2626;
           border-radius: 8px;
-          color: #72adcb;
+          color: #dc2626;
           font-size: 14px;
           font-weight: 500;
         `;

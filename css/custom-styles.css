@@ -208,13 +208,13 @@ section[class*="section_"] {
   display: block;
 }
 
-/* Form input error state - use accent blue instead of red */
+/* Form input error state - use red for clear error indication */
 .form_input.error,
 .w-select.error,
 .w-input.error {
-  border-color: #72adcb !important;
-  background-color: rgba(114, 173, 203, 0.1) !important;
-  box-shadow: 0 0 0 2px rgba(114, 173, 203, 0.2) !important;
+  border-color: #dc2626 !important;
+  background-color: rgba(220, 38, 38, 0.1) !important;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2) !important;
 }
 
 /* Flatpickr calendar styling - modern white theme */
