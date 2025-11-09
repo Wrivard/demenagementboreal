@@ -1318,10 +1318,17 @@
         // Heavy weight
         const heavyWeightCheckbox = document.querySelector('#heavy-weight');
         const heavyWeightInput = document.querySelector('#heavy-weight-input');
-        if (heavyWeightCheckbox && heavyWeightCheckbox.checked && heavyWeightInput && heavyWeightInput.value) {
-          const weight = parseFloat(heavyWeightInput.value) || 0;
-          if (weight > 0) {
-            choices.push(`Objets lourds: ${weight} lb`);
+        if (heavyWeightCheckbox && heavyWeightCheckbox.checked) {
+          if (heavyWeightInput && heavyWeightInput.value) {
+            const weight = parseFloat(heavyWeightInput.value) || 0;
+            if (weight > 0) {
+              choices.push(`Objets lourds: ${weight} lb (0.6$ par livre au-delà de 250 lb)`);
+            } else {
+              choices.push(`Objets lourds: Objets de plus de 250 lb (0.6$ par livre)`);
+            }
+          } else {
+            // Checkbox checked but no weight entered
+            choices.push(`Objets lourds: Objets de plus de 250 lb (0.6$ par livre)`);
           }
         }
       } else if (selectedServiceType === 'commercial') {
