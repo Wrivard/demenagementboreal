@@ -1570,8 +1570,26 @@
         // Function to update field visibility - using Webflow alignment fixes approach
         function updateFieldVisibility() {
           if (newCheckbox.checked) {
+            // Ensure all parent elements are visible
+            let current = complexOtherField;
+            while (current && current !== document.body) {
+              const computedStyle = window.getComputedStyle(current);
+              if (computedStyle.display === 'none' || computedStyle.visibility === 'hidden') {
+                current.style.setProperty('display', 'block', 'important');
+                current.style.setProperty('visibility', 'visible', 'important');
+              }
+              current = current.parentElement;
+            }
+            
             // Add class to trigger CSS rules (Webflow alignment fixes approach)
             complexOtherField.classList.add('show-field');
+            // Remove inline style attribute that has display: none
+            const currentStyle = complexOtherField.getAttribute('style');
+            if (currentStyle) {
+              // Remove display: none from inline style
+              const newStyle = currentStyle.replace(/display\s*:\s*none[^;]*;?/gi, '').replace(/margin-top\s*:\s*8px[^;]*;?/gi, '');
+              complexOtherField.setAttribute('style', newStyle + '; margin-top: 8px;');
+            }
             // Force display with !important using setProperty (Webflow alignment fixes approach)
             complexOtherField.style.setProperty('display', 'block', 'important');
             complexOtherField.style.setProperty('visibility', 'visible', 'important');
@@ -1594,6 +1612,8 @@
             // Also force text field visibility
             complexOtherText.style.setProperty('display', 'block', 'important');
             complexOtherText.style.setProperty('visibility', 'visible', 'important');
+            complexOtherText.style.setProperty('opacity', '1', 'important');
+            complexOtherText.style.setProperty('width', '100%', 'important');
             // Focus the text field when shown (with small delay)
             setTimeout(() => {
               complexOtherText.focus();
@@ -1623,6 +1643,34 @@
             // Small delay to let the checkbox state update first
             setTimeout(updateFieldVisibility, 10);
           });
+        }
+        
+        // Monitor for style changes that might hide the field (Webflow alignment fixes approach)
+        if (complexOtherField && newCheckbox.checked) {
+          const styleObserver = new MutationObserver(() => {
+            if (newCheckbox.checked) {
+              const computedStyle = window.getComputedStyle(complexOtherField);
+              if (computedStyle.display === 'none' || computedStyle.visibility === 'hidden') {
+                // Force visibility again if Webflow tries to hide it
+                updateFieldVisibility();
+              }
+            }
+          });
+          
+          // Observe style attribute changes
+          styleObserver.observe(complexOtherField, {
+            attributes: true,
+            attributeFilter: ['style', 'class']
+          });
+          
+          // Also observe parent for visibility changes
+          const parent = complexOtherField.parentElement;
+          if (parent) {
+            styleObserver.observe(parent, {
+              attributes: true,
+              attributeFilter: ['style', 'class']
+            });
+          }
         }
       }
     }
