@@ -1551,11 +1551,20 @@
         const newCheckbox = complexOtherCheckbox.cloneNode(true);
         complexOtherCheckbox.parentNode.replaceChild(newCheckbox, complexOtherCheckbox);
         
-        // Function to update field visibility
+        // Function to update field visibility - using Webflow alignment fixes approach
         function updateFieldVisibility() {
           if (newCheckbox.checked) {
-            complexOtherField.style.display = 'block';
-            complexOtherField.style.visibility = 'visible';
+            // Add class to trigger CSS rules (Webflow alignment fixes approach)
+            complexOtherField.classList.add('show-field');
+            // Force display with !important using setProperty (Webflow alignment fixes approach)
+            complexOtherField.style.setProperty('display', 'block', 'important');
+            complexOtherField.style.setProperty('visibility', 'visible', 'important');
+            complexOtherField.style.setProperty('opacity', '1', 'important');
+            complexOtherField.style.setProperty('height', 'auto', 'important');
+            complexOtherField.style.setProperty('overflow', 'visible', 'important');
+            complexOtherField.style.setProperty('margin-top', '8px', 'important');
+            // Remove any inline styles that might hide it
+            complexOtherField.removeAttribute('hidden');
             // Make text field required when checkbox is checked
             complexOtherText.setAttribute('required', 'required');
             // Focus the text field when shown (with small delay)
@@ -1563,8 +1572,11 @@
               complexOtherText.focus();
             }, 50);
           } else {
-            complexOtherField.style.display = 'none';
-            complexOtherField.style.visibility = 'hidden';
+            // Remove class
+            complexOtherField.classList.remove('show-field');
+            // Hide field
+            complexOtherField.style.setProperty('display', 'none', 'important');
+            complexOtherField.style.setProperty('visibility', 'hidden', 'important');
             // Remove required when checkbox is unchecked
             complexOtherText.removeAttribute('required');
             complexOtherText.value = ''; // Clear value when hidden

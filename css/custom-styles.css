@@ -1257,6 +1257,24 @@ input.date-picker-input[readonly] {
   margin-top: 8px !important; /* Reduce from 12px to 8px */
 }
 
+/* Force complex-other-field to show when needed - Webflow alignment fixes approach */
+#complex-other-field[style*="display: block"],
+#complex-other-field.show-field {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+/* Ensure complex-other-field is visible when checkbox is checked */
+.residential-questions #complex-other-field,
+.commercial-questions #complex-other-field {
+  position: relative !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
 /* Reduce text size spacing in step 3 */
 .residential-questions .text-size-small,
 .commercial-questions .text-size-small {
