@@ -1,0 +1,20 @@
+[33m2323221[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m fix: Suppression de l'override de showStep qui causait des conflits avec les étapes et la barre de progression
+[33mf3d462c[m fix: Correction du callback Google Maps avec un nom unique pour éviter les conflits
+[33m1146c21[m fix: Retrait de autocomplete='off' pour permettre à Google Places Autocomplete de fonctionner
+[33m195cc2e[m fix: Amélioration de l'initialisation de l'autocomplete avec vérification et gestion d'erreurs
+[33m4b58524[m fix: Simplification de la validation blur pour permettre à l'autocomplete de fonctionner
+[33m1c0d881[m fix: Correction de l'erreur 'Assignment to constant variable' - utilisation de let au lieu de const pour les inputs
+[33ma177cea[m fix: Correction de l'autocomplete - suppression des listeners dupliqués et meilleure gestion des flags
+[33m63f563e[m fix: Correction de l'autocomplete - évite les conflits avec la validation blur
+[33mbd3f783[m fix: Ajout des fonctions d'affichage des erreurs d'adresse
+[33m5992c6d[m feat: Validation des adresses complètes avec message d'erreur en français
+[33m68d4b89[m fix: Initialisation de l'autocomplete d'adresse à l'étape 4 et amélioration de la gestion
+[33m0394f7d[m fix: Correction de la barre de progression - désactivation de flex: 1 pour permettre la largeur dynamique
+[33m4c99a7c[m fix: Correction de la barre de progression - largeur dynamique au lieu de 100%
+[33mf41be6f[m style: Amélioration de la barre de progression - fond gris clair pour meilleure visibilité
+[33m0c5eec3[m fix: Correction du texte de l'étape - affichage Étape X/4
+[33m657fda1[m fix: Correction finale de la barre de progression - calcul avec /5 et affichage Étape X/4
+[33m78f63fb[m fix: Correction du calcul de la barre de progression - 20%, 40%, 60%, 80% pour les étapes 1-4
+[33me3ceee6[m fix: Correction de la barre de progression - 4 étapes au lieu de 5 (80% max)
+[33m94fb3d5[m fix: Ajout de vérifications et logs pour Google Places Autocomplete
+[33m106b081[m fix: Amélioration des logs et gestion d'erreurs pour Google Maps API

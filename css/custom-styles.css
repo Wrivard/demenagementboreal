@@ -991,3 +991,123 @@ input.date-picker-input[readonly] {
   }
 }
 
+/* ============================================
+   Contact Form Checkbox Styling
+   Clean, aligned, with blue checked state and animation
+   ============================================ */
+
+/* Contact form checkbox container - align with other fields */
+.contact5_form .w-checkbox.form_checkbox {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+  position: relative;
+  align-self: flex-start;
+}
+
+/* Checkbox icon - clean square box */
+.contact5_form .form_checkbox-icon {
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  min-height: 20px !important;
+  margin: 0 12px 0 0 !important;
+  padding: 0 !important;
+  background-color: #ffffff !important;
+  border: 2px solid rgba(0, 0, 0, 0.2) !important;
+  border-radius: 4px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  flex-shrink: 0 !important;
+  float: none !important;
+}
+
+/* Checkbox icon when checked - blue background with smooth animation */
+.contact5_form .w-checkbox:has(input[type="checkbox"]:checked) .form_checkbox-icon,
+.contact5_form .w-checkbox.is-checked .form_checkbox-icon {
+  background-color: #72adcb !important;
+  border-color: #72adcb !important;
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(114, 173, 203, 0.3);
+}
+
+/* Checkmark SVG - clean white checkmark */
+.contact5_form .form_checkbox-icon::after {
+  content: '' !important;
+  display: block !important;
+  width: 6px;
+  height: 10px;
+  border: solid #ffffff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) scale(0);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -6px;
+  margin-left: -3px;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1) 0.1s;
+  opacity: 0;
+}
+
+/* Checkmark when checked - animate in */
+.contact5_form .w-checkbox:has(input[type="checkbox"]:checked) .form_checkbox-icon::after,
+.contact5_form .w-checkbox.is-checked .form_checkbox-icon::after {
+  transform: rotate(45deg) scale(1);
+  opacity: 1;
+}
+
+/* Checkbox label - align with other form labels */
+.contact5_form .form_checkbox-label {
+  color: #1a1a1a;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  flex: 1;
+}
+
+/* Checkbox label when checked */
+.contact5_form .w-checkbox:has(input[type="checkbox"]:checked) .form_checkbox-label,
+.contact5_form .w-checkbox.is-checked .form_checkbox-label {
+  color: #1a1a1a;
+  font-weight: 500;
+}
+
+/* Hover state */
+.contact5_form .w-checkbox.form_checkbox:hover .form_checkbox-icon {
+  border-color: #72adcb;
+  transform: scale(1.02);
+}
+
+/* Ensure checkbox wrapper aligns with form fields */
+.contact5_form .margin-bottom.margin-xsmall {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: block;
+}
+
+/* Align checkbox container with form field wrappers */
+.contact5_form .margin-bottom.margin-xsmall .w-checkbox.form_checkbox {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+/* Override any Webflow default checkbox styles */
+.contact5_form .w-checkbox-input {
+  float: none !important;
+  margin: 0 !important;
+}
+

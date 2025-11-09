@@ -1246,6 +1246,33 @@ margin: 0rem !important;
       hideAllWebflowMessages();
       setInterval(hideAllWebflowMessages, 100);
 
+      // Handle checkbox state and animation
+      const checkbox = form.querySelector('#Contact-5-Checkbox');
+      const checkboxLabel = form.querySelector('.w-checkbox.form_checkbox');
+      
+      if (checkbox && checkboxLabel) {
+        // Update checkbox state on change
+        function updateCheckboxState() {
+          if (checkbox.checked) {
+            checkboxLabel.classList.add('is-checked');
+          } else {
+            checkboxLabel.classList.remove('is-checked');
+          }
+        }
+        
+        // Initial state
+        updateCheckboxState();
+        
+        // Listen for changes
+        checkbox.addEventListener('change', updateCheckboxState);
+        
+        // Also listen for clicks on the label
+        checkboxLabel.addEventListener('click', function(e) {
+          // Let the default behavior handle the checkbox toggle
+          setTimeout(updateCheckboxState, 10);
+        });
+      }
+
       if (form) {
         form.addEventListener('submit', async function(e) {
           e.preventDefault();

@@ -322,3 +322,4 @@ Avant de déployer votre template d'email, vérifiez :
 
 *Dernière mise à jour : Novembre 2025*
 
+
