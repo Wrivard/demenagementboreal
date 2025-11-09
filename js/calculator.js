@@ -594,13 +594,65 @@
     }
     
     async function loadGoogleMapsAPI() {
+      // Prevent multiple loads
       if (googleMapsLoaded) return true;
+      if (window.google && window.google.maps && window.google.maps.places) {
+        googleMapsLoaded = true;
+        return true;
+      }
+      
+      // Check if we're already loading
+      if (window._googleMapsLoading) {
+        return new Promise((resolve) => {
+          const checkInterval = setInterval(() => {
+            if (googleMapsLoaded || (window.google && window.google.maps && window.google.maps.places)) {
+              clearInterval(checkInterval);
+              googleMapsLoaded = true;
+              resolve(true);
+            }
+          }, 100);
+          // Timeout after 10 seconds
+          setTimeout(() => {
+            clearInterval(checkInterval);
+            resolve(false);
+          }, 10000);
+        });
+      }
+      
+      window._googleMapsLoading = true;
       
       try {
+        // First, aggressively remove ALL existing Google Maps scripts and reset
+        const allMapsScripts = document.querySelectorAll('script[src*="maps.googleapis.com"]');
+        allMapsScripts.forEach(script => {
+          script.remove();
+        });
+        
+        // Remove any Webflow map widgets that might trigger Google Maps loading
+        const webflowMapWidgets = document.querySelectorAll('.w-widget-map');
+        webflowMapWidgets.forEach(widget => {
+          widget.style.display = 'none';
+          widget.removeAttribute('data-widget-latlng');
+          widget.removeAttribute('data-widget-address');
+        });
+        
+        // Reset google object if it exists to prevent conflicts
+        if (window.google) {
+          try {
+            delete window.google;
+          } catch (e) {
+            // Ignore errors
+          }
+        }
+        
+        // Wait a bit to ensure old scripts are fully removed
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
         // Get API key from serverless function
         const response = await fetch('/api/get-maps-key');
         
         if (!response.ok) {
+          window._googleMapsLoading = false;
           showDistanceMessage('Erreur de récupération de la clé API. Vous pouvez saisir la distance manuellement.', 'warning');
           return false;
         }
@@ -608,45 +660,30 @@
         const data = await response.json();
         
         if (!data.success || !data.apiKey) {
+          window._googleMapsLoading = false;
           showDistanceMessage('Clé API Google Maps non disponible. Vérifiez la configuration Vercel. Vous pouvez saisir la distance manuellement.', 'warning');
           return false;
         }
         
         const apiKey = data.apiKey;
         
-        // Check if Google Maps is already loaded (possibly without API key)
-        // Remove ALL Google Maps scripts, including those loaded by Webflow
-        const existingScripts = document.querySelectorAll('script[src*="maps.googleapis.com"]:not([data-our-script])');
-        existingScripts.forEach(script => {
-          script.remove();
-        });
-        
-        // Also remove any Webflow map widgets that might trigger Google Maps loading
-        const webflowMapWidgets = document.querySelectorAll('.w-widget-map');
-        webflowMapWidgets.forEach(widget => {
-          widget.style.display = 'none';
-          // Remove any data attributes that might trigger loading
-          widget.removeAttribute('data-widget-latlng');
-        });
-        
-        // Wait a bit to ensure old scripts are fully removed
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
         // Load Google Maps JavaScript API with API key
         return new Promise((resolve, reject) => {
           // Double check - if Google Maps is already loaded with API key, we're good
           if (window.google && window.google.maps && window.google.maps.places) {
             googleMapsLoaded = true;
+            window._googleMapsLoading = false;
             resolve(true);
             return;
           }
           
           const script = document.createElement('script');
-          const scriptUrl = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&language=fr&callback=initGoogleMapsCallback`;
+          const scriptUrl = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&language=fr&callback=initGoogleMapsCallback&loading=async`;
           
           // Set callback for when Google Maps is loaded
           window.initGoogleMapsCallback = function() {
             googleMapsLoaded = true;
+            window._googleMapsLoading = false;
             if (window.google && window.google.maps && window.google.maps.places) {
               resolve(true);
             } else {
@@ -666,6 +703,7 @@
               if (window.google && window.google.maps && window.google.maps.places) {
                 if (!googleMapsLoaded) {
                   googleMapsLoaded = true;
+                  window._googleMapsLoading = false;
                   resolve(true);
                 }
               }
@@ -673,6 +711,7 @@
           };
           
           script.onerror = (error) => {
+            window._googleMapsLoading = false;
             if (window.initGoogleMapsCallback) {
               delete window.initGoogleMapsCallback;
             }
@@ -689,6 +728,7 @@
           }
         });
       } catch (error) {
+        window._googleMapsLoading = false;
         showDistanceMessage('Erreur de chargement de Google Maps. Vous pouvez saisir la distance manuellement.', 'warning');
         return false;
       }
@@ -1348,12 +1388,17 @@
       const complexOtherText = form.querySelector('#complex-other-text');
       
       if (complexOtherCheckbox && complexOtherField && complexOtherText) {
+        // Remove existing listeners to prevent duplicates
+        const newCheckbox = complexOtherCheckbox.cloneNode(true);
+        complexOtherCheckbox.parentNode.replaceChild(newCheckbox, complexOtherCheckbox);
+        
         // Function to update field visibility
         function updateFieldVisibility() {
-          if (complexOtherCheckbox.checked) {
+          if (newCheckbox.checked) {
             complexOtherField.style.display = 'block';
             // Make text field required when checkbox is checked
             complexOtherText.setAttribute('required', 'required');
+            complexOtherText.focus(); // Focus the text field when shown
           } else {
             complexOtherField.style.display = 'none';
             // Remove required when checkbox is unchecked
@@ -1366,10 +1411,10 @@
         updateFieldVisibility();
         
         // Listen for checkbox changes
-        complexOtherCheckbox.addEventListener('change', updateFieldVisibility);
+        newCheckbox.addEventListener('change', updateFieldVisibility);
         
         // Also listen for clicks on the label wrapper
-        const checkboxLabel = complexOtherCheckbox.closest('.form_checkbox-btn');
+        const checkboxLabel = newCheckbox.closest('.form_checkbox-btn');
         if (checkboxLabel) {
           checkboxLabel.addEventListener('click', function(e) {
             // Small delay to let the checkbox state update first
@@ -1412,28 +1457,47 @@
     loadGoogleMapsAPI().then(loaded => {
       if (loaded) {
         // Monitor and prevent Webflow from loading Google Maps without API key
-        const observer = new MutationObserver(() => {
-          const newScripts = document.querySelectorAll('script[src*="maps.googleapis.com"]:not([data-our-script])');
-          newScripts.forEach(script => {
-            // Check if it's not our script (doesn't have API key or has different callback)
-            if (!script.src.includes('key=') || script.src.includes('callback=_wf_maps_loaded')) {
-              script.remove();
-            }
+        const observer = new MutationObserver((mutations) => {
+          mutations.forEach((mutation) => {
+            mutation.addedNodes.forEach((node) => {
+              if (node.nodeName === 'SCRIPT' && node.src && node.src.includes('maps.googleapis.com')) {
+                // Check if it's not our script (doesn't have API key or has different callback)
+                if (!node.hasAttribute('data-our-script')) {
+                  if (!node.src.includes('key=') || node.src.includes('callback=_wf_maps_loaded') || node.src.includes('maps-api-v3')) {
+                    node.remove();
+                  }
+                }
+              }
+            });
           });
         });
         
         // Observe for new script tags
         observer.observe(document.head, { childList: true, subtree: true });
+        observer.observe(document.body, { childList: true, subtree: true });
         
-        // Also periodically check and remove unauthorized scripts
-        setInterval(() => {
+        // Also periodically check and remove unauthorized scripts (more aggressive)
+        const cleanupInterval = setInterval(() => {
+          if (!googleMapsLoaded) {
+            clearInterval(cleanupInterval);
+            return;
+          }
+          
           const unauthorizedScripts = document.querySelectorAll('script[src*="maps.googleapis.com"]:not([data-our-script])');
           unauthorizedScripts.forEach(script => {
-            if (!script.src.includes('key=') || script.src.includes('callback=_wf_maps_loaded')) {
+            if (!script.src.includes('key=') || script.src.includes('callback=_wf_maps_loaded') || script.src.includes('maps-api-v3')) {
               script.remove();
             }
           });
-        }, 1000);
+          
+          // Also check for Webflow map widgets
+          const webflowMapWidgets = document.querySelectorAll('.w-widget-map');
+          webflowMapWidgets.forEach(widget => {
+            widget.style.display = 'none';
+            widget.removeAttribute('data-widget-latlng');
+            widget.removeAttribute('data-widget-address');
+          });
+        }, 500);
       }
     }).catch(() => {
       // Silently fail - will retry on step 4
