@@ -1133,13 +1133,9 @@ input.date-picker-input[readonly] {
   transform: scale(1.02);
 }
 
-/* Ensure checkbox wrapper aligns with form fields - left aligned, matching form_field-wrapper exactly */
-.contact5_form .margin-bottom.margin-xsmall {
+/* Ensure checkbox wrapper aligns with form fields - using form_field-wrapper like other fields */
+.contact5_form .form_field-wrapper:has(.w-checkbox.form_checkbox) {
   margin: 0 !important;
-  margin-bottom: 0 !important;
-  margin-top: 0 !important;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
   padding: 0 !important;
   width: 100%;
   display: block;
@@ -1149,7 +1145,7 @@ input.date-picker-input[readonly] {
 }
 
 /* Align checkbox container with form field wrappers - left aligned, override Webflow's padding-left */
-.contact5_form .margin-bottom.margin-xsmall .w-checkbox.form_checkbox {
+.contact5_form .form_field-wrapper .w-checkbox.form_checkbox {
   margin: 0 !important;
   padding: 0 !important;
   padding-left: 0 !important; /* Override Webflow's padding-left: 20px */
