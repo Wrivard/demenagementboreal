@@ -1310,20 +1310,13 @@
           complexLabels.push(complexOtherText.value.trim());
         }
         
-        // Heavy weight - include in Articles complexes section
+        // Heavy weight - include in Articles complexes section (simple Yes/No)
         const heavyWeightCheckbox = document.querySelector('#heavy-weight');
-        const heavyWeightInput = document.querySelector('#heavy-weight-input');
-        if (heavyWeightCheckbox && heavyWeightCheckbox.checked) {
-          if (heavyWeightInput && heavyWeightInput.value) {
-            const weight = parseFloat(heavyWeightInput.value) || 0;
-            if (weight > 0) {
-              complexLabels.push(`Objets lourds: ${weight} lb (0.6$ par livre au-delà de 250 lb)`);
-            } else {
-              complexLabels.push(`Objets lourds de plus de 250 lb (0.6$ par livre)`);
-            }
+        if (heavyWeightCheckbox) {
+          if (heavyWeightCheckbox.checked) {
+            complexLabels.push('Objets lourds: Oui');
           } else {
-            // Checkbox checked but no weight entered
-            complexLabels.push(`Objets lourds de plus de 250 lb (0.6$ par livre)`);
+            complexLabels.push('Objets lourds: Non');
           }
         }
         
