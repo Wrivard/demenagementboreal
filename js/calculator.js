@@ -707,8 +707,13 @@
       try {
         // Remove any existing Google Maps scripts that don't have our marker
         // Remove ALL scripts without API key (Webflow's scripts)
-        const existingScripts = document.querySelectorAll('script[src*="maps.googleapis.com"]:not([data-our-script]), script[src*="maps-api-v3"]');
+        // But keep scripts that have our API key
+        const existingScripts = document.querySelectorAll('script[src*="maps.googleapis.com"], script[src*="maps-api-v3"]');
         existingScripts.forEach(script => {
+          // Keep our script with API key
+          if (script.hasAttribute('data-our-script')) {
+            return;
+          }
           // Remove scripts without API key or with Webflow callbacks
           if (!script.src.includes('key=') || script.src.includes('callback=_wf_maps_loaded') || script.src.includes('maps-api-v3')) {
             script.remove();
@@ -748,6 +753,32 @@
         
         const apiKey = data.apiKey;
         
+        // Check if script with this API key already exists
+        const existingScript = document.querySelector(`script[src*="maps.googleapis.com"][src*="key=${apiKey}"]`);
+        if (existingScript) {
+          // Script already exists with our API key, just wait for it to load
+          return new Promise((resolve) => {
+            const checkLoaded = setInterval(() => {
+              if (window.google && window.google.maps && window.google.maps.places) {
+                clearInterval(checkLoaded);
+                googleMapsLoaded = true;
+                window._googleMapsLoading = false;
+                resolve(true);
+              }
+            }, 100);
+            setTimeout(() => {
+              clearInterval(checkLoaded);
+              if (window.google && window.google.maps && window.google.maps.places) {
+                googleMapsLoaded = true;
+                window._googleMapsLoading = false;
+                resolve(true);
+              } else {
+                resolve(false);
+              }
+            }, 5000);
+          });
+        }
+        
         // Load Google Maps JavaScript API with API key
         return new Promise((resolve, reject) => {
           // Double check - if Google Maps is already loaded with API key, we're good
@@ -777,6 +808,7 @@
           script.async = true;
           script.defer = true;
           script.setAttribute('data-our-script', 'true'); // Mark as our script
+          script.setAttribute('data-api-key', apiKey); // Store API key for reference
           
           script.onload = () => {
             // Wait a bit for callback
@@ -842,14 +874,11 @@
               
               // Initialize Google Places Autocomplete - following CALCULATOR_KM_CALCULATION_AND_STYLING.md
               // Use strict bounds to prevent invalid coordinates
+              // Note: Removed bounds object to avoid setBounds errors - using componentRestrictions instead
               const options = {
                 componentRestrictions: { country: 'ca' },
                 fields: ['formatted_address', 'geometry'],
-                types: ['address'],
-                bounds: new google.maps.LatLngBounds(
-                  new google.maps.LatLng(41.0, -81.0), // Southwest corner of Canada
-                  new google.maps.LatLng(83.0, -52.0)  // Northeast corner of Canada
-                )
+                types: ['address']
               };
               
               // Clear any existing autocomplete instances
@@ -869,10 +898,20 @@
               }
               
               try {
-                fromAutocomplete = new google.maps.places.Autocomplete(fromInput, options);
-                toAutocomplete = new google.maps.places.Autocomplete(toInput, options);
+                // Validate that Autocomplete is available (not deprecated for existing customers)
+                if (typeof google.maps.places.Autocomplete === 'function') {
+                  fromAutocomplete = new google.maps.places.Autocomplete(fromInput, options);
+                  toAutocomplete = new google.maps.places.Autocomplete(toInput, options);
+                } else {
+                  // Fallback if Autocomplete is not available
+                  console.warn('Google Places Autocomplete not available');
+                  distanceInput.removeAttribute('readonly');
+                  distanceInput.placeholder = 'Saisissez la distance manuellement (km)';
+                  return;
+                }
               } catch (error) {
                 // If autocomplete fails, allow manual entry
+                console.error('Error initializing Autocomplete:', error);
                 distanceInput.removeAttribute('readonly');
                 distanceInput.placeholder = 'Saisissez la distance manuellement (km)';
                 return;
