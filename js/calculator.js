@@ -1,5 +1,16 @@
 // Clean Multi-Step Calculator - Google Maps only for address autocomplete
 // Note: Contact section uses Google My Map (iframe embed), not Google Maps API
+// Production-ready version with error handling and best practices
+
+// Production mode flag - set to false for development logging
+const PRODUCTION_MODE = true;
+
+// Safe console logging (disabled in production)
+const safeLog = {
+  warn: PRODUCTION_MODE ? () => {} : console.warn.bind(console),
+  error: PRODUCTION_MODE ? () => {} : console.error.bind(console),
+  log: PRODUCTION_MODE ? () => {} : console.log.bind(console)
+};
 
 // IMMEDIATE: Disable Webflow map widgets to prevent Google Maps loading
 (function() {
@@ -7,18 +18,24 @@
   
   // Disable all Webflow map widgets immediately
   function disableWebflowMapWidgets() {
-    const mapWidgets = document.querySelectorAll('.w-widget-map, [class*="w-widget-map"]');
-    mapWidgets.forEach(widget => {
-      widget.style.display = 'none';
-      widget.style.visibility = 'hidden';
-      widget.removeAttribute('data-widget-latlng');
-      widget.removeAttribute('data-widget-address');
-      widget.removeAttribute('data-widget-style');
-      widget.removeAttribute('data-widget-zoom');
-      // Prevent any event listeners
-      widget.onclick = null;
-      widget.onload = null;
-    });
+    try {
+      const mapWidgets = document.querySelectorAll('.w-widget-map, [class*="w-widget-map"]');
+      mapWidgets.forEach(widget => {
+        if (widget && widget.nodeType === Node.ELEMENT_NODE) {
+          widget.style.display = 'none';
+          widget.style.visibility = 'hidden';
+          widget.removeAttribute('data-widget-latlng');
+          widget.removeAttribute('data-widget-address');
+          widget.removeAttribute('data-widget-style');
+          widget.removeAttribute('data-widget-zoom');
+          // Prevent any event listeners
+          widget.onclick = null;
+          widget.onload = null;
+        }
+      });
+    } catch (error) {
+      safeLog.error('Error disabling Webflow map widgets:', error);
+    }
   }
   
   // Run immediately
@@ -28,38 +45,68 @@
     disableWebflowMapWidgets();
   }
   
-  // Also monitor for new map widgets
-  const widgetObserver = new MutationObserver(() => {
-    disableWebflowMapWidgets();
-  });
-  
-  if (document.body) {
-    widgetObserver.observe(document.body, { childList: true, subtree: true });
+  // Also monitor for new map widgets with proper error handling
+  let widgetObserver = null;
+  try {
+    widgetObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          // Validate node is an Element before processing
+          if (node && node.nodeType === Node.ELEMENT_NODE) {
+            disableWebflowMapWidgets();
+          }
+        });
+      });
+    });
+    
+    if (document.body) {
+      widgetObserver.observe(document.body, { childList: true, subtree: true });
+    }
+  } catch (error) {
+    safeLog.error('Error setting up widget observer:', error);
   }
   
   // Remove any Google Maps scripts without API key immediately
   function removeUnauthorizedScripts() {
-    const scripts = document.querySelectorAll('script[src*="maps.googleapis.com"]:not([data-our-script]), script[src*="maps-api-v3"]');
-    scripts.forEach(script => {
-      if (!script.src.includes('key=') || script.src.includes('callback=_wf_maps_loaded') || script.src.includes('maps-api-v3')) {
-        script.remove();
-      }
-    });
+    try {
+      const scripts = document.querySelectorAll('script[src*="maps.googleapis.com"]:not([data-our-script]), script[src*="maps-api-v3"]');
+      scripts.forEach(script => {
+        if (script && script.nodeType === Node.ELEMENT_NODE) {
+          if (!script.src.includes('key=') || script.src.includes('callback=_wf_maps_loaded') || script.src.includes('maps-api-v3')) {
+            script.remove();
+          }
+        }
+      });
+    } catch (error) {
+      safeLog.error('Error removing unauthorized scripts:', error);
+    }
   }
   
   // Run immediately
   removeUnauthorizedScripts();
   
-  // Monitor for new scripts
-  const scriptObserver = new MutationObserver(() => {
-    removeUnauthorizedScripts();
-  });
-  
-  if (document.head) {
-    scriptObserver.observe(document.head, { childList: true, subtree: true });
-  }
-  if (document.body) {
-    scriptObserver.observe(document.body, { childList: true, subtree: true });
+  // Monitor for new scripts with proper error handling
+  let scriptObserver = null;
+  try {
+    scriptObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          // Validate node is an Element before processing
+          if (node && node.nodeType === Node.ELEMENT_NODE) {
+            removeUnauthorizedScripts();
+          }
+        });
+      });
+    });
+    
+    if (document.head) {
+      scriptObserver.observe(document.head, { childList: true, subtree: true });
+    }
+    if (document.body) {
+      scriptObserver.observe(document.body, { childList: true, subtree: true });
+    }
+  } catch (error) {
+    safeLog.error('Error setting up script observer:', error);
   }
 })();
 
@@ -164,12 +211,16 @@
           }
           
           if (scrollTarget) {
-            scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            // Also try scrolling window to top of form
-            const rect = scrollTarget.getBoundingClientRect();
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            const targetY = scrollTop + rect.top - 20; // 20px offset from top
-            window.scrollTo({ top: targetY, behavior: 'smooth' });
+            try {
+              scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              // Also try scrolling window to top of form
+              const rect = scrollTarget.getBoundingClientRect();
+              const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+              const targetY = scrollTop + rect.top - 20; // 20px offset from top
+              window.scrollTo({ top: targetY, behavior: 'smooth' });
+            } catch (error) {
+              safeLog.error('Error scrolling to form:', error);
+            }
           }
         }, 150);
       }
@@ -489,7 +540,9 @@
         // Remove old listeners by cloning
         const newBtn = btn.cloneNode(true);
         newBtn.dataset.listenerAttached = 'true';
-        btn.parentNode.replaceChild(newBtn, btn);
+        if (btn.parentNode) {
+          btn.parentNode.replaceChild(newBtn, btn);
+        }
         
         newBtn.addEventListener('click', function(e) {
           e.preventDefault();
@@ -506,7 +559,9 @@
         
         const newBtn = btn.cloneNode(true);
         newBtn.dataset.listenerAttached = 'true';
-        btn.parentNode.replaceChild(newBtn, btn);
+        if (btn.parentNode) {
+          btn.parentNode.replaceChild(newBtn, btn);
+        }
         
         newBtn.addEventListener('click', function(e) {
           e.preventDefault();
@@ -530,7 +585,9 @@
         const newCheckbox = checkbox.cloneNode(true);
         const newInput = newCheckbox.querySelector('input[type="checkbox"]');
         const newIcon = newCheckbox.querySelector('.w-checkbox-input, .form_checkbox-icon');
-        checkbox.parentNode.replaceChild(newCheckbox, checkbox);
+        if (checkbox.parentNode) {
+          checkbox.parentNode.replaceChild(newCheckbox, checkbox);
+        }
         
         // Ensure checkbox has good contrast with white background
         newCheckbox.style.cssText = `
@@ -645,6 +702,9 @@
     let fromAutocomplete = null;
     let toAutocomplete = null;
     let distanceMatrixService = null;
+    let mapsAPILoadPromise = null;
+    let cleanupInterval = null;
+    let mapsObserver = null;
     
     function showDistanceMessage(message, type) {
       removeDistanceMessage();
@@ -684,9 +744,14 @@
         return true;
       }
       
+      // If already loading, return the existing promise
+      if (mapsAPILoadPromise) {
+        return mapsAPILoadPromise;
+      }
+      
       // Check if we're already loading
       if (window._googleMapsLoading) {
-        return new Promise((resolve) => {
+        mapsAPILoadPromise = new Promise((resolve) => {
           const checkInterval = setInterval(() => {
             if (googleMapsLoaded || (window.google && window.google.maps && window.google.maps.places)) {
               clearInterval(checkInterval);
@@ -697,154 +762,186 @@
           // Timeout after 10 seconds
           setTimeout(() => {
             clearInterval(checkInterval);
-            resolve(false);
+            if (window.google && window.google.maps && window.google.maps.places) {
+              googleMapsLoaded = true;
+              resolve(true);
+            } else {
+              resolve(false);
+            }
           }, 10000);
         });
+        return mapsAPILoadPromise;
       }
       
       window._googleMapsLoading = true;
       
-      try {
-        // Remove any existing Google Maps scripts that don't have our marker
-        // Remove ALL scripts without API key (Webflow's scripts)
-        // But keep scripts that have our API key
-        const existingScripts = document.querySelectorAll('script[src*="maps.googleapis.com"], script[src*="maps-api-v3"]');
-        existingScripts.forEach(script => {
-          // Keep our script with API key
-          if (script.hasAttribute('data-our-script')) {
-            return;
-          }
-          // Remove scripts without API key or with Webflow callbacks
-          if (!script.src.includes('key=') || script.src.includes('callback=_wf_maps_loaded') || script.src.includes('maps-api-v3')) {
-            script.remove();
-          }
-        });
-        
-        // Also disable all Webflow map widgets
-        const mapWidgets = document.querySelectorAll('.w-widget-map, [class*="w-widget-map"]');
-        mapWidgets.forEach(widget => {
-          widget.style.display = 'none';
-          widget.style.visibility = 'hidden';
-          widget.removeAttribute('data-widget-latlng');
-          widget.removeAttribute('data-widget-address');
-          widget.removeAttribute('data-widget-style');
-          widget.removeAttribute('data-widget-zoom');
-        });
-        
-        // Wait a bit to ensure old scripts are fully removed
-        await new Promise(resolve => setTimeout(resolve, 150));
-        
-        // Get API key from serverless function
-        const response = await fetch('/api/get-maps-key');
-        
-        if (!response.ok) {
-          window._googleMapsLoading = false;
-          showDistanceMessage('Erreur de récupération de la clé API. Vous pouvez saisir la distance manuellement.', 'warning');
-          return false;
-        }
-        
-        const data = await response.json();
-        
-        if (!data.success || !data.apiKey) {
-          window._googleMapsLoading = false;
-          showDistanceMessage('Clé API Google Maps non disponible. Vérifiez la configuration Vercel. Vous pouvez saisir la distance manuellement.', 'warning');
-          return false;
-        }
-        
-        const apiKey = data.apiKey;
-        
-        // Check if script with this API key already exists
-        const existingScript = document.querySelector(`script[src*="maps.googleapis.com"][src*="key=${apiKey}"]`);
-        if (existingScript) {
-          // Script already exists with our API key, just wait for it to load
-          return new Promise((resolve) => {
-            const checkLoaded = setInterval(() => {
-              if (window.google && window.google.maps && window.google.maps.places) {
-                clearInterval(checkLoaded);
-                googleMapsLoaded = true;
-                window._googleMapsLoading = false;
-                resolve(true);
-              }
-            }, 100);
-            setTimeout(() => {
-              clearInterval(checkLoaded);
-              if (window.google && window.google.maps && window.google.maps.places) {
-                googleMapsLoaded = true;
-                window._googleMapsLoading = false;
-                resolve(true);
-              } else {
-                resolve(false);
-              }
-            }, 5000);
-          });
-        }
-        
-        // Load Google Maps JavaScript API with API key
-        return new Promise((resolve, reject) => {
-          // Double check - if Google Maps is already loaded with API key, we're good
-          if (window.google && window.google.maps && window.google.maps.places) {
-            googleMapsLoaded = true;
-            window._googleMapsLoading = false;
-            resolve(true);
-            return;
-          }
-          
-          const script = document.createElement('script');
-          const scriptUrl = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&language=fr&callback=initGoogleMapsCallback&loading=async`;
-          
-          // Set callback for when Google Maps is loaded
-          window.initGoogleMapsCallback = function() {
-            googleMapsLoaded = true;
-            window._googleMapsLoading = false;
-            if (window.google && window.google.maps && window.google.maps.places) {
-              resolve(true);
-            } else {
-              reject(false);
+      mapsAPILoadPromise = (async () => {
+        try {
+          // Remove any existing Google Maps scripts that don't have our marker
+          // Remove ALL scripts without API key (Webflow's scripts)
+          // But keep scripts that have our API key
+          const existingScripts = document.querySelectorAll('script[src*="maps.googleapis.com"], script[src*="maps-api-v3"]');
+          existingScripts.forEach(script => {
+            // Keep our script with API key
+            if (script.hasAttribute('data-our-script')) {
+              return;
             }
-            delete window.initGoogleMapsCallback;
-          };
+            // Remove scripts without API key or with Webflow callbacks
+            if (!script.src.includes('key=') || script.src.includes('callback=_wf_maps_loaded') || script.src.includes('maps-api-v3')) {
+              try {
+                script.remove();
+              } catch (e) {
+                safeLog.error('Error removing script:', e);
+              }
+            }
+          });
           
-          script.src = scriptUrl;
-          script.async = true;
-          script.defer = true;
-          script.setAttribute('data-our-script', 'true'); // Mark as our script
-          script.setAttribute('data-api-key', apiKey); // Store API key for reference
+          // Also disable all Webflow map widgets
+          const mapWidgets = document.querySelectorAll('.w-widget-map, [class*="w-widget-map"]');
+          mapWidgets.forEach(widget => {
+            if (widget && widget.nodeType === Node.ELEMENT_NODE) {
+              widget.style.display = 'none';
+              widget.style.visibility = 'hidden';
+              widget.removeAttribute('data-widget-latlng');
+              widget.removeAttribute('data-widget-address');
+              widget.removeAttribute('data-widget-style');
+              widget.removeAttribute('data-widget-zoom');
+            }
+          });
           
-          script.onload = () => {
-            // Wait a bit for callback
-            setTimeout(() => {
-              if (window.google && window.google.maps && window.google.maps.places) {
-                if (!googleMapsLoaded) {
+          // Wait a bit to ensure old scripts are fully removed
+          await new Promise(resolve => setTimeout(resolve, 150));
+          
+          // Get API key from serverless function
+          const response = await fetch('/api/get-maps-key');
+          
+          if (!response.ok) {
+            window._googleMapsLoading = false;
+            mapsAPILoadPromise = null;
+            showDistanceMessage('Erreur de récupération de la clé API. Vous pouvez saisir la distance manuellement.', 'warning');
+            return false;
+          }
+          
+          const data = await response.json();
+          
+          if (!data.success || !data.apiKey) {
+            window._googleMapsLoading = false;
+            mapsAPILoadPromise = null;
+            showDistanceMessage('Clé API Google Maps non disponible. Vérifiez la configuration Vercel. Vous pouvez saisir la distance manuellement.', 'warning');
+            return false;
+          }
+          
+          const apiKey = data.apiKey;
+          
+          // Check if script with this API key already exists
+          const existingScript = document.querySelector(`script[src*="maps.googleapis.com"][src*="key=${apiKey}"]`);
+          if (existingScript && existingScript.hasAttribute('data-our-script')) {
+            // Script already exists with our API key, just wait for it to load
+            return new Promise((resolve) => {
+              let retries = 0;
+              const maxRetries = 50; // 5 seconds max
+              const checkLoaded = setInterval(() => {
+                retries++;
+                if (window.google && window.google.maps && window.google.maps.places) {
+                  clearInterval(checkLoaded);
                   googleMapsLoaded = true;
                   window._googleMapsLoading = false;
+                  mapsAPILoadPromise = null;
                   resolve(true);
+                } else if (retries >= maxRetries) {
+                  clearInterval(checkLoaded);
+                  window._googleMapsLoading = false;
+                  mapsAPILoadPromise = null;
+                  resolve(false);
                 }
-              }
-            }, 500);
-          };
-          
-          script.onerror = (error) => {
-            window._googleMapsLoading = false;
-            if (window.initGoogleMapsCallback) {
-              delete window.initGoogleMapsCallback;
-            }
-            showDistanceMessage('Erreur de chargement de Google Maps. Vérifiez votre ad-blocker. Vous pouvez saisir la distance manuellement.', 'warning');
-            reject(false);
-          };
-          
-          // Insert script at the beginning of head to ensure it loads first
-          const firstScript = document.head.querySelector('script');
-          if (firstScript) {
-            document.head.insertBefore(script, firstScript);
-          } else {
-            document.head.appendChild(script);
+              }, 100);
+            });
           }
-        });
-      } catch (error) {
-        window._googleMapsLoading = false;
-        showDistanceMessage('Erreur de chargement de Google Maps. Vous pouvez saisir la distance manuellement.', 'warning');
-        return false;
-      }
+          
+          // Load Google Maps JavaScript API with API key
+          return new Promise((resolve, reject) => {
+            // Double check - if Google Maps is already loaded with API key, we're good
+            if (window.google && window.google.maps && window.google.maps.places) {
+              googleMapsLoaded = true;
+              window._googleMapsLoading = false;
+              mapsAPILoadPromise = null;
+              resolve(true);
+              return;
+            }
+            
+            const script = document.createElement('script');
+            const scriptUrl = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&language=fr&callback=initGoogleMapsCallback&loading=async`;
+            
+            // Set callback for when Google Maps is loaded
+            window.initGoogleMapsCallback = function() {
+              googleMapsLoaded = true;
+              window._googleMapsLoading = false;
+              mapsAPILoadPromise = null;
+              if (window.google && window.google.maps && window.google.maps.places) {
+                resolve(true);
+              } else {
+                reject(new Error('Google Maps API loaded but places library not available'));
+              }
+              // Clean up callback after a delay to ensure it's called
+              setTimeout(() => {
+                if (window.initGoogleMapsCallback) {
+                  delete window.initGoogleMapsCallback;
+                }
+              }, 1000);
+            };
+            
+            script.src = scriptUrl;
+            script.async = true;
+            script.defer = true;
+            script.setAttribute('data-our-script', 'true'); // Mark as our script
+            script.setAttribute('data-api-key', apiKey); // Store API key for reference
+            
+            script.onload = () => {
+              // Wait a bit for callback
+              setTimeout(() => {
+                if (window.google && window.google.maps && window.google.maps.places) {
+                  if (!googleMapsLoaded) {
+                    googleMapsLoaded = true;
+                    window._googleMapsLoading = false;
+                    mapsAPILoadPromise = null;
+                    resolve(true);
+                  }
+                }
+              }, 500);
+            };
+            
+            script.onerror = (error) => {
+              window._googleMapsLoading = false;
+              mapsAPILoadPromise = null;
+              if (window.initGoogleMapsCallback) {
+                delete window.initGoogleMapsCallback;
+              }
+              showDistanceMessage('Erreur de chargement de Google Maps. Vérifiez votre ad-blocker. Vous pouvez saisir la distance manuellement.', 'warning');
+              reject(error);
+            };
+            
+            // Insert script at the beginning of head to ensure it loads first
+            try {
+              const firstScript = document.head.querySelector('script');
+              if (firstScript && firstScript.parentNode) {
+                document.head.insertBefore(script, firstScript);
+              } else {
+                document.head.appendChild(script);
+              }
+            } catch (error) {
+              safeLog.error('Error inserting Google Maps script:', error);
+              reject(error);
+            }
+          });
+        } catch (error) {
+          window._googleMapsLoading = false;
+          mapsAPILoadPromise = null;
+          showDistanceMessage('Erreur de chargement de Google Maps. Vous pouvez saisir la distance manuellement.', 'warning');
+          return false;
+        }
+      })();
+      
+      return mapsAPILoadPromise;
     }
     
     function initAddressAutocomplete() {
@@ -864,7 +961,10 @@
         }
         
         // Wait for Google Maps to be fully loaded - check for places library
+        let retries = 0;
+        const maxRetries = 50; // 5 seconds max
         const initPlaces = () => {
+          retries++;
           if (window.google && window.google.maps && window.google.maps.places && window.google.maps.places.Autocomplete) {
             try {
               // Re-check inputs exist at this point
@@ -872,8 +972,7 @@
                 return;
               }
               
-              // Initialize Google Places Autocomplete - following CALCULATOR_KM_CALCULATION_AND_STYLING.md
-              // Use strict bounds to prevent invalid coordinates
+              // Initialize Google Places Autocomplete
               // Note: Removed bounds object to avoid setBounds errors - using componentRestrictions instead
               const options = {
                 componentRestrictions: { country: 'ca' },
@@ -904,14 +1003,14 @@
                   toAutocomplete = new google.maps.places.Autocomplete(toInput, options);
                 } else {
                   // Fallback if Autocomplete is not available
-                  console.warn('Google Places Autocomplete not available');
+                  safeLog.warn('Google Places Autocomplete not available');
                   distanceInput.removeAttribute('readonly');
                   distanceInput.placeholder = 'Saisissez la distance manuellement (km)';
                   return;
                 }
               } catch (error) {
                 // If autocomplete fails, allow manual entry
-                console.error('Error initializing Autocomplete:', error);
+                safeLog.error('Error initializing Autocomplete:', error);
                 distanceInput.removeAttribute('readonly');
                 distanceInput.placeholder = 'Saisissez la distance manuellement (km)';
                 return;
@@ -927,7 +1026,7 @@
                 return;
               }
               
-              // Listen for place selection on "from" address - following guide
+              // Listen for place selection on "from" address
               fromAutocomplete.addListener('place_changed', () => {
                 try {
                   const place = fromAutocomplete.getPlace();
@@ -946,11 +1045,11 @@
                     calculateDistance();
                   }
                 } catch (error) {
-                  // Silently handle errors
+                  safeLog.error('Error in fromAutocomplete place_changed:', error);
                 }
               });
               
-              // Listen for place selection on "to" address - following guide
+              // Listen for place selection on "to" address
               toAutocomplete.addListener('place_changed', () => {
                 try {
                   const place = toAutocomplete.getPlace();
@@ -969,16 +1068,16 @@
                     calculateDistance();
                   }
                 } catch (error) {
-                  // Silently handle errors
+                  safeLog.error('Error in toAutocomplete place_changed:', error);
                 }
               });
               
-              // Also calculate on blur events - following guide
+              // Also calculate on blur events
               fromInput.addEventListener('blur', () => {
                 try {
                   calculateDistance();
                 } catch (error) {
-                  // Silently handle errors
+                  safeLog.error('Error calculating distance on blur:', error);
                 }
               });
               
@@ -986,25 +1085,33 @@
                 try {
                   calculateDistance();
                 } catch (error) {
-                  // Silently handle errors
+                  safeLog.error('Error calculating distance on blur:', error);
                 }
               });
             } catch (error) {
               // Handle errors gracefully
+              safeLog.error('Error in initPlaces:', error);
               distanceInput.removeAttribute('readonly');
               distanceInput.placeholder = 'Saisissez la distance manuellement (km)';
-              // Don't show error message to avoid cluttering the UI
             }
-          } else {
+          } else if (retries < maxRetries) {
             // Retry after a short delay if places library not loaded yet
             setTimeout(initPlaces, 100);
+          } else {
+            // Max retries reached, allow manual entry
+            distanceInput.removeAttribute('readonly');
+            distanceInput.placeholder = 'Saisissez la distance manuellement (km)';
           }
         };
         
         initPlaces();
       }).catch(error => {
-        distanceInput.removeAttribute('readonly');
-        distanceInput.placeholder = 'Saisissez la distance manuellement (km)';
+        safeLog.error('Error loading Google Maps API:', error);
+        const distanceInput = form.querySelector('#form-distance');
+        if (distanceInput) {
+          distanceInput.removeAttribute('readonly');
+          distanceInput.placeholder = 'Saisissez la distance manuellement (km)';
+        }
       });
     }
     
@@ -1097,12 +1204,14 @@
             }
           } catch (error) {
             // Handle errors gracefully
+            safeLog.error('Error processing distance matrix response:', error);
             distanceInput.placeholder = 'Erreur de calcul';
             distanceInput.disabled = false;
           }
         });
       } catch (error) {
         // Handle errors gracefully
+        safeLog.error('Error calling distance matrix service:', error);
         distanceInput.placeholder = 'Erreur de calcul';
         distanceInput.disabled = false;
       }
@@ -1160,6 +1269,7 @@
         }, { capture: true });
       } catch (error) {
         // Re-enable input if Flatpickr fails
+        safeLog.error('Error initializing Flatpickr:', error);
         dateInput.removeAttribute('readonly');
       }
     }
@@ -1481,12 +1591,26 @@
               Récapitulatif de votre demande
             </div>
             <div class="summary-grid">
-              ${choices.map(choice => `
+              ${choices.map(choice => {
+                const parts = choice.split(':');
+                const label = parts[0];
+                const value = parts.slice(1).join(':').trim();
+                // Escape HTML to prevent XSS
+                const safeLabel = label.replace(/[&<>"']/g, (m) => {
+                  const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+                  return map[m];
+                });
+                const safeValue = value.replace(/[&<>"']/g, (m) => {
+                  const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+                  return map[m];
+                });
+                return `
                 <div style="font-size: 13px; color: #666; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
-                  <span style="font-weight: 600; color: #1a1a1a;">${choice.split(':')[0]}:</span>
-                  <span style="margin-left: 4px;">${choice.split(':').slice(1).join(':').trim()}</span>
+                  <span style="font-weight: 600; color: #1a1a1a;">${safeLabel}:</span>
+                  <span style="margin-left: 4px;">${safeValue}</span>
                 </div>
-              `).join('')}
+              `;
+              }).join('')}
             </div>
           </div>
           ` : ''}
@@ -1518,7 +1642,11 @@
       setTimeout(() => {
         const formElement = form.closest('.multi-form11_component') || form;
         if (formElement) {
-          formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          try {
+            formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          } catch (error) {
+            safeLog.error('Error scrolling to result:', error);
+          }
         }
       }, 100);
       
@@ -1559,15 +1687,18 @@
           result = JSON.parse(text);
         } catch (parseError) {
           // Silently fail - don't interrupt user experience
+          safeLog.error('Error parsing email response:', parseError);
           return;
         }
         
         if (!result.success) {
           // Silently fail - don't interrupt user experience
+          safeLog.warn('Email sending failed:', result);
           return;
         }
       } catch (error) {
         // Silently fail - don't interrupt user experience
+        safeLog.error('Error sending emails:', error);
       }
     }
     
@@ -1598,7 +1729,9 @@
       if (heavyWeightCheckbox && heavyWeightField) {
         // Remove existing listeners
         const newCheckbox = heavyWeightCheckbox.cloneNode(true);
-        heavyWeightCheckbox.parentNode.replaceChild(newCheckbox, heavyWeightCheckbox);
+        if (heavyWeightCheckbox.parentNode) {
+          heavyWeightCheckbox.parentNode.replaceChild(newCheckbox, heavyWeightCheckbox);
+        }
         
         newCheckbox.addEventListener('change', function() {
           if (this.checked) {
@@ -1623,54 +1756,95 @@
     loadGoogleMapsAPI().then(loaded => {
       if (loaded) {
         // Monitor and prevent Webflow from loading Google Maps without API key
-        const observer = new MutationObserver((mutations) => {
-          mutations.forEach((mutation) => {
-            mutation.addedNodes.forEach((node) => {
-              if (node.nodeName === 'SCRIPT' && node.src && (node.src.includes('maps.googleapis.com') || node.src.includes('maps-api-v3'))) {
-                // Only remove scripts without API key or with Webflow callbacks
-                if (!node.hasAttribute('data-our-script')) {
-                  if (!node.src.includes('key=') || node.src.includes('callback=_wf_maps_loaded') || node.src.includes('maps-api-v3')) {
-                    node.remove();
+        try {
+          mapsObserver = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+              mutation.addedNodes.forEach((node) => {
+                // Validate node is an Element before processing
+                if (node && node.nodeType === Node.ELEMENT_NODE && node.nodeName === 'SCRIPT' && node.src && (node.src.includes('maps.googleapis.com') || node.src.includes('maps-api-v3'))) {
+                  // Only remove scripts without API key or with Webflow callbacks
+                  if (!node.hasAttribute('data-our-script')) {
+                    if (!node.src.includes('key=') || node.src.includes('callback=_wf_maps_loaded') || node.src.includes('maps-api-v3')) {
+                      try {
+                        node.remove();
+                      } catch (e) {
+                        safeLog.error('Error removing unauthorized script:', e);
+                      }
+                    }
+                  }
+                }
+              });
+            });
+          });
+          
+          // Observe for new script tags
+          if (document.head) {
+            mapsObserver.observe(document.head, { childList: true, subtree: true });
+          }
+          if (document.body) {
+            mapsObserver.observe(document.body, { childList: true, subtree: true });
+          }
+        } catch (error) {
+          safeLog.error('Error setting up maps observer:', error);
+        }
+        
+        // Also periodically check and remove unauthorized scripts (with cleanup)
+        cleanupInterval = setInterval(() => {
+          if (!googleMapsLoaded) {
+            if (cleanupInterval) {
+              clearInterval(cleanupInterval);
+              cleanupInterval = null;
+            }
+            return;
+          }
+          
+          try {
+            // Remove scripts without API key (Webflow's scripts)
+            const unauthorizedScripts = document.querySelectorAll('script[src*="maps.googleapis.com"]:not([data-our-script]), script[src*="maps-api-v3"]');
+            unauthorizedScripts.forEach(script => {
+              if (script && script.nodeType === Node.ELEMENT_NODE) {
+                if (!script.src.includes('key=') || script.src.includes('callback=_wf_maps_loaded') || script.src.includes('maps-api-v3')) {
+                  try {
+                    script.remove();
+                  } catch (e) {
+                    safeLog.error('Error removing unauthorized script:', e);
                   }
                 }
               }
             });
-          });
-        });
-        
-        // Observe for new script tags
-        observer.observe(document.head, { childList: true, subtree: true });
-        observer.observe(document.body, { childList: true, subtree: true });
-        
-        // Also periodically check and remove unauthorized scripts
-        const cleanupInterval = setInterval(() => {
-          if (!googleMapsLoaded) {
-            clearInterval(cleanupInterval);
-            return;
+            
+            // Also disable all Webflow map widgets
+            const mapWidgets = document.querySelectorAll('.w-widget-map, [class*="w-widget-map"]');
+            mapWidgets.forEach(widget => {
+              if (widget && widget.nodeType === Node.ELEMENT_NODE) {
+                widget.style.display = 'none';
+                widget.style.visibility = 'hidden';
+                widget.removeAttribute('data-widget-latlng');
+                widget.removeAttribute('data-widget-address');
+                widget.removeAttribute('data-widget-style');
+                widget.removeAttribute('data-widget-zoom');
+              }
+            });
+          } catch (error) {
+            safeLog.error('Error in cleanup interval:', error);
           }
-          
-          // Remove scripts without API key (Webflow's scripts)
-          const unauthorizedScripts = document.querySelectorAll('script[src*="maps.googleapis.com"]:not([data-our-script]), script[src*="maps-api-v3"]');
-          unauthorizedScripts.forEach(script => {
-            if (!script.src.includes('key=') || script.src.includes('callback=_wf_maps_loaded') || script.src.includes('maps-api-v3')) {
-              script.remove();
-            }
-          });
-          
-          // Also disable all Webflow map widgets
-          const mapWidgets = document.querySelectorAll('.w-widget-map, [class*="w-widget-map"]');
-          mapWidgets.forEach(widget => {
-            widget.style.display = 'none';
-            widget.style.visibility = 'hidden';
-            widget.removeAttribute('data-widget-latlng');
-            widget.removeAttribute('data-widget-address');
-            widget.removeAttribute('data-widget-style');
-            widget.removeAttribute('data-widget-zoom');
-          });
         }, 300);
       }
-    }).catch(() => {
+    }).catch((error) => {
+      safeLog.error('Error loading Google Maps API on init:', error);
       // Silently fail - will retry on step 4
+    });
+    
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+      if (cleanupInterval) {
+        clearInterval(cleanupInterval);
+        cleanupInterval = null;
+      }
+      if (mapsObserver) {
+        mapsObserver.disconnect();
+        mapsObserver = null;
+      }
     });
     
     // Re-setup on step change
