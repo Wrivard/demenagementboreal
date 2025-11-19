@@ -831,10 +831,27 @@ const safeLog = {
       }
       
       if (googleMapsLoaded) return true;
-      if (window.google && window.google.maps && window.google.maps.places) {
-        googleMapsLoaded = true;
-        window._googleMapsAPILoaded = true;
-        return true;
+      
+      // Check if Google Maps is already loaded (even by Webflow) - if so, use it
+      if (window.google && window.google.maps) {
+        // Check if places library is available
+        if (window.google.maps.places) {
+          googleMapsLoaded = true;
+          window._googleMapsAPILoaded = true;
+          // Mark as loaded even if Webflow loaded it, to prevent our script from loading again
+          return true;
+        }
+        // If maps is loaded but places is not, we still need to load with places library
+        // But first check if there's a script loading it
+        const existingMapsScript = document.querySelector('script[src*="maps.googleapis.com"]');
+        if (existingMapsScript && !existingMapsScript.src.includes('libraries=places')) {
+          // Remove the existing script and load our own with places library
+          try {
+            existingMapsScript.remove();
+          } catch (e) {
+            safeLog.error('Error removing existing maps script:', e);
+          }
+        }
       }
       
       // If already loading, return the existing promise
