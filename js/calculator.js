@@ -12,9 +12,53 @@ const safeLog = {
   log: PRODUCTION_MODE ? () => {} : console.log.bind(console)
 };
 
+// IMMEDIATE: Suppress Google Maps console warnings BEFORE they appear
+(function() {
+  'use strict';
+  
+  // Store original console methods
+  const originalWarn = console.warn;
+  const originalError = console.error;
+  
+  // Filter out Google Maps warnings
+  console.warn = function(...args) {
+    const message = args.join(' ');
+    // Suppress Google Maps warnings
+    if (
+      message.includes('Google Maps JavaScript API') ||
+      message.includes('You have included the Google Maps') ||
+      message.includes('NoApiKeys') ||
+      message.includes('Element with name \'gmp-internal') ||
+      message.includes('has been loaded directly without loading async') ||
+      message.includes('google.maps.Marker is deprecated') ||
+      message.includes('google.maps.places.Autocomplete is not available')
+    ) {
+      return; // Suppress these warnings
+    }
+    originalWarn.apply(console, args);
+  };
+  
+  // Filter out Google Maps errors (but keep real errors)
+  console.error = function(...args) {
+    const message = args.join(' ');
+    // Suppress Google Maps specific errors that are not critical
+    if (
+      message.includes('gmp-internal') ||
+      (message.includes('Google Maps') && message.includes('warning'))
+    ) {
+      return; // Suppress these
+    }
+    originalError.apply(console, args);
+  };
+})();
+
 // IMMEDIATE: Disable Webflow map widgets to prevent Google Maps loading
 (function() {
   'use strict';
+  
+  // Track if we've already loaded Google Maps with our API key
+  window._googleMapsAPILoaded = false;
+  window._googleMapsAPIKey = null;
   
   // Disable all Webflow map widgets immediately
   function disableWebflowMapWidgets() {
@@ -67,13 +111,40 @@ const safeLog = {
   }
   
   // Remove any Google Maps scripts without API key immediately
+  // This runs BEFORE scripts can load
   function removeUnauthorizedScripts() {
     try {
-      const scripts = document.querySelectorAll('script[src*="maps.googleapis.com"]:not([data-our-script]), script[src*="maps-api-v3"]');
-      scripts.forEach(script => {
-        if (script && script.nodeType === Node.ELEMENT_NODE) {
-          if (!script.src.includes('key=') || script.src.includes('callback=_wf_maps_loaded') || script.src.includes('maps-api-v3')) {
-            script.remove();
+      // Get ALL scripts that reference Google Maps
+      const allScripts = document.querySelectorAll('script[src]');
+      allScripts.forEach(script => {
+        if (script && script.nodeType === Node.ELEMENT_NODE && script.src) {
+          const src = script.src;
+          
+          // Check if it's a Google Maps script
+          if (src.includes('maps.googleapis.com') || src.includes('maps-api-v3')) {
+            // Keep ONLY our script with API key
+            if (script.hasAttribute('data-our-script')) {
+              return; // Keep our script
+            }
+            
+            // Remove if:
+            // 1. No API key
+            // 2. Has Webflow callback
+            // 3. Is maps-api-v3 (Webflow's version)
+            // 4. Already loaded Google Maps with our key
+            if (
+              !src.includes('key=') || 
+              src.includes('callback=_wf_maps_loaded') || 
+              src.includes('maps-api-v3') ||
+              (window._googleMapsAPILoaded && !script.hasAttribute('data-our-script'))
+            ) {
+              try {
+                // Prevent script from loading by removing it
+                script.remove();
+              } catch (e) {
+                safeLog.error('Error removing script:', e);
+              }
+            }
           }
         }
       });
@@ -82,8 +153,11 @@ const safeLog = {
     }
   }
   
-  // Run immediately
+  // Run immediately and aggressively
   removeUnauthorizedScripts();
+  
+  // Run more frequently to catch scripts before they load
+  setInterval(removeUnauthorizedScripts, 50);
   
   // Monitor for new scripts with proper error handling
   let scriptObserver = null;
@@ -93,6 +167,19 @@ const safeLog = {
         mutation.addedNodes.forEach((node) => {
           // Validate node is an Element before processing
           if (node && node.nodeType === Node.ELEMENT_NODE) {
+            // Immediately remove unauthorized scripts
+            if (node.tagName === 'SCRIPT' && node.src) {
+              const src = node.src;
+              if ((src.includes('maps.googleapis.com') || src.includes('maps-api-v3')) && !node.hasAttribute('data-our-script')) {
+                if (!src.includes('key=') || src.includes('callback=_wf_maps_loaded') || src.includes('maps-api-v3')) {
+                  try {
+                    node.remove();
+                  } catch (e) {
+                    // Ignore
+                  }
+                }
+              }
+            }
             removeUnauthorizedScripts();
           }
         });
@@ -737,10 +824,16 @@ const safeLog = {
     }
     
     async function loadGoogleMapsAPI() {
-      // Prevent multiple loads
+      // Prevent multiple loads - check global flag first
+      if (window._googleMapsAPILoaded && window.google && window.google.maps && window.google.maps.places) {
+        googleMapsLoaded = true;
+        return true;
+      }
+      
       if (googleMapsLoaded) return true;
       if (window.google && window.google.maps && window.google.maps.places) {
         googleMapsLoaded = true;
+        window._googleMapsAPILoaded = true;
         return true;
       }
       
@@ -756,6 +849,7 @@ const safeLog = {
             if (googleMapsLoaded || (window.google && window.google.maps && window.google.maps.places)) {
               clearInterval(checkInterval);
               googleMapsLoaded = true;
+              window._googleMapsAPILoaded = true;
               resolve(true);
             }
           }, 100);
@@ -764,6 +858,7 @@ const safeLog = {
             clearInterval(checkInterval);
             if (window.google && window.google.maps && window.google.maps.places) {
               googleMapsLoaded = true;
+              window._googleMapsAPILoaded = true;
               resolve(true);
             } else {
               resolve(false);
@@ -845,6 +940,8 @@ const safeLog = {
                 if (window.google && window.google.maps && window.google.maps.places) {
                   clearInterval(checkLoaded);
                   googleMapsLoaded = true;
+                  window._googleMapsAPILoaded = true;
+                  window._googleMapsAPIKey = apiKey;
                   window._googleMapsLoading = false;
                   mapsAPILoadPromise = null;
                   resolve(true);
@@ -863,6 +960,21 @@ const safeLog = {
             // Double check - if Google Maps is already loaded with API key, we're good
             if (window.google && window.google.maps && window.google.maps.places) {
               googleMapsLoaded = true;
+              window._googleMapsAPILoaded = true;
+              window._googleMapsAPIKey = apiKey;
+              window._googleMapsLoading = false;
+              mapsAPILoadPromise = null;
+              resolve(true);
+              return;
+            }
+            
+            // Check if script with this exact API key already exists in DOM
+            const existingWithKey = document.querySelector(`script[src*="maps.googleapis.com"][src*="key=${apiKey}"]`);
+            if (existingWithKey && existingWithKey.hasAttribute('data-our-script')) {
+              // Script already exists, just wait for it
+              googleMapsLoaded = true;
+              window._googleMapsAPILoaded = true;
+              window._googleMapsAPIKey = apiKey;
               window._googleMapsLoading = false;
               mapsAPILoadPromise = null;
               resolve(true);
@@ -875,6 +987,8 @@ const safeLog = {
             // Set callback for when Google Maps is loaded
             window.initGoogleMapsCallback = function() {
               googleMapsLoaded = true;
+              window._googleMapsAPILoaded = true;
+              window._googleMapsAPIKey = apiKey;
               window._googleMapsLoading = false;
               mapsAPILoadPromise = null;
               if (window.google && window.google.maps && window.google.maps.places) {
@@ -896,19 +1010,21 @@ const safeLog = {
             script.setAttribute('data-our-script', 'true'); // Mark as our script
             script.setAttribute('data-api-key', apiKey); // Store API key for reference
             
-            script.onload = () => {
-              // Wait a bit for callback
-              setTimeout(() => {
-                if (window.google && window.google.maps && window.google.maps.places) {
-                  if (!googleMapsLoaded) {
-                    googleMapsLoaded = true;
-                    window._googleMapsLoading = false;
-                    mapsAPILoadPromise = null;
-                    resolve(true);
-                  }
+          script.onload = () => {
+            // Wait a bit for callback
+            setTimeout(() => {
+              if (window.google && window.google.maps && window.google.maps.places) {
+                if (!googleMapsLoaded) {
+                  googleMapsLoaded = true;
+                  window._googleMapsAPILoaded = true;
+                  window._googleMapsAPIKey = apiKey;
+                  window._googleMapsLoading = false;
+                  mapsAPILoadPromise = null;
+                  resolve(true);
                 }
-              }, 500);
-            };
+              }
+            }, 500);
+          };
             
             script.onerror = (error) => {
               window._googleMapsLoading = false;
