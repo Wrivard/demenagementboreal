@@ -367,7 +367,7 @@ const safeLog = {
         if (step === 5) {
           stepText.textContent = 'Résultats';
         } else {
-          stepText.textContent = `Step ${step}/5`;
+          stepText.textContent = `Étape ${step}/5`;
         }
       }
       

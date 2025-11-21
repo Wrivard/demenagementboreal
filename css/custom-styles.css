@@ -1597,5 +1597,18 @@ input.date-picker-input[readonly] {
   .layout416_component {
     display: none !important;
   }
+  
+  /* Fix map overflow on mobile */
+  .contact16_map-wrapper {
+    max-width: 100% !important;
+    overflow: hidden !important;
+    width: 100% !important;
+  }
+  
+  .contact16_map {
+    max-width: 100% !important;
+    width: 100% !important;
+    overflow: hidden !important;
+  }
 }
 
