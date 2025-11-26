@@ -282,6 +282,14 @@ const safeLog = {
         // Small delay to ensure DOM is ready
         setTimeout(() => {
           initAddressAutocomplete();
+          // Also check if dropoff field is already visible and initialize it
+          if (step === 3) {
+            const dropoffCheckbox = form.querySelector('#service-dropoff');
+            const dropoffAddressField = form.querySelector('#dropoff-address-field');
+            if (dropoffCheckbox && dropoffCheckbox.checked && dropoffAddressField && dropoffAddressField.style.display !== 'none') {
+              initDropoffAutocomplete();
+            }
+          }
         }, 100);
         
         // Scroll to top of form when showing step 4 (it's shorter than step 3)
@@ -1911,13 +1919,85 @@ const safeLog = {
       }
     }
 
+    // Initialize dropoff address autocomplete
+    function initDropoffAutocomplete() {
+      const dropoffInput = form.querySelector('#dropoff-address');
+      if (!dropoffInput) return;
+      
+      // Check if already initialized
+      if (dropoffAutocomplete) {
+        return;
+      }
+      
+      // Load Google Maps API first
+      loadGoogleMapsAPI().then(loaded => {
+        if (!loaded) {
+          return;
+        }
+        
+        // Wait for Google Maps to be fully loaded
+        let retries = 0;
+        const maxRetries = 50;
+        const initPlaces = () => {
+          retries++;
+          if (window.google && window.google.maps && window.google.maps.places && window.google.maps.places.Autocomplete) {
+            try {
+              const options = {
+                componentRestrictions: { country: 'ca' },
+                fields: ['formatted_address', 'geometry'],
+                types: ['address']
+              };
+              
+              // Clear any existing autocomplete instance
+              if (dropoffAutocomplete) {
+                try {
+                  google.maps.event.clearInstanceListeners(dropoffInput);
+                } catch (e) {
+                  // Ignore errors
+                }
+              }
+              
+              dropoffAutocomplete = new google.maps.places.Autocomplete(dropoffInput, options);
+              
+              // Listen for place selection
+              dropoffAutocomplete.addListener('place_changed', () => {
+                try {
+                  const place = dropoffAutocomplete.getPlace();
+                  if (place && place.formatted_address) {
+                    dropoffInput.value = place.formatted_address;
+                  }
+                } catch (error) {
+                  safeLog.error('Error in dropoffAutocomplete place_changed:', error);
+                }
+              });
+            } catch (error) {
+              safeLog.error('Error initializing dropoff Autocomplete:', error);
+            }
+          } else if (retries < maxRetries) {
+            setTimeout(initPlaces, 100);
+          }
+        };
+        
+        initPlaces();
+      });
+    }
+    
     // Show/hide dropoff address field when service is selected
     function setupDropoffAddressField() {
       const dropoffCheckbox = form.querySelector('#service-dropoff');
       const dropoffAddressField = form.querySelector('#dropoff-address-field');
       if (dropoffCheckbox && dropoffAddressField) {
         const toggle = () => {
-          dropoffAddressField.style.display = dropoffCheckbox.checked ? 'block' : 'none';
+          const isVisible = dropoffCheckbox.checked;
+          dropoffAddressField.style.display = isVisible ? 'block' : 'none';
+          
+          // Initialize autocomplete when field becomes visible
+          if (isVisible) {
+            // Small delay to ensure field is visible in DOM
+            setTimeout(() => {
+              initDropoffAutocomplete();
+            }, 100);
+          }
         };
         dropoffCheckbox.addEventListener('change', toggle);
         // Initial state
