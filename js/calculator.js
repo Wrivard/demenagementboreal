@@ -276,8 +276,9 @@ const safeLog = {
         }
       }
       
-      // Initialize address autocomplete when step 4 is shown
-      if (step === 4) {
+      // Initialize address autocomplete when step 3 or 4 is shown
+      // (for dropoff address in step 3 and route addresses in step 4)
+      if (step === 3 || step === 4) {
         // Small delay to ensure DOM is ready
         setTimeout(() => {
           initAddressAutocomplete();
