@@ -1578,6 +1578,13 @@ const safeLog = {
             }
             return '';
           }).filter(Boolean);
+
+          // Ajouter l'adresse de drop off / pick up si fournie
+          const dropoffAddressInput = document.getElementById('dropoff-address');
+          if (dropoffAddressInput && dropoffAddressInput.value.trim() !== '') {
+            serviceLabels.push(`Drop off / pick up à: ${dropoffAddressInput.value.trim()}`);
+          }
+
           if (serviceLabels.length > 0) {
             choices.push(`Services supplémentaires: ${serviceLabels.join(', ')}`);
           }
@@ -1875,6 +1882,27 @@ const safeLog = {
         });
       }
     }
+
+    // Show/hide dropoff address field when service is selected
+    function setupDropoffAddressField() {
+      const dropoffCheckbox = form.querySelector('#service-dropoff');
+      const dropoffAddressField = form.querySelector('#dropoff-address-field');
+      if (dropoffCheckbox && dropoffAddressField) {
+        // Remove existing listeners
+        const newCheckbox = dropoffCheckbox.cloneNode(true);
+        if (dropoffCheckbox.parentNode) {
+          dropoffCheckbox.parentNode.replaceChild(newCheckbox, dropoffCheckbox);
+        }
+
+        const toggle = () => {
+          dropoffAddressField.style.display = newCheckbox.checked ? 'block' : 'none';
+        };
+
+        newCheckbox.addEventListener('change', toggle);
+        // Initial state
+        toggle();
+      }
+    }
     
     // Initialize
     styleRadios();
@@ -1883,6 +1911,7 @@ const safeLog = {
     setupButtons();
     initDatePicker();
     setupHeavyWeightField();
+    setupDropoffAddressField();
     
     // Load Google Maps API immediately on initialization (not just on step 4)
     // This ensures Google Maps is loaded with API key before any other script tries to use it
@@ -2003,6 +2032,22 @@ const safeLog = {
       }, 100);
     };
     
+  }
+
+  // Afficher/masquer le champ d'adresse pour le drop off / pick up
+  function setupDropoffAddressField() {
+    const dropoffCheckbox = document.getElementById('service-dropoff');
+    const dropoffAddressField = document.getElementById('dropoff-address-field');
+
+    if (!dropoffCheckbox || !dropoffAddressField) return;
+
+    const toggleField = () => {
+      dropoffAddressField.style.display = dropoffCheckbox.checked ? 'block' : 'none';
+    };
+
+    dropoffCheckbox.addEventListener('change', toggleField);
+    // Initial state
+    toggleField();
   }
   
   if (document.readyState === 'loading') {
