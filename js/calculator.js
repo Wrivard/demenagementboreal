@@ -789,6 +789,7 @@ const safeLog = {
     let googleMapsLoaded = false;
     let fromAutocomplete = null;
     let toAutocomplete = null;
+    let dropoffAutocomplete = null;
     let distanceMatrixService = null;
     let mapsAPILoadPromise = null;
     let cleanupInterval = null;
@@ -1082,6 +1083,7 @@ const safeLog = {
       const fromInput = form.querySelector('#form-address-departure');
       const toInput = form.querySelector('#form-address-destination');
       const distanceInput = form.querySelector('#form-distance');
+      const dropoffInput = form.querySelector('#dropoff-address');
       
       if (!fromInput || !toInput || !distanceInput) return;
       
@@ -1122,6 +1124,13 @@ const safeLog = {
                   // Ignore errors when clearing listeners
                 }
               }
+              if (dropoffAutocomplete && dropoffInput) {
+                try {
+                  google.maps.event.clearInstanceListeners(dropoffInput);
+                } catch (e) {
+                  // Ignore errors when clearing listeners
+                }
+              }
               if (toAutocomplete) {
                 try {
                   google.maps.event.clearInstanceListeners(toInput);
@@ -1135,6 +1144,9 @@ const safeLog = {
                 if (typeof google.maps.places.Autocomplete === 'function') {
                   fromAutocomplete = new google.maps.places.Autocomplete(fromInput, options);
                   toAutocomplete = new google.maps.places.Autocomplete(toInput, options);
+                  if (dropoffInput) {
+                    dropoffAutocomplete = new google.maps.places.Autocomplete(dropoffInput, options);
+                  }
                 } else {
                   // Fallback if Autocomplete is not available
                   safeLog.warn('Google Places Autocomplete not available');
@@ -1205,6 +1217,20 @@ const safeLog = {
                   safeLog.error('Error in toAutocomplete place_changed:', error);
                 }
               });
+              
+              // Optional: format dropoff address nicely when a place is selected
+              if (dropoffAutocomplete && dropoffInput) {
+                dropoffAutocomplete.addListener('place_changed', () => {
+                  try {
+                    const place = dropoffAutocomplete.getPlace();
+                    if (place && place.formatted_address) {
+                      dropoffInput.value = place.formatted_address;
+                    }
+                  } catch (error) {
+                    safeLog.error('Error in dropoffAutocomplete place_changed:', error);
+                  }
+                });
+              }
               
               // Also calculate on blur events
               fromInput.addEventListener('blur', () => {
