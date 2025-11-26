@@ -378,10 +378,11 @@ const safeLog = {
         styleRadios();
         setupButtons();
         if (step === 3) {
-          // Setup heavy weight field for both residential and commercial
+          // Setup conditional fields for step 3 (residential/commercial)
           // Additional delay to ensure section is fully visible
           setTimeout(() => {
             setupHeavyWeightField();
+            setupDropoffAddressField();
           }, 150);
         }
       }, 100);
@@ -1888,17 +1889,10 @@ const safeLog = {
       const dropoffCheckbox = form.querySelector('#service-dropoff');
       const dropoffAddressField = form.querySelector('#dropoff-address-field');
       if (dropoffCheckbox && dropoffAddressField) {
-        // Remove existing listeners
-        const newCheckbox = dropoffCheckbox.cloneNode(true);
-        if (dropoffCheckbox.parentNode) {
-          dropoffCheckbox.parentNode.replaceChild(newCheckbox, dropoffCheckbox);
-        }
-
         const toggle = () => {
-          dropoffAddressField.style.display = newCheckbox.checked ? 'block' : 'none';
+          dropoffAddressField.style.display = dropoffCheckbox.checked ? 'block' : 'none';
         };
-
-        newCheckbox.addEventListener('change', toggle);
+        dropoffCheckbox.addEventListener('change', toggle);
         // Initial state
         toggle();
       }
