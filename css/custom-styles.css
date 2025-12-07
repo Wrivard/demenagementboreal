@@ -1603,20 +1603,34 @@ input.date-picker-input[readonly] {
     max-width: 100% !important;
     overflow: hidden !important;
     width: 100% !important;
-    height: 600px !important;
+    height: 700px !important;
+    min-height: 700px !important;
   }
   
   .contact16_map-wrapper iframe {
     width: 100% !important;
-    height: 750px !important;
+    height: 850px !important;
     border: 0 !important;
     margin-top: -150px !important;
   }
   
   /* Responsive map styling */
+  @media screen and (max-width: 991px) {
+    .contact16_map-wrapper {
+      height: 500px !important;
+      min-height: 500px !important;
+    }
+    
+    .contact16_map-wrapper iframe {
+      height: 650px !important;
+      margin-top: -150px !important;
+    }
+  }
+  
   @media screen and (max-width: 768px) {
     .contact16_map-wrapper {
       height: 400px !important;
+      min-height: 400px !important;
     }
     
     .contact16_map-wrapper iframe {
