@@ -1598,68 +1598,11 @@ input.date-picker-input[readonly] {
     display: none !important;
   }
   
-  /* Google My Maps styling - hide black title bar - make it normal sized */
+  /* Fix map overflow on mobile */
   .contact16_map-wrapper {
-    max-width: none !important;
+    max-width: 100% !important;
     overflow: hidden !important;
     width: 100% !important;
-    height: 600px !important;
-    min-height: 600px !important;
-    min-width: 100% !important;
-    box-sizing: border-box !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    position: relative !important;
-    flex: 1 1 100% !important;
-  }
-  
-  .contact16_map-wrapper iframe {
-    width: 100% !important;
-    max-width: none !important;
-    min-width: 100% !important;
-    height: 750px !important;
-    border: 0 !important;
-    margin: -150px 0 0 0 !important;
-    padding: 0 !important;
-    display: block !important;
-    box-sizing: border-box !important;
-    position: relative !important;
-  }
-  
-  /* Ensure the contact component doesn't constrain the map */
-  .contact16_component {
-    display: flex !important;
-    flex-direction: column !important;
-  }
-  
-  .contact16_map-wrapper {
-    flex: 1 1 auto !important;
-    align-self: stretch !important;
-  }
-  
-  /* Responsive map styling */
-  @media screen and (max-width: 991px) {
-    .contact16_map-wrapper {
-      height: 500px !important;
-      min-height: 500px !important;
-    }
-    
-    .contact16_map-wrapper iframe {
-      height: 650px !important;
-      margin-top: -150px !important;
-    }
-  }
-  
-  @media screen and (max-width: 768px) {
-    .contact16_map-wrapper {
-      height: 400px !important;
-      min-height: 400px !important;
-    }
-    
-    .contact16_map-wrapper iframe {
-      height: 550px !important;
-      margin-top: -150px !important;
-    }
   }
   
   .contact16_map {
