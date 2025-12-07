@@ -1605,13 +1605,22 @@ input.date-picker-input[readonly] {
     width: 100% !important;
     height: 700px !important;
     min-height: 700px !important;
+    min-width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
   
   .contact16_map-wrapper iframe {
     width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
     height: 850px !important;
     border: 0 !important;
-    margin-top: -150px !important;
+    margin: -150px 0 0 0 !important;
+    padding: 0 !important;
+    display: block !important;
+    box-sizing: border-box !important;
   }
   
   /* Responsive map styling */
