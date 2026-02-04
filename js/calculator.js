@@ -1018,22 +1018,78 @@ const safeLog = {
             
             // Set callback for when Google Maps is loaded
             window.initGoogleMapsCallback = function() {
+              // Check if Google Maps loaded successfully
+              if (!window.google || !window.google.maps) {
+                const error = new Error('Google Maps API failed to load - API key may be invalid or billing not enabled');
+                window._googleMapsLoading = false;
+                mapsAPILoadPromise = null;
+                if (window.initGoogleMapsCallback) {
+                  delete window.initGoogleMapsCallback;
+                }
+                // Show user-friendly error message
+                const distanceInput = form ? form.querySelector('#form-distance') : null;
+                if (distanceInput) {
+                  distanceInput.removeAttribute('readonly');
+                  distanceInput.placeholder = 'Distance non disponible';
+                  showDistanceMessage('Erreur de chargement de Google Maps. Vérifiez la configuration de la clé API. Vous pouvez saisir la distance manuellement.', 'error');
+                }
+                reject(error);
+                return;
+              }
+              
+              // Check if places library is available
+              if (!window.google.maps.places || !window.google.maps.places.Autocomplete) {
+                const error = new Error('Google Maps Places library not available');
+                window._googleMapsLoading = false;
+                mapsAPILoadPromise = null;
+                if (window.initGoogleMapsCallback) {
+                  delete window.initGoogleMapsCallback;
+                }
+                const distanceInput = form ? form.querySelector('#form-distance') : null;
+                if (distanceInput) {
+                  distanceInput.removeAttribute('readonly');
+                  distanceInput.placeholder = 'Distance non disponible';
+                  showDistanceMessage('Bibliothèque Places non disponible. Vous pouvez saisir la distance manuellement.', 'error');
+                }
+                reject(error);
+                return;
+              }
+              
+              // Success - Google Maps loaded correctly
               googleMapsLoaded = true;
               window._googleMapsAPILoaded = true;
               window._googleMapsAPIKey = apiKey;
               window._googleMapsLoading = false;
               mapsAPILoadPromise = null;
-              if (window.google && window.google.maps && window.google.maps.places) {
-                resolve(true);
-              } else {
-                reject(new Error('Google Maps API loaded but places library not available'));
-              }
+              resolve(true);
+              
               // Clean up callback after a delay to ensure it's called
               setTimeout(() => {
                 if (window.initGoogleMapsCallback) {
                   delete window.initGoogleMapsCallback;
                 }
               }, 1000);
+            };
+            
+            // Also set up error handler for Google Maps API errors
+            // This catches errors that occur after the script loads but before callback
+            window.googleMapsErrorHandler = function(error) {
+              safeLog.error('Google Maps API error:', error);
+              window._googleMapsLoading = false;
+              mapsAPILoadPromise = null;
+              if (window.initGoogleMapsCallback) {
+                delete window.initGoogleMapsCallback;
+              }
+              if (window.googleMapsErrorHandler) {
+                delete window.googleMapsErrorHandler;
+              }
+              const distanceInput = form ? form.querySelector('#form-distance') : null;
+              if (distanceInput) {
+                distanceInput.removeAttribute('readonly');
+                distanceInput.placeholder = 'Distance non disponible';
+                showDistanceMessage('Erreur de chargement de Google Maps. Vérifiez la configuration de la clé API. Vous pouvez saisir la distance manuellement.', 'error');
+              }
+              reject(new Error('Google Maps API error: ' + (error.message || 'Unknown error')));
             };
             
             script.src = scriptUrl;
@@ -1043,19 +1099,37 @@ const safeLog = {
             script.setAttribute('data-api-key', apiKey); // Store API key for reference
             
           script.onload = () => {
-            // Wait a bit for callback
+            // Wait a bit for callback to fire
             setTimeout(() => {
-              if (window.google && window.google.maps && window.google.maps.places) {
-                if (!googleMapsLoaded) {
-                  googleMapsLoaded = true;
-                  window._googleMapsAPILoaded = true;
-                  window._googleMapsAPIKey = apiKey;
-                  window._googleMapsLoading = false;
-                  mapsAPILoadPromise = null;
-                  resolve(true);
-                }
+              // Check if callback already resolved/rejected
+              if (googleMapsLoaded || mapsAPILoadPromise === null) {
+                return;
               }
-            }, 500);
+              
+              // If callback hasn't fired, check if Google Maps loaded
+              if (window.google && window.google.maps && window.google.maps.places) {
+                googleMapsLoaded = true;
+                window._googleMapsAPILoaded = true;
+                window._googleMapsAPIKey = apiKey;
+                window._googleMapsLoading = false;
+                mapsAPILoadPromise = null;
+                resolve(true);
+              } else {
+                // Script loaded but Google Maps didn't initialize - likely API key error
+                window._googleMapsLoading = false;
+                mapsAPILoadPromise = null;
+                if (window.initGoogleMapsCallback) {
+                  delete window.initGoogleMapsCallback;
+                }
+                const distanceInput = form ? form.querySelector('#form-distance') : null;
+                if (distanceInput) {
+                  distanceInput.removeAttribute('readonly');
+                  distanceInput.placeholder = 'Distance non disponible';
+                  showDistanceMessage('Erreur de chargement de Google Maps. Vérifiez la configuration de la clé API. Vous pouvez saisir la distance manuellement.', 'error');
+                }
+                reject(new Error('Google Maps script loaded but API failed to initialize - check API key configuration'));
+              }
+            }, 2000); // Increased timeout to 2 seconds to allow for slower connections
           };
             
             script.onerror = (error) => {
@@ -1092,6 +1166,63 @@ const safeLog = {
       return mapsAPILoadPromise;
     }
     
+    // Function to detect and handle Google Maps error popups
+    function handleGoogleMapsErrorPopup() {
+      // Check for Google Maps error popup periodically
+      const checkInterval = setInterval(() => {
+        // Look for common Google Maps error popup selectors
+        const errorSelectors = [
+          '[class*="gm-err"]',
+          '[id*="gm-err"]',
+          '.gm-style-cc',
+          '[aria-label*="Google Maps"]',
+          'div[style*="position: absolute"][style*="z-index"]'
+        ];
+        
+        let errorPopup = null;
+        for (const selector of errorSelectors) {
+          const elements = document.querySelectorAll(selector);
+          for (const el of elements) {
+            const text = el.textContent || el.innerText || '';
+            if (text.includes('Impossible de charger') || 
+                text.includes('Unable to load') ||
+                text.includes('Google Maps') && text.includes('error')) {
+              errorPopup = el;
+              break;
+            }
+          }
+          if (errorPopup) break;
+        }
+        
+        if (errorPopup) {
+          // Hide the error popup
+          try {
+            errorPopup.style.display = 'none';
+            errorPopup.style.visibility = 'hidden';
+            // Also try to remove it
+            if (errorPopup.parentNode) {
+              errorPopup.parentNode.removeChild(errorPopup);
+            }
+          } catch (e) {
+            safeLog.error('Error removing Google Maps popup:', e);
+          }
+          
+          // Enable manual distance entry
+          const distanceInput = form.querySelector('#form-distance');
+          if (distanceInput) {
+            distanceInput.removeAttribute('readonly');
+            distanceInput.placeholder = 'Saisissez la distance manuellement (km)';
+            showDistanceMessage('Google Maps n\'a pas pu se charger. Vous pouvez saisir la distance manuellement.', 'warning');
+          }
+          
+          clearInterval(checkInterval);
+        }
+      }, 500);
+      
+      // Stop checking after 10 seconds
+      setTimeout(() => clearInterval(checkInterval), 10000);
+    }
+    
     function initAddressAutocomplete() {
       const fromInput = form.querySelector('#form-address-departure');
       const toInput = form.querySelector('#form-address-destination');
@@ -1100,12 +1231,16 @@ const safeLog = {
       
       if (!fromInput || !toInput || !distanceInput) return;
       
+      // Start monitoring for Google Maps error popups
+      handleGoogleMapsErrorPopup();
+      
       // Load Google Maps API first
       loadGoogleMapsAPI().then(loaded => {
         if (!loaded) {
           // Fallback: allow manual distance entry
           distanceInput.removeAttribute('readonly');
           distanceInput.placeholder = 'Saisissez la distance manuellement (km)';
+          showDistanceMessage('Google Maps n\'a pas pu se charger. Vous pouvez saisir la distance manuellement.', 'warning');
           return;
         }
         
@@ -1278,6 +1413,7 @@ const safeLog = {
         if (distanceInput) {
           distanceInput.removeAttribute('readonly');
           distanceInput.placeholder = 'Saisissez la distance manuellement (km)';
+          showDistanceMessage('Erreur de chargement de Google Maps. Vérifiez la configuration de la clé API. Vous pouvez saisir la distance manuellement.', 'error');
         }
       });
     }
