@@ -1231,16 +1231,19 @@ const safeLog = {
       
       if (!fromInput || !toInput || !distanceInput) return;
       
+      // IMPORTANT: Attach blur listeners FIRST, before Google Maps loads
+      // This ensures distance calculation works via server-side API even if Google Maps fails
+      attachBlurListeners();
+      
       // Start monitoring for Google Maps error popups
       handleGoogleMapsErrorPopup();
       
-      // Load Google Maps API first
+      // Try to load Google Maps API for autocomplete (nice-to-have, not required)
+      // Distance calculation will work via server-side API even if this fails
       loadGoogleMapsAPI().then(loaded => {
         if (!loaded) {
-          // Fallback: allow manual distance entry
-          distanceInput.removeAttribute('readonly');
-          distanceInput.placeholder = 'Saisissez la distance manuellement (km)';
-          showDistanceMessage('Google Maps n\'a pas pu se charger. Vous pouvez saisir la distance manuellement.', 'warning');
+          // Google Maps autocomplete not available, but distance calculation still works via server
+          safeLog.warn('Google Maps autocomplete not available, using server-side distance calculation only');
           return;
         }
         
@@ -1499,25 +1502,59 @@ const safeLog = {
       // Remove existing messages
       removeDistanceMessage();
       
-      // Check if Google Maps is available, try to initialize if not
-      if (!window.google || !window.google.maps) {
-        // Google Maps not loaded yet, try to load it
-        loadGoogleMapsAPI().then(loaded => {
-          if (loaded && window.google && window.google.maps) {
-            // Retry calculation after Google Maps loads
-            calculateDistance();
-          } else {
-            distanceInput.placeholder = 'Distance non disponible';
-            distanceInput.disabled = false;
-            distanceInput.removeAttribute('readonly');
-            showDistanceMessage('Google Maps non disponible. Vous pouvez saisir la distance manuellement.', 'warning');
-          }
-        }).catch(() => {
-          distanceInput.placeholder = 'Distance non disponible';
-          distanceInput.disabled = false;
-          distanceInput.removeAttribute('readonly');
-          showDistanceMessage('Google Maps non disponible. Vous pouvez saisir la distance manuellement.', 'warning');
+      // PRIMARY METHOD: Use server-side API for distance calculation
+      // This is more reliable than client-side Google Maps JavaScript API
+      calculateDistanceServerSide(fromAddress, toAddress, distanceInput);
+    }
+    
+    // Server-side distance calculation using our API endpoint
+    async function calculateDistanceServerSide(fromAddress, toAddress, distanceInput) {
+      try {
+        const response = await fetch('/api/calculate-distance', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            origin: fromAddress,
+            destination: toAddress
+          })
         });
+        
+        const result = await response.json();
+        
+        if (result.success && result.distance !== undefined) {
+          // Success - show calculated distance
+          distanceInput.value = result.distance;
+          distanceInput.disabled = false;
+          distanceInput.placeholder = 'Calculé automatiquement';
+          
+          let message = `Distance calculée: ${result.distance} km`;
+          if (result.duration) {
+            message += ` (${result.duration})`;
+          }
+          showDistanceMessage(message, 'success');
+        } else {
+          // Server couldn't calculate distance - try client-side fallback
+          safeLog.warn('Server-side calculation failed, trying client-side fallback');
+          calculateDistanceClientSide(fromAddress, toAddress, distanceInput);
+        }
+      } catch (error) {
+        safeLog.error('Error calling distance API:', error);
+        // Network error or server issue - try client-side fallback
+        calculateDistanceClientSide(fromAddress, toAddress, distanceInput);
+      }
+    }
+    
+    // Client-side fallback using Google Maps JavaScript API
+    function calculateDistanceClientSide(fromAddress, toAddress, distanceInput) {
+      // Check if Google Maps is available
+      if (!window.google || !window.google.maps) {
+        // Google Maps not loaded - allow manual entry
+        distanceInput.placeholder = 'Distance non disponible';
+        distanceInput.disabled = false;
+        distanceInput.removeAttribute('readonly');
+        showDistanceMessage('Calcul automatique non disponible. Veuillez saisir la distance manuellement.', 'warning');
         return;
       }
       
@@ -1530,7 +1567,7 @@ const safeLog = {
           distanceInput.placeholder = 'Erreur de service';
           distanceInput.disabled = false;
           distanceInput.removeAttribute('readonly');
-          showDistanceMessage('Erreur d\'initialisation du service de calcul. Vous pouvez saisir la distance manuellement.', 'error');
+          showDistanceMessage('Calcul automatique non disponible. Veuillez saisir la distance manuellement.', 'warning');
           return;
         }
       }
