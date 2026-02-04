@@ -281,6 +281,10 @@ const safeLog = {
       if (step === 3 || step === 4) {
         // Small delay to ensure DOM is ready
         setTimeout(() => {
+          // For step 4, always attach blur listeners first
+          if (step === 4) {
+            attachBlurListeners();
+          }
           initAddressAutocomplete();
           // Also check if dropoff field is already visible and initialize it
           if (step === 3) {
@@ -1197,7 +1201,8 @@ const safeLog = {
                       }
                     }
                     fromInput.value = place.formatted_address;
-                    calculateDistance();
+                    // Small delay to ensure value is set before calculating
+                    setTimeout(() => calculateDistance(), 100);
                   }
                 } catch (error) {
                   safeLog.error('Error in fromAutocomplete place_changed:', error);
@@ -1220,7 +1225,8 @@ const safeLog = {
                       }
                     }
                     toInput.value = place.formatted_address;
-                    calculateDistance();
+                    // Small delay to ensure value is set before calculating
+                    setTimeout(() => calculateDistance(), 100);
                   }
                 } catch (error) {
                   safeLog.error('Error in toAutocomplete place_changed:', error);
@@ -1241,22 +1247,8 @@ const safeLog = {
                 });
               }
               
-              // Also calculate on blur events
-              fromInput.addEventListener('blur', () => {
-                try {
-                  calculateDistance();
-                } catch (error) {
-                  safeLog.error('Error calculating distance on blur:', error);
-                }
-              });
-              
-              toInput.addEventListener('blur', () => {
-                try {
-                  calculateDistance();
-                } catch (error) {
-                  safeLog.error('Error calculating distance on blur:', error);
-                }
-              });
+              // Note: Blur listeners are attached separately via attachBlurListeners()
+              // to ensure they work even if Google Maps fails to load
             } catch (error) {
               // Handle errors gracefully
               safeLog.error('Error in initPlaces:', error);
@@ -1270,10 +1262,16 @@ const safeLog = {
             // Max retries reached, allow manual entry
             distanceInput.removeAttribute('readonly');
             distanceInput.placeholder = 'Saisissez la distance manuellement (km)';
+            // Still attach blur listeners even if Google Maps failed
+            attachBlurListeners();
           }
         };
         
         initPlaces();
+        
+        // Always attach blur listeners as fallback, even if Google Maps hasn't loaded yet
+        // This ensures distance calculation works even if Google Maps loads later
+        attachBlurListeners();
       }).catch(error => {
         safeLog.error('Error loading Google Maps API:', error);
         const distanceInput = form.querySelector('#form-distance');
@@ -1282,6 +1280,64 @@ const safeLog = {
           distanceInput.placeholder = 'Saisissez la distance manuellement (km)';
         }
       });
+    }
+    
+    // Track if blur listeners are already attached to avoid duplicates
+    let blurListenersAttached = false;
+    let attachedInputs = new WeakSet();
+    
+    // Attach blur listeners for distance calculation (always, regardless of Google Maps status)
+    function attachBlurListeners() {
+      const fromInput = form.querySelector('#form-address-departure');
+      const toInput = form.querySelector('#form-address-destination');
+      
+      if (!fromInput || !toInput) return;
+      
+      // Check if listeners are already attached to these specific input elements
+      // This allows re-attaching if inputs are recreated
+      if (attachedInputs.has(fromInput) && attachedInputs.has(toInput)) {
+        return;
+      }
+      
+      // Attach blur listeners
+      fromInput.addEventListener('blur', handleAddressBlur, { passive: true });
+      toInput.addEventListener('blur', handleAddressBlur, { passive: true });
+      
+      // Also attach input listeners for real-time calculation (debounced)
+      let fromTimeout;
+      let toTimeout;
+      
+      fromInput.addEventListener('input', () => {
+        clearTimeout(fromTimeout);
+        fromTimeout = setTimeout(() => {
+          if (fromInput.value.trim() && toInput.value.trim()) {
+            calculateDistance();
+          }
+        }, 1000); // Wait 1 second after user stops typing
+      }, { passive: true });
+      
+      toInput.addEventListener('input', () => {
+        clearTimeout(toTimeout);
+        toTimeout = setTimeout(() => {
+          if (fromInput.value.trim() && toInput.value.trim()) {
+            calculateDistance();
+          }
+        }, 1000); // Wait 1 second after user stops typing
+      }, { passive: true });
+      
+      // Mark these inputs as having listeners attached
+      attachedInputs.add(fromInput);
+      attachedInputs.add(toInput);
+      blurListenersAttached = true;
+    }
+    
+    // Handler for address blur events
+    function handleAddressBlur() {
+      try {
+        calculateDistance();
+      } catch (error) {
+        safeLog.error('Error calculating distance on blur:', error);
+      }
     }
     
     function calculateDistance() {
@@ -1307,12 +1363,40 @@ const safeLog = {
       // Remove existing messages
       removeDistanceMessage();
       
-      // Check if Google Maps is available
-      if (!distanceMatrixService || !window.google || !window.google.maps) {
-        distanceInput.placeholder = 'Distance non disponible';
-        distanceInput.disabled = false;
-        showDistanceMessage('Google Maps non disponible. Vous pouvez saisir la distance manuellement.', 'warning');
+      // Check if Google Maps is available, try to initialize if not
+      if (!window.google || !window.google.maps) {
+        // Google Maps not loaded yet, try to load it
+        loadGoogleMapsAPI().then(loaded => {
+          if (loaded && window.google && window.google.maps) {
+            // Retry calculation after Google Maps loads
+            calculateDistance();
+          } else {
+            distanceInput.placeholder = 'Distance non disponible';
+            distanceInput.disabled = false;
+            distanceInput.removeAttribute('readonly');
+            showDistanceMessage('Google Maps non disponible. Vous pouvez saisir la distance manuellement.', 'warning');
+          }
+        }).catch(() => {
+          distanceInput.placeholder = 'Distance non disponible';
+          distanceInput.disabled = false;
+          distanceInput.removeAttribute('readonly');
+          showDistanceMessage('Google Maps non disponible. Vous pouvez saisir la distance manuellement.', 'warning');
+        });
         return;
+      }
+      
+      // Initialize Distance Matrix Service if not already initialized
+      if (!distanceMatrixService) {
+        try {
+          distanceMatrixService = new google.maps.DistanceMatrixService();
+        } catch (error) {
+          safeLog.error('Error initializing DistanceMatrixService:', error);
+          distanceInput.placeholder = 'Erreur de service';
+          distanceInput.disabled = false;
+          distanceInput.removeAttribute('readonly');
+          showDistanceMessage('Erreur d\'initialisation du service de calcul. Vous pouvez saisir la distance manuellement.', 'error');
+          return;
+        }
       }
       
       // Calculate distance using Distance Matrix API
@@ -2126,6 +2210,9 @@ const safeLog = {
           }, 150);
         }
         if (step === 4) {
+          // Always attach blur listeners first (works even if Google Maps fails)
+          attachBlurListeners();
+          // Then initialize Google Maps autocomplete
           initAddressAutocomplete();
           // Re-initialize date picker if needed
           initDatePicker();
