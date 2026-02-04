@@ -96,9 +96,8 @@ export default async function handler(req, res) {
       });
     }
 
-    // For testing, send both emails to wrivard@kua.quebec
-    // Since kua.quebec is verified on Resend, we can send to any email address
-    const testEmail = 'wrivard@kua.quebec';
+    // Production email configuration
+    const ownerEmail = 'dettboreal@gmail.com';
     const fullName = `${firstName} ${lastName}`.trim();
 
     // Logo URL - encode to handle special characters
@@ -250,24 +249,25 @@ export default async function handler(req, res) {
 
     // Send both emails
     console.log('📤 Sending emails...', {
-      to: testEmail,
+      userTo: email,
+      ownerTo: ownerEmail,
       from: 'noreply@kua.quebec'
     });
 
     try {
       const emailResults = await Promise.allSettled([
-        // Email to user (confirmation) - sent to test email for now
+        // Email to user (confirmation)
         resend.emails.send({
           from: 'Déménagement Boréal <noreply@kua.quebec>',
-          to: [testEmail], // For testing, send to test email
-          replyTo: 'dettboreal@gmail.com',
+          to: [email],
+          replyTo: ownerEmail,
           subject: `Confirmation de votre message - Déménagement Boréal`,
           html: userEmailHTML,
         }),
-        // Email to owner (notification) - sent to test email for now
+        // Email to owner (notification)
         resend.emails.send({
           from: 'Déménagement Boréal <noreply@kua.quebec>',
-          to: [testEmail], // For testing, send to test email
+          to: [ownerEmail],
           replyTo: email,
           subject: `Nouveau message de contact - ${fullName}`,
           html: ownerEmailHTML,
