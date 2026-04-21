@@ -6066,6 +6066,21 @@ figcaption {
   }
 }
 
+/* Disable slow image animations - show images immediately */
+.layout218_image,
+.layout204_image,
+.layout13_image,
+.layout201_image,
+.layout356_image,
+.stats30_image,
+.gallery8_image1,
+.gallery8_image2,
+.gallery8_image3,
+.gallery8_image4 {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
 /* Global image overlay for better contrast */
 .layout218_image-wrapper,
 .layout204_image-wrapper,
