@@ -2305,12 +2305,59 @@ figcaption {
   overflow: hidden;
 }
 
+.testimonial6_slider-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
 .testimonial6_grid-list {
   grid-column-gap: 3rem;
   grid-row-gap: 4rem;
   grid-template-rows: auto;
   grid-template-columns: 1fr 1fr 1fr;
   grid-auto-columns: 1fr;
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+}
+
+.testimonial6_content {
+  flex: 0 0 calc(33.333% - 2rem);
+  min-width: calc(33.333% - 2rem);
+}
+
+.testimonial6_nav {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.testimonial6_nav-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--_primitives---color--neutral-darkest);
+  background-color: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.testimonial6_nav-btn:hover {
+  background-color: var(--_primitives---color--neutral-darkest);
+  color: #fff;
+}
+
+.testimonial6_nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.testimonial6_nav-btn svg {
+  width: 20px;
+  height: 20px;
   display: grid;
 }
 
@@ -4171,6 +4218,11 @@ figcaption {
   .testimonial6_grid-list, .layout204_content {
     grid-row-gap: 3rem;
     grid-template-columns: 1fr;
+  }
+
+  .testimonial6_content {
+    flex: 0 0 100%;
+    min-width: 100%;
   }
 
   .gallery8_lightbox-link {
