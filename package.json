@@ -9,11 +9,15 @@
   "engines": {
     "node": "22.x"
   },
-  "keywords": ["webflow", "demenagement", "quebec"],
+  "keywords": [
+    "webflow",
+    "demenagement",
+    "quebec"
+  ],
   "author": "Déménagement Boréal",
   "license": "MIT",
   "dependencies": {
     "resend": "^3.2.0"
-  }
+  },
+  "main": "index.js"
 }
-

@@ -6114,3 +6114,48 @@ figcaption {
   border-radius: inherit;
 }
 
+/* Image optimization - prevent layout shift */
+.layout218_image,
+.layout204_image,
+.layout13_image,
+.layout201_image,
+.layout356_image,
+.stats30_image {
+  aspect-ratio: 3/2;
+  object-fit: cover;
+  width: 100%;
+  height: auto;
+}
+
+.gallery8_image1,
+.gallery8_image4 {
+  aspect-ratio: 4/5;
+  object-fit: cover;
+  width: 100%;
+  height: auto;
+}
+
+.gallery8_image2,
+.gallery8_image3 {
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  width: 100%;
+  height: auto;
+}
+
+.layout423_image {
+  aspect-ratio: 3/2;
+  object-fit: cover;
+}
+
+/* Hero images optimization */
+.header5_background-image,
+.header50_background-image {
+  object-fit: cover;
+}
+
+/* CTA background optimization */
+.cta3_background-image {
+  object-fit: cover;
+}
+
