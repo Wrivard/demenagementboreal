@@ -2191,7 +2191,7 @@ figcaption {
 }
 
 .layout423_overlay {
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: #00000080;
   position: absolute;
   inset: 0%;
 }
@@ -6074,8 +6074,7 @@ figcaption {
 .stats30_image-wrapper,
 .layout13_image-wrapper,
 .layout201_image-wrapper,
-.layout356_image-wrapper,
-.layout423_image-wrapper {
+.layout356_image-wrapper {
   position: relative;
   background-color: #2a2a2a;
 }
