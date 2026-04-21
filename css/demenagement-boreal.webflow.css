@@ -2375,7 +2375,7 @@ figcaption {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #e4a63d;
+  background-color: #72adcb;
   color: #fff;
   font-size: 1.5rem;
   font-weight: 600;
@@ -6066,4 +6066,52 @@ figcaption {
   }
 }
 
+/* Global image overlay for better contrast */
+.layout218_image-wrapper,
+.layout204_image-wrapper,
+.gallery8_image-wrapper,
+.gallery8_image-wrapper-large,
+.stats30_image-wrapper,
+.layout13_image-wrapper,
+.layout201_image-wrapper,
+.layout356_image-wrapper {
+  position: relative;
+}
+
+.layout218_image-wrapper::after,
+.layout204_image-wrapper::after,
+.gallery8_image-wrapper::after,
+.gallery8_image-wrapper-large::after,
+.stats30_image-wrapper::after,
+.layout13_image-wrapper::after,
+.layout201_image-wrapper::after,
+.layout356_image-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+/* Cards overlay */
+.layout423_image-wrapper {
+  position: relative;
+}
+
+.layout423_image-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+  z-index: 1;
+}
 
