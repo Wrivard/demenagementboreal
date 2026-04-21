@@ -2092,6 +2092,8 @@ figcaption {
 
 .navbar3_logo-link {
   padding-left: 0;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
 }
 
 .navbar3_menu-background {
