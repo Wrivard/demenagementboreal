@@ -1612,3 +1612,29 @@ input.date-picker-input[readonly] {
   }
 }
 
+/* À propos — grille statistiques: les photos remplissent la cellule (plus de bande foncée sous l’image) */
+.section_stats30 .stats30_image-wrapper {
+  background-color: transparent !important;
+  position: relative;
+  overflow: hidden;
+  align-self: stretch;
+  min-height: 14rem;
+}
+
+@media screen and (min-width: 992px) {
+  .section_stats30 .stats30_image-wrapper {
+    min-height: 0;
+    height: 100%;
+  }
+}
+
+.section_stats30 .stats30_image {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover !important;
+  aspect-ratio: unset !important;
+}
+
