@@ -1638,3 +1638,47 @@ input.date-picker-input[readonly] {
   aspect-ratio: unset !important;
 }
 
+/* Sections image + texte : cadres plus hauts (moins de rognage vertical) */
+.layout218_image,
+.layout204_image,
+.layout201_image,
+.layout13_image {
+  aspect-ratio: 1 / 1 !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  width: 100% !important;
+  height: auto !important;
+}
+
+/* Blocs sticky « étapes » (ex. résidentiel) : image plus haute */
+.layout356_image {
+  aspect-ratio: 4 / 5 !important;
+  min-height: 28rem !important;
+  height: auto !important;
+  object-fit: cover !important;
+  object-position: center !important;
+}
+
+@media screen and (min-width: 992px) {
+  .layout356_image {
+    min-height: min(78vh, 52rem) !important;
+  }
+}
+
+/* Moins de cadre gris/noir et d’assombrissement sur ces photos */
+.layout218_image-wrapper,
+.layout204_image-wrapper,
+.layout201_image-wrapper,
+.layout13_image-wrapper,
+.layout356_image-wrapper {
+  background-color: transparent !important;
+}
+
+.layout218_image-wrapper::after,
+.layout204_image-wrapper::after,
+.layout201_image-wrapper::after,
+.layout13_image-wrapper::after,
+.layout356_image-wrapper::after {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+}
+
